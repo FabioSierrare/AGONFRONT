@@ -12,18 +12,17 @@ namespace AGONFRONT.Models
     public class Pedidos
     {
         [Key]
-        [DisplayName("Id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 
         public int Id { get; set; }
 
-        [ForeignKey("ClienteId")]
-        [DisplayName("Clienteid")]
+        [Display(Name = " Id del Cliente")]
         public int ClienteId { get; set; }
 
-        [DisplayName("Estado")]
+        [Display(Name = " Estado del pedido")]
         public string Estado { get; set; }
 
-        [DisplayName("Total")]
+        [Display(Name = " Total del pedido")]
         public decimal Total { get; set; }
 
         [DataType(DataType.Date)]

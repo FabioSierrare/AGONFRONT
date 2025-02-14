@@ -5,17 +5,18 @@ using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AGONFRONT.Models
 {
     public class Categoria
     {
         [Key]
-        [DisplayName("Id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [DisplayName("Nombre")]
-        [Required (ErrorMessage = "El campo {0} es requerido")]
+        [Display(Name = " Nombre de la categoria")]
+        [Required (ErrorMessage = " El campo {0} es requerido")]
         public string Nombre { get; set; } 
     }
 }

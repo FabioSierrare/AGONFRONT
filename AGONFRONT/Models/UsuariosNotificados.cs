@@ -12,21 +12,19 @@ namespace AGONFRONT.Models
     public class UsuariosNotificados
     {
         [Key]
-        [DisplayName("Id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [ForeignKey("UsuarioId")]
-        [DisplayName("UsuarioId")]
+        [Display(Name = " Id del usuario")]
         public int UsuarioId { get; set; }
 
-        [ForeignKey("NotificacionId")]
-        [DisplayName("NotificacionId")]
+        [Display(Name = " Id de la notificacion")]
         public int NotificacionId { get; set; }
 
-        [DisplayName("UsuarioId")]
+        [Display(Name = " Usuario notificado")]
         public bool Leido { get; set; }
 
-        [DisplayName("UsuarioId")]
+        [Display(Name = " Fecha vista por el usuario")]
         [DataType(DataType.DateTime)]
         public DateTime? FechaLeido { get; set; }
     }

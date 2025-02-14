@@ -12,25 +12,24 @@ namespace AGONFRONT.Models
     public class TicketsSoporte
     {
         [Key]
-        [DisplayName("Id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [DisplayName("UsuarioId")]
-        [ForeignKey("UsuarioId")]
+        [Display(Name = " Id del Usuario")]
         public int UsuarioId { get; set; }
 
-        [DisplayName("Titulo")]
-        [Required]
+        [Display(Name = " Titulo")]
+        [Required(ErrorMessage = " El campo {0} es requerido")]
         public string Titulo { get; set; }
 
-        [DisplayName("Descripcion")]
-        [Required]
+        [Display(Name = " Descripcion del ticket")]
+        [Required(ErrorMessage = " El campo {0} es requerido")]
         public string Descripcion { get; set; } 
 
-        [DisplayName("Estado")]
+        [Display(Name = " Estado del ticket")]
         public string Estado { get; set; }
 
-        [DisplayName("FechaCreacion")]
+        [Display(Name = " Fecha de creacion del ticket")]
         [DataType(DataType.DateTime)]
         public DateTime FechaCreacion { get; set; }
     }

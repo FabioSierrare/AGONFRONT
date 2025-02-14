@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 
 namespace AGONFRONT.Models
@@ -12,34 +13,35 @@ namespace AGONFRONT.Models
     public class Usuarios
     {
         [Key]
-        [DisplayName("Id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [DisplayName("Nombre")]
-        [Required]
+        [Display(Name = " Nombre")]
+        [Required(ErrorMessage = " El campo {0} es requerido")]
         public string Nombre { get; set; }
 
-        [DisplayName("Correo")]
-        [Required]
+        [Display(Name = " Correo")]
+        [EmailAddress(ErrorMessage = " El email no tiene un formato válido")]
+        [Required(ErrorMessage = " El campo {0} es requerido")]
         public string Correo { get; set; }
 
-        [DisplayName("Contraseña")]
-        [Required]
+        [Display(Name = " Contraseña")]
+        [Required(ErrorMessage = " El campo {0} es requerido")]
         public string Contraseña { get; set; }
 
-        [DisplayName("Telefono")]
-        [Required]
+        [Display(Name = " Telefono")]
+        [Required(ErrorMessage = " El campo {0} es requerido")]
         public string Telefono { get; set; }
 
-        [DisplayName("Direccion")]
-        [Required]
+        [Display(Name = " Direccion")]
+        [Required(ErrorMessage = " El campo {0} es requerido")]
         public string Direccion { get; set; }
 
-        [DisplayName("TipoUsuario")]
-        [Required]
+        [Display(Name = " Tipo de usuario")]
+        [Required(ErrorMessage = " El campo {0} es requerido")]
         public string TipoUsuario { get; set; }
 
-        [DisplayName("FehcaCreacion")]
+        [Display(Name =  "Fehca de creacion")]
         [DataType(DataType.DateTime)]
         public DateTime FechaCreacion { get; set; }
     }

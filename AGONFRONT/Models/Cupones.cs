@@ -12,15 +12,13 @@ namespace AGONFRONT.Models
     public class Cupones
     {
         [Key]
-        [DisplayName("Id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [ForeignKey("ProductoId")]
-        [DisplayName("ProductoId")]
+        [Display(Name = " Id del Producto")]
         public int ProductoId { get; set; }
 
-        [ForeignKey("PromocionId")]
-        [DisplayName("PromocionId")]
+        [Display(Name = " Id de la Promocion")]
         public int PromocionId { get; set; }
 
     }

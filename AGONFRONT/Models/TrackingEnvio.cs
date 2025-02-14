@@ -13,20 +13,19 @@ namespace AGONFRONT.Models
     public class TrackingEnvio
     {
         [Key]
-        [DisplayName("Id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [DisplayName("EnvioId")]
-        [ForeignKey("EnvioId")]
+        [Display(Name = " Id del Envio")]
         public int EnvioId { get; set; }
 
-        [DisplayName("EnvioId")]
+        [Display(Name = " Envio")]
         public string Estado { get; set; }
 
-        [DisplayName("Ubicacion")]
+        [Display(Name = " Ubicacion del envio")]
         public string Ubicacion { get; set; }
 
-        [DisplayName("Fecha")]
+        [Display(Name = " Fecha del envio")]
         [DataType(DataType.DateTime)]
         public DateTime Fecha { get; set; }
     }

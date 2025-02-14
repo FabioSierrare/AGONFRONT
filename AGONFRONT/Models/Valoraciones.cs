@@ -13,22 +13,20 @@ namespace AGONFRONT.Models
      {
 
         [Key]
-        [DisplayName("Id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [ForeignKey("UsuarioId")]
-        [DisplayName("UsuarioId")]
+        [Display(Name = " Id del usuario")]
         public int UsuarioId { get; set; }
 
-        [ForeignKey("ProductoId")]
-        [DisplayName("ProductoId")]
+        [Display(Name = " Id del Producto")]
         public int ProductoId { get; set; }
 
-        [DisplayName("Valor")]
-        [Required]
+        [Display(Name = " Que calificacion le da al producto")]
+        [Required(ErrorMessage = " El campo {0} es requerido")]
         public int Valor { get; set; }
 
-        [DisplayName("FechaValoracion")]
+        [Display(Name = " Fecha de la valoracion")]
         [DataType(DataType.DateTime)]
         public DateTime FechaValoracion { get; set; }
     }

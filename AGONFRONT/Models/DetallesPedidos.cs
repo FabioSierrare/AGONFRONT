@@ -12,22 +12,20 @@ namespace AGONFRONT.Models
     public class DetallesPedidos
     {
         [Key]
-        [DisplayName("Id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [ForeignKey("PedidoId")]
-        [DisplayName("PedidoId")]
+        [Display(Name = " Id del Pedido")]
         public int PedidoId { get; set; }
 
-        [ForeignKey("PedidoId")]
-        [DisplayName("PedidoId")]
+        [Display(Name = " Id del Producto")]
         public int ProductoId { get; set; }
 
-        [DisplayName("Cantidad")]
-        [Required (ErrorMessage = "El campo {0} es requerido")]
+        [Display(Name = " Cantidad del pedido")]
+        [Required (ErrorMessage = " El campo {0} es requerido")]
         public int Cantidad { get; set; }
 
-        [DisplayName("PrecioUnitario")]
+        [Display(Name = " Precio Unitario")]
         [Required(ErrorMessage = "El campo {0} es requerido")]
         public decimal PrecioUnitario { get; set; }
     }

@@ -12,18 +12,17 @@ namespace AGONFRONT.Models
     public class ReporteAcciones
     {
         [Key]
-        [DisplayName("Id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [ForeignKey("UsuarioId")]
-        [DisplayName("UsuarioId")]
+        [Display(Name = " Id del Usuario")]
         public int UsuarioId { get; set; }
 
-        [DisplayName("Descripcion")]
-        [Required]
+        [Display(Name = " Descripcion del reporte")]
+        [Required(ErrorMessage = " El campo {0} es requerido")]
         public string Descripcion { get; set; }
 
-        [DisplayName("FechaReporte")]
+        [Display(Name = " Fecha del Reporte")]
         [DataType(DataType.DateTime)]
         public DateTime FechaReporte { get; set; }
     }

@@ -5,29 +5,30 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AGONFRONT.Models
 {
     public class Promociones
     {
         [Key]
-        [DisplayName("Id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [DisplayName("Nombre")]
-        [Required]
+        [Display(Name = " Nombre")]
+        [Required(ErrorMessage = " El campo {0} es requerido")]
         public string Nombre { get; set; }
 
-        [DisplayName("Descuento")]
-        [Required]
+        [Display(Name = " Descuento")]
+        [Required(ErrorMessage = " El campo {0} es requerido")]
         public decimal Descuento { get; set; }
 
-        [DisplayName("FechaInicio")]
-        [DataType(DataType.Date)]
+        [Display(Name = " Fecha de inicio del descuento")]
+        [DataType(DataType.DateTime)]
         public DateTime FechaInicio { get; set; }
 
-        [DisplayName("FechaFin")]
-        [DataType(DataType.Date)]
+        [Display(Name = "Fecha final del descuento")]
+        [DataType(DataType.DateTime)]
         public DateTime FechaFin { get; set; }
     }
 }

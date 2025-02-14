@@ -12,16 +12,15 @@ namespace AGONFRONT.Models
     public class ImagenProducto
     {
         [Key]
-        [DisplayName("Id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [DisplayName("UrlImagen")]
+        [Display(Name = " Dirección de la imagen")]
         [Url]
         public string UrlImagen { get; set; }
 
 
-        [DisplayName("Productoid")]
-        [ForeignKey("ProductoId")]
+        [Display(Name = " Id del Producto")]
         public int ProductoId { get; set; }
 
 

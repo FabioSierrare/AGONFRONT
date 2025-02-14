@@ -12,23 +12,20 @@ namespace AGONFRONT.Models
     public class Inventarios
     {
         [Key]
-        [DisplayName("Id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [ForeignKey("ProductoId")]
-        [DisplayName("ProductoId")]
+        [Display(Name = " Id del Producto")]
         public int ProductoId { get; set; }
 
-        [DisplayName("Cantidad")]
+        [Display(Name = " Cantidad de productos")]
         [Required(ErrorMessage = "El campo {0} es requerido")]
-
         public int Cantidad { get; set; }
 
 
-        [DisplayName("UltimaActualizacion")]
+        [Display(Name = " Tiempo de la ultima actualizacion")]
         [DataType(DataType.DateTime)]
         [Required(ErrorMessage = "El campo {0} es requerido")]
-
         public DateTime UltimaActualizacion { get; set; }
     }
 }

@@ -12,40 +12,34 @@ namespace AGONFRONT.Models
     public class Productos
     {
         [Key]
-        [DisplayName("Id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Required]
-        [DisplayName("Nombre")]
+        [Required(ErrorMessage = " El campo {0} es requerido")]
+        [Display(Name = " Nombre")]
         public string Nombre { get; set; }
 
-        [Required]
-        [DisplayName("Descripcion")]
+        [Required(ErrorMessage = " El campo {0} es requerido")]
+        [Display(Name = " Descripcion del producto")]
         public string Descripcion { get; set; }
 
-        [Required]
-        [DisplayName("Precio")]
+        [Required(ErrorMessage = " El campo {0} es requerido")]
+        [Display(Name = " Precio del producto")]
         public decimal Precio { get; set; }
 
-        [Required]
-        [DisplayName("Stock")]
+        [Required(ErrorMessage = " El campo {0} es requerido")]
+        [Display(Name = " Stock del producto")]
         public int Stock { get; set; }
 
-        [Required]
-        [DisplayName("FechaCreacion")]
+        [Required(ErrorMessage = " El campo {0} es requerido")]
+        [Display(Name =  "Fecha de creacion")]
         [DataType(DataType.Date)]
         public DateTime FechaCreacion { get; set; }
 
-
-        [ForeignKey("CategoriaId")]
-        [DisplayName("CategoriaId")]
-
+        [Display(Name = " Id de la Categoria")]
         public int CategoriaId { get; set; }
 
-
-        [ForeignKey("VendedorId")]
-        [DisplayName("VendedorId")]
-
+        [Display(Name = " Id del Vendedor")]
         public int VendedorId { get; set; }     
 
     }

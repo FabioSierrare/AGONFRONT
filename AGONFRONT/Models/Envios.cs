@@ -12,30 +12,29 @@ namespace AGONFRONT.Models
     public class Envios
     {
         [Key]
-        [DisplayName("Id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [ForeignKey("PedidoId")]
-        [DisplayName("PedidoId")]
+        [Display(Name = " Id del Pedido")]
         public int PedidoId { get; set; }
 
-        [DisplayName("EmpresaEnvio")]
+        [Display(Name = " Empresa del Envio")]
         [Required(ErrorMessage = "El campo {0} es requerido")]
         public string EmpresaEnvio { get; set; }
 
-        [DisplayName("NumeroGuia")]
+        [Display(Name = " Numero Guia")]
         [Required(ErrorMessage = "El campo {0} es requerido")]
         public string NumeroGuia { get; set; }
 
-        [DisplayName("EstadoEnvio")]
+        [Display(Name = " Estado del Envio")]
         [Required(ErrorMessage = "El campo {0} es requerido")]
         public string EstadoEnvio { get; set; }
 
-        [DisplayName("FechaEnvio")]
+        [Display(Name = " Fecha del Envio")]
         [DataType(DataType.DateTime)]
         public DateTime FechaEnvio { get; set; }
 
-        [DisplayName("FechaEntrega")]
+        [Display(Name = " Fecha de la Entrega")]
         [DataType(DataType.DateTime)]
         public DateTime? FechaEntrega { get; set; }
     }

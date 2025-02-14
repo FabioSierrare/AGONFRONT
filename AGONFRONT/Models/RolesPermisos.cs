@@ -12,15 +12,9 @@ namespace AGONFRONT.Models
     public class RolesPermisos
     {
         [Key]
-        [DisplayName("Id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-
-        [ForeignKey("RolId")]
-        [DisplayName("RolId")]
         public int RolId { get; set; }
-
-        [ForeignKey("PermisoId")]
-        [DisplayName("PermisoId")]
         public int PermisoId { get; set; }
     }
 }
