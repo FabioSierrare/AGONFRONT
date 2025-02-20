@@ -1,0 +1,70 @@
+*{
+    padding: 0;
+    margin: 0;
+    outline: none;
+}
+
+body{
+    font-family: "Merriweather", serif;
+    margin: 0;
+    display: grid;
+    min-height: 100dvh;
+    grid-template-rows: auto 1fr auto;
+}
+
+body {
+    background-color: #f4f7fa;
+    font-family: 'Arial', sans-serif;
+  }
+  .card {
+    max-width: 500px;
+    margin: 80px auto;
+    border-radius: 15px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    padding: 40px;
+  }
+  .card-header {
+    background-color: #5b8f5b;
+    color: white;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    padding: 20px;
+  }
+  .card-body {
+    padding: 30px;
+  }
+  .form-group {
+    margin-bottom: 30px;
+  }
+  .form-control {
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    padding: 15px;
+    font-size: 16px;
+  }
+  .btn-primary {
+    background-color: #5b8f5b;
+    border: none;
+    border-radius: 8px;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    width: 100%;
+  }
+  .btn-primary:hover {
+    background-color: #5b8f5b;
+  }
+  .text-muted {
+    color: #6c757d !important;
+  }
+  p.text-center {
+    margin-top: 25px;
+  }
+  p.text-center a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  p.text-center a:hover {
+    text-decoration: underline;
+  }

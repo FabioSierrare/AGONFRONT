@@ -1,0 +1,36 @@
+*{
+    padding: 0;
+    margin: 0;
+    outline: none;
+}
+
+body{
+    
+    font-family: "Merriweather", serif;
+    display: grid;
+    min-height: 100dvh;
+    grid-template-rows: auto 1fr auto;
+}
+
+.content {
+    flex: 1;
+}
+
+.txtlogo{
+    color: #157347;
+}
+
+*{
+    padding: 0;
+    margin: 0;
+    outline: none;
+}
+
+input[type="text"]:focus, 
+input[type="email"]:focus, 
+input[type="password"]:focus {
+  outline: none; /* Quitamos el borde predeterminado del navegador */
+  border: 1px solid #157347; /* Borde verde claro cuando está enfocado */
+  box-shadow: 0 0 10px rgba(21, 115, 71, 0.5); /* Sombra suave verde */
+}
+  

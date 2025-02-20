@@ -1,0 +1,60 @@
+*{
+    padding: 0;
+    margin: 0;
+    outline: none;
+}
+
+body{
+    font-family: "Merriweather", serif;
+    height: 100vh;
+    margin: 0;
+    display: grid;
+    min-height: 100dvh;
+    grid-template-rows: auto 1fr auto;
+}
+
+    .container {
+      max-width: 600px; 
+      margin-top: 100px;
+    }
+
+    .card-body {
+      padding: 40px; 
+    }
+
+    .form-label {
+      font-size: 1.2rem;
+    }
+
+    .form-control {
+      font-size: 1.2rem;
+      padding: 10px; 
+    }
+
+    .btn {
+      font-size: 1.2rem;
+      padding: 12px; 
+    }
+
+    h3.card-title {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+
+    .text-center p {
+      font-size: 1.1rem; 
+    }
+
+    .colorbtn{
+        background-color: #5b8f27;
+        color: white;
+        border: none;
+        padding: 20px 20px;
+        border-radius: 125px;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .colorbtn:hover {
+        background-color: #B7D7A9;
+    }

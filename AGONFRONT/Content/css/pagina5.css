@@ -1,0 +1,169 @@
+*{
+    padding: 0;
+    margin: 0;
+    outline: none;
+}
+
+.logo{
+    display: flex;  
+    color: #39771D;
+}
+
+.logo p{
+    font-size: 18px;
+    margin-top: 35px;
+}
+
+.logo *:hover{
+    cursor: pointer;
+}
+
+.logos{
+    width: 90px;
+}
+
+
+.opciones{
+    margin: auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 1);
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    width: 30%;
+    border-radius: 20px;
+}
+
+.links{
+    margin: auto;
+    width: 40%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    color: #fff;
+}
+
+.links a{
+    font-size: 20px;
+    display: inline-block;
+    color: #39771D;
+    text-decoration: none;
+}
+.h1{
+    margin-top: 50px;
+    display: inline-block;
+    margin: auto;
+    margin-bottom: 50px;
+}
+h1{
+    border-bottom: 3px solid #000;
+    padding: 10px;
+    text-align: center;
+    margin: auto;
+    display: inline-block;
+}
+
+.opcionVender{
+    display: inline-block;
+    margin: auto;
+    flex-direction: column;
+    margin-bottom: 50px;
+}
+
+.opcionVender *{
+    display: block;
+    margin: auto;
+}
+
+.btnVender{
+    margin-top: 30px;
+    width: 180px;
+    border-radius: 30px;
+    padding: 10px;
+    background: #B7D7A9;
+    font-size: 20px;
+}
+
+.opcionCliente{
+    display: inline-block;
+    flex-direction: column;
+    margin-bottom: 50px;
+    margin: auto;
+}
+
+.opcionCliente *{
+    display: block;
+    margin: auto;
+}
+
+.btnCliente{
+    margin-top: 30px;
+    width: 180px;
+    border-radius: 30px;
+    padding: 10px;
+    background: #B7D7A9;
+    font-size: 20px;
+}
+
+.btnVender, .btnCliente:hover{
+    cursor: pointer;
+}
+
+
+.imgcampesino{
+    display: inline;
+    margin: auto;
+    justify-content: center;
+}
+
+.contacto{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    text-align: center;
+    padding: 10px;
+    background: rgba(255, 255, 255, 1);
+}
+
+.contacto .informacion{
+    display: flex;
+    flex-direction: row;
+}
+
+.informacion p{
+    margin-top: 5px;
+}
+
+.informacion:hover{
+    cursor: pointer;
+}
+
+/* General Reset */
+* {
+    padding: 0;
+    margin: 0;
+    outline: none;
+}
+
+body {
+    background-image: url("../img/Fondo\ hojas.webp");
+    background-size: cover;
+    background-repeat: no-repeat;
+    font-family: "Merriweather", serif;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.menu {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 1);
+}
+

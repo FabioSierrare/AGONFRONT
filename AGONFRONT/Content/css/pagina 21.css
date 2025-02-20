@@ -1,0 +1,194 @@
+*{
+  padding: 0;
+  margin: 0;
+  outline: none;
+}
+
+body{
+  background-image: url("../img/Fondo\ hojas.webp");
+  background-size: cover;
+  background-repeat: no-repeat;
+  font-family: "Merriweather", serif;
+  height: 100vh;
+  margin: 0;
+  
+}
+
+body {
+padding-top: 80px; /* Ajusta según el tamaño de la barra */
+}
+
+/* Estilo adicional para asegurar que la barra de búsqueda ocupe el espacio necesario */
+.navbar {
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+/* La barra de búsqueda ocupa el 90% del espacio disponible pero se ajusta en pantallas más pequeñas */
+.search-bar {
+flex-grow: 1; /* La barra de búsqueda ocupa el espacio sobrante */
+max-width: 60%; /* Máxima anchura cuando la pantalla es grande */
+}
+
+.navbar-nav {
+width: 100%;
+}
+
+.navbar-collapse{
+max-width: 400px;
+width: 100%;
+}
+
+.container {
+    width: 350px;
+    background-color: rgba(255, 255, 255, 0.85);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    margin: auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.home-icon img {
+    width: 25px;
+}
+
+.search-section {
+    margin: 20px 0;
+}
+
+.search-section h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.search-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.search-bar input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    width: 150px;
+    margin-right: 10px;
+}
+
+.search-bar button {
+    background-color: #c1e1c1;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.search-bar button:hover {
+    background-color: #a8d5a8;
+}
+
+.help-sections {
+    margin-bottom: 20px;
+}
+
+.section {
+    margin-bottom: 15px;
+}
+
+.section h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.item img {
+    width: 25px;
+    margin-right: 10px;
+}
+
+.item p {
+    flex-grow: 1;
+    text-align: left;
+    font-size: 14px;
+}
+
+.btn-ver {
+    background-color: #d8efd8;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-ver:hover {
+    background-color: #bde1b2;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-volver, .btn-salir {
+    background-color: #c1e1c1;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+}
+
+.btn-volver:hover, .btn-salir:hover {
+    background-color: #a8d5a8;
+}
+
+.contactow{
+    margin-top: auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    text-align: center;
+    padding: 10px;
+    background: rgba(255, 255, 255, 1);
+}
+
+.contactow .informacionw{
+    display: flex;
+    flex-direction: row;
+}
+
+.informacionw p{
+    margin-top: 5px;
+}
+
+.informacionw:hover{
+    cursor: pointer;
+}
+
+footer{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}

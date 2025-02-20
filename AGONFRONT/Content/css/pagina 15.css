@@ -1,0 +1,186 @@
+*{
+  padding: 0;
+  margin: 0;
+  outline: none;
+}
+
+body{
+  background-image: url("../img/Fondo\ hojas.webp");
+  background-size: cover;
+  background-repeat: no-repeat;
+  font-family: "Merriweather", serif;
+  display: grid;
+  min-height: 100dvh;
+  grid-template-rows: auto 1fr auto;
+}
+
+body {
+padding-top: 80px; /* Ajusta según el tamaño de la barra */
+}
+
+/* Estilo adicional para asegurar que la barra de búsqueda ocupe el espacio necesario */
+.navbar {
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+/* La barra de búsqueda ocupa el 90% del espacio disponible pero se ajusta en pantallas más pequeñas */
+.search-bar {
+flex-grow: 1; /* La barra de búsqueda ocupa el espacio sobrante */
+max-width: 60%; /* Máxima anchura cuando la pantalla es grande */
+}
+
+.navbar-nav {
+width: 100%;
+}
+
+.navbar-collapse{
+max-width: 400px;
+width: 100%;
+}
+
+.login-container {
+    margin: auto;
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+.login-box {
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    
+}
+
+h2 {
+    color:  #39771D;
+    font-size: 2em;
+    margin-bottom: 15px;
+}
+
+.logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 50px;
+}
+
+.logo {
+    width: 50px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #333;
+    font-size: 1.1em;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    background-color: white;
+    border-radius: 1px;
+    padding: 10px;
+    margin-left: 40px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.input-group i {
+    color:  #39771D;
+    margin-right: 10px;
+}
+
+input[type="text"],
+input[type="password"] {
+    border: none;
+    outline: none;
+    font-size: 1em;
+    width: 100%;
+}
+
+.button
+{
+    background-color: #5b8f27;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    
+}
+
+.button:hover {
+    background-color: #B7D7A9;
+}
+.continuar{
+    margin-left: 270px;
+    color: white;
+    text-decoration: none;
+}
+.continuar p {
+    margin: 0;
+    font-size: 0.9em;
+}
+.continuar a{
+    color: white;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+.links {
+    margin-bottom: 15px;
+}
+
+.links a {
+    color: #39771D;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+
+.links p {
+    margin: 0;
+    font-size: 0.9em;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.social-links a {
+    color: #39771D;
+    font-size: 1.5em;
+    text-decoration: none;
+}
+.historial-container {
+    background-color: rgba(223, 223, 223, 0.534);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    
+    
+}
+.historial-box {
+    background-color: rgba(223, 223, 223, 0.534);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+}
+.historial-img {
+    display: inline-block;
+    width: 30%;
+}
+.p-text{
+    display: inline-block;
+    width: 70%;
+    text-align: center;
+}

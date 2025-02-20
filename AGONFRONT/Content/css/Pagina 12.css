@@ -1,0 +1,37 @@
+*{
+  padding: 0;
+  margin: 0;
+  outline: none;
+}
+
+body{
+    font-family: "Merriweather", serif;
+    display: grid;
+    min-height: 100dvh;
+    grid-template-rows: auto 1fr auto;
+}
+
+.container{
+    margin: auto;
+}
+/* Estilo adicional para asegurar que la barra de búsqueda ocupe el espacio necesario */
+.navbar {
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+/* La barra de búsqueda ocupa el 90% del espacio disponible pero se ajusta en pantallas más pequeñas */
+.search-bar {
+flex-grow: 1; /* La barra de búsqueda ocupa el espacio sobrante */
+max-width: 60%; /* Máxima anchura cuando la pantalla es grande */
+}
+
+.navbar-nav {
+width: 100%;
+}
+
+.navbar-collapse{
+max-width: 500px;
+width: 100%;
+}

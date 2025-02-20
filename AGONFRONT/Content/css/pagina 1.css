@@ -1,0 +1,40 @@
+*{
+    padding: 0;
+    margin: 0;
+    outline: none;
+}
+
+body{
+    font-family: "Merriweather", serif;
+    display: grid;
+    min-height: 100dvh;
+    grid-template-rows: auto 1fr auto;
+}
+
+.content {
+    flex: 1;
+}
+
+.txtlogo{
+    color: #157347;
+}
+
+
+.logo-container h1 {
+    font-size: 3rem;
+}
+.logo-container p {
+    font-size: 1.5rem;
+}
+.subtitle {
+    font-size: 1.25rem;
+    color: #555;
+}
+.start-button a {
+    text-decoration: none;
+    color: white;
+}
+.start-button {
+    background-color: #28a745;
+    color: white;
+}

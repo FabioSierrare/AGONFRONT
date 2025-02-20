@@ -1,0 +1,186 @@
+*{
+  padding: 0;
+  margin: 0;
+  outline: none;
+}
+
+body{
+  background-image: url("../img/Fondo\ hojas.webp");
+  background-size: cover;
+  background-repeat: no-repeat;
+  font-family: "Merriweather", serif;
+  height: 100vh;
+  margin: 0;
+  
+}
+
+body {
+padding-top: 80px; /* Ajusta según el tamaño de la barra */
+}
+
+/* Estilo adicional para asegurar que la barra de búsqueda ocupe el espacio necesario */
+.navbar {
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+/* La barra de búsqueda ocupa el 90% del espacio disponible pero se ajusta en pantallas más pequeñas */
+.search-bar {
+flex-grow: 1; /* La barra de búsqueda ocupa el espacio sobrante */
+max-width: 60%; /* Máxima anchura cuando la pantalla es grande */
+}
+
+.navbar-nav {
+width: 100%;
+}
+
+.navbar-collapse{
+max-width: 400px;
+width: 100%;
+}
+.container {
+    margin: auto;
+    background-color: rgba(255, 255, 255, 0.8); /* Fondo translúcido */
+    padding: 20px;
+    border-radius: 10px;
+    width: 350px;
+    text-align: center;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    width: 50px;
+}
+
+.home-btn img {
+    width: 30px;
+}
+
+h1 {
+    font-size: 24px;
+    margin: 20px 0;
+    color: #333;
+}
+
+.pedido-btn {
+    background-color: #E7F4E4;
+    color: #333;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f7f7f7;
+    border-radius: 5px;
+}
+
+.product-img {
+    width: 40px;
+    height: 40px;
+    background-color: #ccc;
+    border-radius: 5px;
+}
+
+.product-info {
+    text-align: left;
+    flex-grow: 1;
+    margin-left: 10px;
+}
+
+.product-info p {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.product-info span {
+    font-size: 14px;
+    color: #555;
+}
+
+.product-controls {
+    display: flex;
+    align-items: center;
+}
+
+.control-btn {
+    background-color: #ddd;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.quantity {
+    margin: 0 10px;
+    font-size: 16px;
+}
+
+.cart-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.add-more {
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+}
+
+.pay-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.contactow{
+    margin-top: auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    text-align: center;
+    padding: 10px;
+    background: rgba(255, 255, 255, 1);
+}
+
+.contactow .informacionw{
+    display: flex;
+    flex-direction: row;
+}
+
+.informacionw p{
+    margin-top: 5px;
+}
+
+.informacionw:hover{
+    cursor: pointer;
+}
+
+footer{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}

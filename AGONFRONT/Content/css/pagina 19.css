@@ -1,0 +1,24 @@
+*{
+    padding: 0;
+    margin: 0;
+    outline: none;
+  }
+
+  
+  
+  body{
+      font-family: "Merriweather", serif;
+      display: grid;
+      min-height: 100dvh;
+      grid-template-rows: auto 1fr auto;
+  }
+
+  footer{
+    bottom: 0;
+    position: absolute;
+    width: 100%;
+  }
+
+  .container{
+    margin-top: 200px;
+  }
