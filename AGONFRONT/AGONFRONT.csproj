@@ -166,6 +166,7 @@
     <Compile Include="Models\Envios.cs" />
     <Compile Include="Models\ImagenProducto.cs" />
     <Compile Include="Models\Inventarios.cs" />
+    <Compile Include="Models\Login.cs" />
     <Compile Include="Models\LogsSistema.cs" />
     <Compile Include="Models\Notificaciones.cs" />
     <Compile Include="Models\Pedidos.cs" />

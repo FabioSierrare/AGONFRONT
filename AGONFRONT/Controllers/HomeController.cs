@@ -1,26 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using AGONFRONT.Models;
-using Newtonsoft.Json;
-using System.Web.Security;
 using System.Net.Http;
 using System.Text;
-using System.Configuration;
 using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Security;
+using System.Web.UI.WebControls;
+using AGONFRONT.Models;
+using Microsoft.Ajax.Utilities;
+using Newtonsoft.Json;
 
 namespace AGONFRONT.Controllers
 {
     public class HomeController : Controller
     {
-        string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
+        private readonly string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
 
-        public ActionResult Index() //Clase genérica de retorno (osea que admite lo que sea)
+        public ActionResult Index()
         {
             return View();
         }
+
+        public ActionResult About()
+        {
+            return View();
+        }
+
         public ActionResult Iniciar()
         {
             return View();
@@ -28,35 +35,65 @@ namespace AGONFRONT.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Login(Usuarios model)
+        public async Task<ActionResult> Login(Models.Login model)
         {
-            string returnUrl = Url.Action("Index", "Home");
-            Token token = new Token();
 
             if (!ModelState.IsValid)
             {
-                return RedirectToAction(returnUrl);
+                Console.WriteLine("Errores en ModelState:");
+
+                foreach (var key in ModelState.Keys)
+                {
+                    foreach (var error in ModelState[key].Errors)
+                    {
+                        TempData["Error"] = ($"Campo: {key} - Error: {error.ErrorMessage}");
+                    }
+                }
+                TempData["ErrorDetalle"] = $"Email recibido: {model.Correo} - Password recibido: {model.Contraseña}";
+                return RedirectToAction("Iniciar", "Home");
             }
+
+
+
+            Console.WriteLine($"Email recibido: {model.Correo}");
+            Console.WriteLine($"Password recibido: {model.Contraseña}");
+
+
+            Token token = new Token();
 
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(apiUrl);
                 client.DefaultRequestHeaders.Clear();
+
                 string json = JsonConvert.SerializeObject(model);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-                HttpResponseMessage Res = await client.PostAsync("api/Auth/Login", content);
 
-                if (Res.IsSuccessStatusCode)
+                HttpResponseMessage response = await client.PostAsync("api/Auth/Login", content);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    var res = Res.Content.ReadAsStringAsync().Result;
+                    var res = await response.Content.ReadAsStringAsync();
                     token = JsonConvert.DeserializeObject<Token>(res);
-                    CookieUpdate(model);
-                    Session["BearerToken"] = token.token;
 
+                    if (token != null && !string.IsNullOrEmpty(token.token))
+                    {
+                        CookieUpdate(model);
+                        Session["BearerToken"] = token.token;
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        TempData["Error"] = "Error al obtener el token.";
+                        return RedirectToAction("Iniciar", "Home");
+                    }
+                }
+                else
+                {
+                    TempData["Error"] = "Credenciales incorrectas o problema con la API.";
+                    return RedirectToAction("Iniciar", "Home");
                 }
             }
-
-            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
@@ -65,20 +102,28 @@ namespace AGONFRONT.Controllers
         {
             Session.RemoveAll();
             FormsAuthentication.SignOut();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Iniciar", "Home");
         }
 
-        private void CookieUpdate(Usuarios usuario)
+        private void CookieUpdate(Models.Login usuario)
         {
-            var ticket = new FormsAuthenticationTicket(2,
+            var ticket = new FormsAuthenticationTicket(
+                2,
                 usuario.Correo,
                 DateTime.Now,
                 DateTime.Now.AddMinutes(FormsAuthentication.Timeout.TotalMinutes),
                 false,
                 JsonConvert.SerializeObject(usuario)
             );
+
             Session["Username"] = usuario.Correo;
-            var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(ticket)) { };
+
+            var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(ticket))
+            {
+                HttpOnly = true,
+                Secure = FormsAuthentication.RequireSSL
+            };
+
             Response.AppendCookie(cookie);
         }
     }
