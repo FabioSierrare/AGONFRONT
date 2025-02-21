@@ -22,11 +22,10 @@
         </div>
 
         <h3 class="text-center mb-4">Registro</h3>
-
+        Model.TipoUsuario = "cliente";
         @using (Html.BeginForm("Create", "Usuarios", FormMethod.Post))
 
         {
-            
             @Html.AntiForgeryToken()
             <form id="registroForm" method="post">
                 <div id="paso1">
@@ -77,18 +76,17 @@
                         @Html.LabelFor(m => m.Documento, new { @class = "form-label" })
                         @Html.TextBoxFor(m => m.Documento, new { @class = "form-control", type = "number", min = "1", step = "1", required = "required" })
                         @Html.ValidationMessageFor(m => m.Documento, "", new { @class = "text-danger" })
-                        
                     </div>
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-success">Registrarse</button>
                     </div>
             </form>
         }
-            @if (TempData["Error"] != null)
-            {
-                <div class="alert alert-danger">@TempData["Error"]</div>
-            }
-        </div>
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+    </div>
 </div>
 
 

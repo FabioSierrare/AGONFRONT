@@ -6,37 +6,27 @@ using System.Web.Mvc;
 
 namespace AGONFRONT.Controllers
 {
-    public class RegisterController : Controller
+    public class XController : Controller
     {
-        // GET: Register
+        // GET: X
         public ActionResult Index()
         {
             return View();
         }
 
-        public ActionResult Register()
-        {
-            return View();
-        }
-
-        public ActionResult RegistroVendedor()
-        {
-            return View();
-        }
-
-        // GET: Register/Details/5
+        // GET: X/Details/5
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: Register/Create
+        // GET: X/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Register/Create
+        // POST: X/Create
         [HttpPost]
         public ActionResult Create(FormCollection collection)
         {
@@ -52,13 +42,13 @@ namespace AGONFRONT.Controllers
             }
         }
 
-        // GET: Register/Edit/5
+        // GET: X/Edit/5
         public ActionResult Edit(int id)
         {
             return View();
         }
 
-        // POST: Register/Edit/5
+        // POST: X/Edit/5
         [HttpPost]
         public ActionResult Edit(int id, FormCollection collection)
         {
@@ -74,13 +64,13 @@ namespace AGONFRONT.Controllers
             }
         }
 
-        // GET: Register/Delete/5
+        // GET: X/Delete/5
         public ActionResult Delete(int id)
         {
             return View();
         }
 
-        // POST: Register/Delete/5
+        // POST: X/Delete/5
         [HttpPost]
         public ActionResult Delete(int id, FormCollection collection)
         {

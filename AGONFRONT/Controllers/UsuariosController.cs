@@ -1,41 +1,65 @@
-﻿using AGONFRONT.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using AGONFRONT.Models;
+using Newtonsoft.Json;
 
 namespace AGONFRONT.Controllers
 {
     public class UsuariosController : Controller
     {
-        // GET: Usuarios
-        public ActionResult Index()
+        private readonly string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
+        // GET: X
+        public ActionResult RegistroVendedor()
         {
             return View();
         }
 
-        // GET: Usuarios/Details/5
-        public ActionResult Details(int id)
+        // GET: X/Details/5
+        public ActionResult Register()
         {
             return View();
         }
 
-        // GET: Usuarios/Create
+        // GET: X/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Usuarios/Create
         [HttpPost]
-        public ActionResult Create(Usuarios model)
+        public async Task<ActionResult> Create(Usuarios model)
         {
             try
             {
-                // TODO: Add insert logic here
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Clear();
 
-                return RedirectToAction("Index");
+                    string json = JsonConvert.SerializeObject(model);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    HttpResponseMessage response = await client.PostAsync("api/Usuarios/PostUsuarios", content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var res = await response.Content.ReadAsStringAsync();
+                    }
+                    else
+                    {
+                        TempData["Error"] = "Credenciales incorrectas o problema con la API.";
+                        return RedirectToAction("Iniciar", "Home");
+                    }
+                }
+
+                return RedirectToAction("Index", "Home");
             }
             catch
             {
@@ -43,13 +67,13 @@ namespace AGONFRONT.Controllers
             }
         }
 
-        // GET: Usuarios/Edit/5
+        // GET: X/Edit/5
         public ActionResult Edit(int id)
         {
             return View();
         }
 
-        // POST: Usuarios/Edit/5
+        // POST: X/Edit/5
         [HttpPost]
         public ActionResult Edit(int id, Usuarios model)
         {
@@ -65,13 +89,13 @@ namespace AGONFRONT.Controllers
             }
         }
 
-        // GET: Usuarios/Delete/5
+        // GET: X/Delete/5
         public ActionResult Delete(int id)
         {
             return View();
         }
 
-        // POST: Usuarios/Delete/5
+        // POST: X/Delete/5
         [HttpPost]
         public ActionResult Delete(int id, Usuarios model)
         {
