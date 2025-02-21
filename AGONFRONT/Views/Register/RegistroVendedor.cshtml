@@ -6,7 +6,7 @@
 }
 
 <head>
-    <link rel="stylesheet" href="~/Content/css/pagina 6.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/Content/css/.css" asp-append-version="true">
 </head>
 
 
@@ -26,16 +26,11 @@
         <form id="registroForm" method="post">
             <div id="paso1">
                 <div class="mb-3">
-                    @Html.LabelFor(m => m.Contraseña, new { @class = "form-label" })
-                    @Html.PasswordFor(m => m.Contraseña, new { @class = "form-control form-control-lg" })
-                    @Html.ValidationMessageFor(m => m.Contraseña, "", new { @class = "text-danger" })
-                    <label for="nombre" class="form-label">Nombre</label>
-                    <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingresa tu nombre" required>
+                    @Html.LabelFor(m => m.Nombre, new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.Nombre, new { @class = "form-control form-control-lg" })
+                    @Html.ValidationMessageFor(m => m.Nombre, "", new { @class = "text-danger" })
                 </div>
-                <div class="mb-3">
-                    <label for="apellido" class="form-label">Apellido</label>
-                    <input type="text" class="form-control" id="apellido" name="apellido" placeholder="Ingresa tu apellido" required>
-                </div>
+
                 <div class="d-grid gap-2">
                     <button type="button" class="btn btn-success" onclick="mostrarPaso2()">Continuar</button>
                 </div>
@@ -43,29 +38,40 @@
 
             <div id="paso2" style="display: none;">
                 <div class="mb-3">
-                    <label for="correo" class="form-label">Correo Electrónico</label>
-                    <input type="email" class="form-control" id="correo" name="correo" placeholder="Ingresa tu correo" required>
+                    @Html.LabelFor(m => m.Correo, new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.Correo, new { @class = "form-control form-control-lg" })
+                    @Html.ValidationMessageFor(m => m.Correo, "", new { @class = "text-danger" })
+                </div>
+                <!-- Contraseña -->
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.Contraseña, new { @class = "form-label" })
+                    @Html.PasswordFor(m => m.Contraseña, new { @class = "form-control", id = "contraseña" })
+                    @Html.ValidationMessageFor(m => m.Contraseña, "", new { @class = "text-danger" })
+                </div>
+
+                <!-- Confirmar Contraseña -->
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.ConfirmarContraseña, new { @class = "form-label" })
+                    @Html.PasswordFor(m => m.ConfirmarContraseña, new { @class = "form-control", id = "confirmarContraseña" })
+                    @Html.ValidationMessageFor(m => m.ConfirmarContraseña, "", new { @class = "text-danger" })
+                    <small id="errorMensaje" class="text-danger d-none">Las contraseñas no coinciden.</small>
+                </div>
+
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.TipoDocumento, new { @class = "form-label" })
+                    @Html.DropDownListFor(m => m.TipoDocumento, new List<SelectListItem>
+                    {
+                        new SelectListItem { Text = "Selecciona un tipo de documento", Value = "", Selected = true },
+                        new SelectListItem { Text = "DNI", Value = "DNI" },
+                        new SelectListItem { Text = "Pasaporte", Value = "Pasaporte" },
+                        new SelectListItem { Text = "Cédula", Value = "Cedula" }
+                    }, new { @class = "form-control", required = "required" })
+                    @Html.ValidationMessageFor(m => m.TipoDocumento, "", new { @class = "text-danger" })
                 </div>
                 <div class="mb-3">
-                    <label for="contrasena" class="form-label">Contraseña</label>
-                    <input type="password" class="form-control" id="contrasena" name="contrasena" placeholder="Ingresa tu contraseña" required>
-                </div>
-                <div class="mb-3">
-                    <label for="confirmarContrasena" class="form-label">Confirmar Contraseña</label>
-                    <input type="password" class="form-control" id="confirmarContrasena" name="confirmarContrasena" placeholder="Confirma tu contraseña" required>
-                </div>
-                <div class="mb-3">
-                    <label for="tipoDocumento" class="form-label">Tipo de Documento</label>
-                    <select class="form-control" id="tipoDocumento" name="tipoDocumento" required>
-                        <option value="">Selecciona un tipo de documento</option>
-                        <option value="DNI">DNI</option>
-                        <option value="Pasaporte">Pasaporte</option>
-                        <option value="Cedula">Cédula</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="numeroDocumento" class="form-label">Número de Documento</label>
-                    <input type="text" class="form-control" id="numeroDocumento" name="numeroDocumento" placeholder="Ingresa tu número de documento" required>
+                    @Html.LabelFor(m => m.Documento, new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.Documento, new { @class = "form-control", type = "number", min = "1", step = "1", required = "required" })
+                    @Html.ValidationMessageFor(m => m.Documento, "", new { @class = "text-danger" })
                 </div>
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-success">Registrarse</button>
@@ -74,7 +80,10 @@
     </div>
 </div>
 
+
+
 <script>
+
     function mostrarPaso2() {
         document.getElementById("paso1").style.display = "none";
         document.getElementById("paso2").style.display = "block";
