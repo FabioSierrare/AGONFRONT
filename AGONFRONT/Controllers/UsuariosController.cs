@@ -16,16 +16,23 @@ namespace AGONFRONT.Controllers
     {
         private readonly string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
         // GET: X
-        public ActionResult RegistroVendedor()
-        {
-            return View();
-        }
-
-        // GET: X/Details/5
         public ActionResult Register()
         {
             return View();
         }
+
+        public ActionResult RegistroVendedor()
+        {
+            return View();
+        }
+        public ActionResult RegistroCliente()
+        {
+            return View();
+        }
+
+
+       
+  
 
         // GET: X/Create
         public ActionResult Create()
@@ -48,24 +55,31 @@ namespace AGONFRONT.Controllers
 
                     HttpResponseMessage response = await client.PostAsync("api/Usuarios/PostUsuarios", content);
 
+                    // Verificar el código de estado de la respuesta
                     if (response.IsSuccessStatusCode)
                     {
                         var res = await response.Content.ReadAsStringAsync();
+                        // Si es exitosa, puedes procesar la respuesta aquí
                     }
                     else
                     {
-                        TempData["Error"] = "Credenciales incorrectas o problema con la API.";
+                        // Obtener más detalles sobre el código de estado y el contenido de la respuesta
+                        var errorContent = await response.Content.ReadAsStringAsync();
+                        TempData["Error"] = $"Error de API: {response.StatusCode} - {errorContent}";
                         return RedirectToAction("Iniciar", "Home");
                     }
                 }
 
                 return RedirectToAction("Index", "Home");
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                // Si algo sale mal en el código, capturar el error
+                TempData["Error"] = $"Hubo un error al procesar la solicitud: {ex.Message}";
+                return RedirectToAction("Iniciar", "Home");
             }
         }
+
 
         // GET: X/Edit/5
         public ActionResult Edit(int id)

@@ -318,6 +318,7 @@
     <Content Include="Views\Register\RegistroVendedor.cshtml" />
     <Content Include="Views\Usuarios\RegistroVendedor.cshtml" />
     <Content Include="Views\Usuarios\Register.cshtml" />
+    <Content Include="Views\Usuarios\RegistroCliente.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

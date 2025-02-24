@@ -52,7 +52,7 @@ namespace AGONFRONT.Models
         [Display(Name = " Documento")]
         [Required(ErrorMessage = " El campo {0} es requerido")]
 
-        public int Documento { get; set; }
+        public string Documento { get; set; }
 
 
         [Display(Name = " Tipo de usuario")]
@@ -63,6 +63,6 @@ namespace AGONFRONT.Models
 
         [Display(Name =  "Fehca de creacion")]
         [DataType(DataType.DateTime)]
-        public DateTime FechaCreacion { get; set; }
+        public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
     }
 }

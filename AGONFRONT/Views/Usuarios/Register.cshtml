@@ -12,9 +12,9 @@
             <h1 class="mb-4">¿Qué deseas hacer?</h1>
             <p class="lead mb-5">Selecciona si eres cliente o vendedor para continuar</p>
             <div class="d-flex justify-content-center">
-                <a href="@Url.Action("RegistroVendedor", "Usuarios")" asp-page="/Pagina6" class="btn btn-success btn-lg mx-3">Soy Cliente </a>
+                <a href="@Url.Action("RegistroCliente", "Usuarios")" asp-page="/Pagina6" class="btn btn-success btn-lg mx-3">Soy Cliente </a>
 
-                <a asp-page="/RegistroVendedor" class="btn btn-success btn-lg mx-3">Soy Vendedor</a>
+                <a href="@Url.Action("RegistroVendedor", "Usuarios")"asp-page="/RegistroVendedor" class="btn btn-success btn-lg mx-3">Soy Vendedor</a>
             </div>
             <p class="mt-3">
                 <a asp-page="/Pagina17" class="text-muted">Continuar sin iniciar sesión</a>
