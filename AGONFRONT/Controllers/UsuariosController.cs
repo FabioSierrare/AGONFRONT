@@ -53,7 +53,7 @@ namespace AGONFRONT.Controllers
                     string json = JsonConvert.SerializeObject(model);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    HttpResponseMessage response = await client.PostAsync("api/Usuarios/PostUsuarios", content);
+                    HttpResponseMessage response = await client.PostAsync("api/Usuarios/GetUsuarios", content);
 
                     // Verificar el código de estado de la respuesta
                     if (response.IsSuccessStatusCode)
