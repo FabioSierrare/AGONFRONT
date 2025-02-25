@@ -311,6 +311,10 @@
     <Content Include="Views\Usuarios\RegistroCliente.cshtml" />
     <Content Include="Views\Shared\_LayoutLoged.cshtml" />
     <Content Include="Views\Productos\Productos.cshtml" />
+    <Content Include="Views\Productos\Frutas.cshtml" />
+    <Content Include="Views\Productos\Verduras.cshtml" />
+    <Content Include="Views\Productos\Tuberculos.cshtml" />
+    <Content Include="Views\Productos\Cereales.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

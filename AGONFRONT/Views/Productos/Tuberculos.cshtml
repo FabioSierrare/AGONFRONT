@@ -1,0 +1,29 @@
+﻿@model List<AGONFRONT.Models.Productos>
+@{
+    ViewBag.Title = "Frutas";
+    Layout = "~/Views/Shared/_LayoutLoged.cshtml";
+}
+
+<h2>Frutas</h2>
+
+<div class="container my-5">
+    <h2 class="text-center mb-4">Tuberculos</h2>
+
+    <div class="row">
+        @foreach (var producto in Model.Where(p => p.CategoriaId == 3)) // Filtrado en la vista
+        {
+            <div class="col-md-3 mb-4 productoRow" data-categoria="@producto.CategoriaId">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@producto.Nombre</h5>
+                        <p class="card-text">@producto.Descripcion</p>
+                        <p class="card-text"><strong>$@producto.Precio</strong></p>
+                        <p class="card-text"><small class="text-muted">Stock: @producto.Stock</small></p>
+                        <p class="card-text"><small class="text-muted">Creado: @producto.FechaCreacion.ToString("dd/MM/yyyy")</small></p>
+                        <a href="@Url.Action("Detalles", "Producto", new { id = producto.Id })" class="btn btn-primary">Ver Detalles</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

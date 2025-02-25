@@ -18,8 +18,30 @@ namespace AGONFRONT.Controllers
         // GET: X
         public ActionResult Register()
         {
+            // Verificar si el token está presente en las cookies o en la sesión
+            var tokenCookie = Request.Cookies["BearerToken"];
+            var tokenSession = Session["BearerToken"] as string;
+
+            // Verificar si existe el token en las cookies o la sesión
+            if (tokenCookie == null && string.IsNullOrEmpty(tokenSession))
+            {
+                TempData["Error"] = "No tienes acceso a esta página. Por favor inicia sesión.";
+                return RedirectToAction("Iniciar", "Home"); // Redirige al login
+            }
+
+            // Si el token está presente en la cookie o sesión, se permite el acceso
+            string token = tokenCookie?.Value ?? tokenSession;
+
+            if (string.IsNullOrEmpty(token))
+            {
+                TempData["Error"] = "No tienes acceso a esta página. Por favor inicia sesión.";
+                return RedirectToAction("Iniciar", "Home");
+            }
+
+            // Si el token es válido, renderiza la vista
             return View();
         }
+
 
         public ActionResult RegistroVendedor()
         {
@@ -31,8 +53,8 @@ namespace AGONFRONT.Controllers
         }
 
 
-       
-  
+
+
 
         // GET: X/Create
         public ActionResult Create()

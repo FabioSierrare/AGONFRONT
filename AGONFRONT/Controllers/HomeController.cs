@@ -80,7 +80,7 @@ namespace AGONFRONT.Controllers
                     {
                         CookieUpdate(model);
                         Session["BearerToken"] = token.token;
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Productos", "Productos");
                     }
                     else
                     {
@@ -95,6 +95,37 @@ namespace AGONFRONT.Controllers
                 }
             }
         }
+
+        // Método para guardar el token en una cookie
+        private void SetTokenCookie(string token)
+        {
+            var cookieOptions = new HttpCookie("BearerToken", token)
+            {
+                HttpOnly = true,            // No accesible desde JavaScript
+                Secure = false,              // Solo se enviará a través de HTTPS
+                SameSite = SameSiteMode.Strict,  // Restricción para evitar el envío en solicitudes cross-origin
+                Expires = DateTime.Now.AddMinutes(1) // Duración de la cookie (10 minutos en este caso)
+            };
+
+            // Agregar la cookie de BearerToken
+            HttpContext.Response.Cookies.Add(cookieOptions);
+
+            // Establecer la cookie de expiración
+            var expirationCookie = new HttpCookie("TokenExpirationTime", DateTime.Now.AddMinutes(10).ToString("yyyy-MM-dd HH:mm:ss"))
+            {
+                HttpOnly = true,
+                Secure = false,
+                SameSite = SameSiteMode.Strict
+            };
+
+            // Agregar la cookie de expiración
+            HttpContext.Response.Cookies.Add(expirationCookie);
+        }
+
+
+
+
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
