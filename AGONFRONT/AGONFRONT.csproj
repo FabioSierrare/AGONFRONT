@@ -268,6 +268,13 @@
     <Content Include="Content\img\semillas.jpg" />
     <Content Include="Content\img\Tuberculos.jpg" />
     <Content Include="Content\img\vector-two-bags-of-rice.jpg" />
+    <Content Include="Content\JS\Dasborad.js" />
+    <Content Include="Content\JS\Envios.js" />
+    <Content Include="Content\JS\EstadisticaVenta.js" />
+    <Content Include="Content\JS\GestionPedidos.js" />
+    <Content Include="Content\JS\GestionPromociones.js" />
+    <Content Include="Content\JS\MisProductos.js" />
+    <Content Include="Content\JS\PerfilVendedor.js" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -315,6 +322,8 @@
     <Content Include="Views\Productos\Verduras.cshtml" />
     <Content Include="Views\Productos\Tuberculos.cshtml" />
     <Content Include="Views\Productos\Cereales.cshtml" />
+    <Content Include="Views\Usuarios\UpdatePerfilVendedor.cshtml" />
+    <Content Include="Views\Shared\_LayoutGestionVendedor.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

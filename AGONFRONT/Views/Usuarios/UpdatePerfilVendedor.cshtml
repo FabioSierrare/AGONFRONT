@@ -1,0 +1,44 @@
+﻿@using Newtonsoft.Json
+@model List<AGONFRONT.Models.Usuarios>
+@{
+    ViewBag.Title = "Perfil Vendedor";
+    Layout = "~/Views/Shared/_LayoutGestionVendedor.cshtml";
+}
+
+<h2>Perfil del Vendedor</h2>
+
+<div id="perfilUsuario"></div>
+
+<script>
+    function getCookie(name) {
+        let matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    }
+
+    let emailUsuario = getCookie("UserEmail");
+
+    if (emailUsuario) {
+        let usuarios = @Html.Raw(JsonConvert.SerializeObject(Model));
+
+        let usuario = usuarios.find(u => u.Correo === emailUsuario);
+
+        if (usuario) {
+            document.getElementById("perfilUsuario").innerHTML = `
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">${usuario.Nombre}</h5>
+                        <p class="card-text"><strong>Correo:</strong> ${usuario.Correo}</p>
+                        <p class="card-text"><strong>Teléfono:</strong> ${usuario.Telefono}</p>
+                        <p class="card-text"><strong>Dirección:</strong> ${usuario.Direccion}</p>
+                        <p class="card-text"><strong>Tipo de Usuario:</strong> ${usuario.TipoUsuario}</p>
+                        <p class="card-text"><strong>Fecha de Creación:</strong> ${new Date(usuario.FechaCreacion).toLocaleDateString()}</p>
+                    </div>
+                </div>
+            `;
+        } else {
+            document.getElementById("perfilUsuario").innerHTML = "<p>No se encontró información del usuario.</p>";
+        }
+    } else {
+        document.getElementById("perfilUsuario").innerHTML = "<p>No se pudo obtener el usuario logueado.</p>";
+    }
+</script>

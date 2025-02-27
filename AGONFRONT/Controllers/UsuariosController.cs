@@ -90,11 +90,11 @@ namespace AGONFRONT.Controllers
             }
         }
 
-        public async Task<ActionResult> Usuarios()
+        public async Task<ActionResult> UpdatePerfilVendedor()
         {
             List<Usuarios> usuarios = new List<Usuarios>();
 
-            // Verificar si el token está presente en las cookies o la sesión
+            // Verificar si el token está en las cookies
             var tokenCookie = Request.Cookies["BearerToken"];
             var tokenExpirationCookie = Request.Cookies["TokenExpirationTime"];
             var tokenSession = Session["BearerToken"] as string;
@@ -130,11 +130,10 @@ namespace AGONFRONT.Controllers
                 return RedirectToAction("Iniciar", "Home");
             }
 
-            // Si el token es válido, proceder a obtener los usuarios de la API
             using (var client = new HttpClient())
             {
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
                 client.BaseAddress = new Uri(apiUrl);
+
                 HttpResponseMessage response = await client.GetAsync("api/Usuarios/GetUsuarios");
 
                 if (response.IsSuccessStatusCode)
@@ -144,27 +143,13 @@ namespace AGONFRONT.Controllers
                 }
                 else
                 {
-                    TempData["Error"] = "No se pudieron obtener los usuarios de la API.";
+                    TempData["Error"] = "No se pudieron obtener los datos del usuario.";
                 }
             }
 
-            // Obtener el correo y contraseña del usuario logueado (se espera que vengan de las cookies o la sesión)
-            var correoLogueado = Session["Correo"] as string;
-            var contrasenaLogueada = Session["Contraseña"] as string;
-
-            // Filtrar usuarios por el correo y contraseña proporcionados
-            var usuarioLogueado = usuarios
-                .FirstOrDefault(u => u.Correo == correoLogueado && u.Contraseña == contrasenaLogueada);
-
-            if (usuarioLogueado == null)
-            {
-                TempData["Error"] = "No se encontró el usuario con esas credenciales.";
-                return RedirectToAction("Iniciar", "Home");
-            }
-
-            // Devolver el usuario encontrado al frontend
-            return View(usuarioLogueado);
+            return View(usuarios);
         }
+
 
         // GET: X/Edit/5
         public ActionResult Edit(int id)

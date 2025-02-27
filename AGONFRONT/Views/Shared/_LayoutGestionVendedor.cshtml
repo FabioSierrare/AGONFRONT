@@ -1,0 +1,48 @@
+﻿@{
+    ViewBag.Title = "Gestión de Pedidos";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="~/Content/css/Dasborad.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Barra lateral de navegación -->
+        <header class="navbar">
+            <div class="navbar-container">
+                <div class="logo">
+                    <h1>E-Agricultura</h1>
+                </div>
+                <nav>
+                    <ul class="nav-links">
+                        <li>@Html.ActionLink("Dashboard", "Index", "Dashboard")</li>
+                        <li>@Html.ActionLink("GestionProductos", "Index", "GestionProductos")</li>
+                        <li>@Html.ActionLink("Mis Productos", "Index", "MisProductos")</li>
+                        <li>@Html.ActionLink("Estadísticas de Ventas", "Index", "EstadisticaVenta")</li>
+                        <li>@Html.ActionLink("Gestión de Pedidos", "Index", "GestionPedidos")</li>
+                        <li>@Html.ActionLink("Promociones y Descuentos", "Index", "GestionPromociones")</li>
+                        <li>@Html.ActionLink("Gestión de Envíos", "Index", "Envios")</li>
+                        <li>@Html.ActionLink("Perfil de Vendedor", "Index", "PerfilVendedor")</li>
+                    </ul>
+                </nav>
+                <div class="notifications">
+                    <span class="notification-icon">&#128276;</span> <!-- Icono de notificación -->
+                    <div class="notification-count">3</div> <!-- Contador de notificaciones -->
+                </div>
+            </div>
+        </header>
+
+        <!-- Contenido principal -->
+        <main class="main-content" id="main-content">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/Content/JS/Dasborad.js"></script>
+</body>
+</html>

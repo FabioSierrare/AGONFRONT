@@ -71,8 +71,12 @@ namespace AGONFRONT.Controllers
                     {
                         // Guardamos el token JWT en una cookie
                         SetTokenCookie(token.token);
+                        // Guardamos el email del usuario en una cookie
 
-                        return RedirectToAction("Productos", "Productos");
+                        SetUserEmailCookie(model.Correo);
+
+
+                        return RedirectToAction("UpdatePerfilVendedor", "Usuarios");
                     }
                     else
                     {
@@ -96,10 +100,24 @@ namespace AGONFRONT.Controllers
                 HttpOnly = true,      // Impide acceso JavaScript
                 Secure = true,        // Asegúrate de usar HTTPS
                 SameSite = SameSiteMode.Lax,
-                Expires = DateTime.Now.AddSeconds(20)  // Duración del token
+                Expires = DateTime.Now.AddMinutes(20)  // Duración del token
             };
 
             HttpContext.Response.Cookies.Add(cookieOptions);
+        }
+
+        // Método para guardar el email en una cookie
+        private void SetUserEmailCookie(string Correo)
+        {
+            var emailCookie = new HttpCookie("UserEmail", Correo)
+            {
+                HttpOnly = false,  // Permitir acceso desde JavaScript si es necesario
+                Secure = true,     // Asegurar que solo se envíe en HTTPS
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTime.Now.AddHours(1)  // Expira en 1 hora
+            };
+
+            HttpContext.Response.Cookies.Add(emailCookie);
         }
 
         [HttpPost]
