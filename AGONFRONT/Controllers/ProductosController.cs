@@ -26,6 +26,11 @@ namespace AGONFRONT.Controllers
             var tokenExpirationCookie = Request.Cookies["TokenExpirationTime"];
             var tokenSession = Session["BearerToken"] as string;
 
+            // Depuración para ver si las cookies están presentes
+            Console.WriteLine("BearerToken Cookie en Request: " + tokenCookie?.Value);
+            Console.WriteLine("TokenExpirationTime Cookie en Request: " + tokenExpirationCookie?.Value);
+
+            // Si el token está ausente, redirigir al login
             if (tokenCookie == null && string.IsNullOrEmpty(tokenSession))
             {
                 TempData["Error"] = "No tienes acceso a esta página. Por favor inicia sesión.";
@@ -71,6 +76,7 @@ namespace AGONFRONT.Controllers
 
             return View(productos);
         }
+
 
 
         public async Task<ActionResult> Frutas()

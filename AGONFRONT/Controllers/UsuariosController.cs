@@ -42,20 +42,8 @@ namespace AGONFRONT.Controllers
             return View();
         }
 
-
-        public ActionResult RegistroVendedor()
-        {
-            return View();
-        }
-        public ActionResult RegistroCliente()
-        {
-            return View();
-        }
-
-
-
-
-
+        
+    
         // GET: X/Create
         public ActionResult Create()
         {
@@ -102,6 +90,81 @@ namespace AGONFRONT.Controllers
             }
         }
 
+        public async Task<ActionResult> Usuarios()
+        {
+            List<Usuarios> usuarios = new List<Usuarios>();
+
+            // Verificar si el token está presente en las cookies o la sesión
+            var tokenCookie = Request.Cookies["BearerToken"];
+            var tokenExpirationCookie = Request.Cookies["TokenExpirationTime"];
+            var tokenSession = Session["BearerToken"] as string;
+
+            // Depuración para ver si las cookies están presentes
+            Console.WriteLine("BearerToken Cookie en Request: " + tokenCookie?.Value);
+            Console.WriteLine("TokenExpirationTime Cookie en Request: " + tokenExpirationCookie?.Value);
+
+            // Si el token está ausente, redirigir al login
+            if (tokenCookie == null && string.IsNullOrEmpty(tokenSession))
+            {
+                TempData["Error"] = "No tienes acceso a esta página. Por favor inicia sesión.";
+                return RedirectToAction("Iniciar", "Home"); // Redirige al login
+            }
+
+            // Si el token está presente en las cookies, continuar
+            string token = tokenCookie?.Value ?? tokenSession;
+
+            // Verificar la fecha de expiración de la cookie
+            DateTime? expirationTime = null;
+            if (tokenExpirationCookie != null)
+            {
+                expirationTime = DateTime.TryParse(tokenExpirationCookie.Value, out var expiryDate) ? expiryDate : (DateTime?)null;
+            }
+
+            // Si la fecha de expiración ha pasado, eliminar la cookie y redirigir
+            if (expirationTime.HasValue && DateTime.Now > expirationTime.Value)
+            {
+                HttpContext.Response.Cookies.Remove("BearerToken");
+                HttpContext.Response.Cookies.Remove("TokenExpirationTime");
+
+                TempData["Error"] = "La sesión ha expirado. Por favor inicia sesión nuevamente.";
+                return RedirectToAction("Iniciar", "Home");
+            }
+
+            // Si el token es válido, proceder a obtener los usuarios de la API
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+                client.BaseAddress = new Uri(apiUrl);
+                HttpResponseMessage response = await client.GetAsync("api/Usuarios/GetUsuarios");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    usuarios = JsonConvert.DeserializeObject<List<Usuarios>>(res);
+                }
+                else
+                {
+                    TempData["Error"] = "No se pudieron obtener los usuarios de la API.";
+                }
+            }
+
+            // Obtener el correo y contraseña del usuario logueado (se espera que vengan de las cookies o la sesión)
+            var correoLogueado = Session["Correo"] as string;
+            var contrasenaLogueada = Session["Contraseña"] as string;
+
+            // Filtrar usuarios por el correo y contraseña proporcionados
+            var usuarioLogueado = usuarios
+                .FirstOrDefault(u => u.Correo == correoLogueado && u.Contraseña == contrasenaLogueada);
+
+            if (usuarioLogueado == null)
+            {
+                TempData["Error"] = "No se encontró el usuario con esas credenciales.";
+                return RedirectToAction("Iniciar", "Home");
+            }
+
+            // Devolver el usuario encontrado al frontend
+            return View(usuarioLogueado);
+        }
 
         // GET: X/Edit/5
         public ActionResult Edit(int id)
@@ -146,5 +209,7 @@ namespace AGONFRONT.Controllers
                 return View();
             }
         }
+
+
     }
 }

@@ -37,27 +37,18 @@ namespace AGONFRONT.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(Models.Login model)
         {
-
             if (!ModelState.IsValid)
             {
-                Console.WriteLine("Errores en ModelState:");
-
+                // Manejo de errores en el ModelState
                 foreach (var key in ModelState.Keys)
                 {
                     foreach (var error in ModelState[key].Errors)
                     {
-                        TempData["Error"] = ($"Campo: {key} - Error: {error.ErrorMessage}");
+                        TempData["Error"] = $"Campo: {key} - Error: {error.ErrorMessage}";
                     }
                 }
-                TempData["ErrorDetalle"] = $"Email recibido: {model.Correo} - Password recibido: {model.Contraseña}";
                 return RedirectToAction("Iniciar", "Home");
             }
-
-
-
-            Console.WriteLine($"Email recibido: {model.Correo}");
-            Console.WriteLine($"Password recibido: {model.Contraseña}");
-
 
             Token token = new Token();
 
@@ -78,8 +69,9 @@ namespace AGONFRONT.Controllers
 
                     if (token != null && !string.IsNullOrEmpty(token.token))
                     {
-                        CookieUpdate(model);
-                        Session["BearerToken"] = token.token;
+                        // Guardamos el token JWT en una cookie
+                        SetTokenCookie(token.token);
+
                         return RedirectToAction("Productos", "Productos");
                     }
                     else
@@ -96,66 +88,29 @@ namespace AGONFRONT.Controllers
             }
         }
 
-        // Método para guardar el token en una cookie
+        // Método para guardar el token JWT en una cookie
         private void SetTokenCookie(string token)
         {
             var cookieOptions = new HttpCookie("BearerToken", token)
             {
-                HttpOnly = true,            // No accesible desde JavaScript
-                Secure = false,              // Solo se enviará a través de HTTPS
-                SameSite = SameSiteMode.Strict,  // Restricción para evitar el envío en solicitudes cross-origin
-                Expires = DateTime.Now.AddMinutes(1) // Duración de la cookie (10 minutos en este caso)
+                HttpOnly = true,      // Impide acceso JavaScript
+                Secure = true,        // Asegúrate de usar HTTPS
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTime.Now.AddSeconds(20)  // Duración del token
             };
 
-            // Agregar la cookie de BearerToken
             HttpContext.Response.Cookies.Add(cookieOptions);
-
-            // Establecer la cookie de expiración
-            var expirationCookie = new HttpCookie("TokenExpirationTime", DateTime.Now.AddMinutes(10).ToString("yyyy-MM-dd HH:mm:ss"))
-            {
-                HttpOnly = true,
-                Secure = false,
-                SameSite = SameSiteMode.Strict
-            };
-
-            // Agregar la cookie de expiración
-            HttpContext.Response.Cookies.Add(expirationCookie);
         }
-
-
-
-
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
-            Session.RemoveAll();
-            FormsAuthentication.SignOut();
+            // Eliminar las cookies de autenticación JWT
+            HttpContext.Response.Cookies["BearerToken"].Expires = DateTime.Now.AddDays(-1);
+
+            // Redirigir al usuario a la página de inicio de sesión
             return RedirectToAction("Iniciar", "Home");
-        }
-
-        private void CookieUpdate(Models.Login usuario)
-        {
-            var ticket = new FormsAuthenticationTicket(
-                2,
-                usuario.Correo,
-                DateTime.Now,
-                DateTime.Now.AddMinutes(FormsAuthentication.Timeout.TotalMinutes),
-                false,
-                JsonConvert.SerializeObject(usuario)
-            );
-
-            Session["Username"] = usuario.Correo;
-
-            var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(ticket))
-            {
-                HttpOnly = true,
-                Secure = FormsAuthentication.RequireSSL
-            };
-
-            Response.AppendCookie(cookie);
         }
     }
 }
