@@ -150,6 +150,57 @@ namespace AGONFRONT.Controllers
             return View(usuarios);
         }
 
+        [HttpPost]
+        public async Task<ActionResult> UpdateUsuario(Usuarios usuario)
+        {
+            // Obtener el token de la cookie o la sesión
+            var tokenCookie = Request.Cookies["BearerToken"];
+            var tokenSession = Session["BearerToken"] as string;
+
+            // Corregir la asignación del token
+            string token = tokenCookie?.Value ?? tokenSession;
+
+            // Verificar si el token está vacío
+            if (string.IsNullOrEmpty(token))
+            {
+                TempData["Error"] = "No tienes acceso a esta acción. Por favor inicia sesión.";
+                return RedirectToAction("Iniciar", "Home");
+            }
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiUrl);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var jsonContent = new StringContent(JsonConvert.SerializeObject(usuario), Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await client.PutAsync($"api/Usuarios/PutUsuarios/{usuario.Id}", jsonContent);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Usuario actualizado correctamente.";
+                }
+                else
+                {
+                    // Leer el contenido de la respuesta para ver los detalles del error
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+
+                    // Guardar el mensaje detallado en TempData para mostrarlo en la vista
+                    TempData["Error"] = $"Error al actualizar usuario: {errorMessage}";
+
+                    // También puedes imprimirlo en la consola para depuración
+                    Console.WriteLine($"Error en API: {errorMessage}");
+
+                    // Regresar a la vista sin redirigir para mostrar los errores
+                    return View("UpdatePerfilVendedor");
+                }
+            }
+
+            return View("UpdatePerfilVendedor");
+        }
+
+
+
 
         // GET: X/Edit/5
         public ActionResult Edit(int id)

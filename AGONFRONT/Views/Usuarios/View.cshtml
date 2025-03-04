@@ -1,0 +1,62 @@
+﻿@using Newtonsoft.Json
+@model List<AGONFRONT.Models.Usuarios>
+
+@{
+    ViewBag.Title = "Actualizar Perfil";
+    Layout = "~/Views/Shared/_LayoutGestionVendedor.cshtml";
+}
+
+<h2>Actualizar Perfil</h2>
+
+<div id="perfilUsuario"></div>
+
+<script>
+    function getCookie(name) {
+        let matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    }
+
+    let emailUsuario = localStorage.getItem("UserEmail") || getCookie("UserEmail");
+    console.log("Correo del usuario:", emailUsuario);
+
+    if (emailUsuario) {
+        let usuarios = @Html.Raw(JsonConvert.SerializeObject(Model ?? new List<AGONFRONT.Models.Usuarios>()));
+
+        let usuario = usuarios.find(u => u.Correo === emailUsuario);
+
+        if (usuario) {
+            document.getElementById("perfilUsuario").innerHTML = `
+                <form method="post" action="@Url.Action("ActualizarUsuario", "Usuarios")">
+                    <input type="hidden" name="Id" value="${usuario.Id}" />
+
+                    <div class="form-group mb-3">
+                        <label for="Nombre">Nombre</label>
+                        <input type="text" class="form-control" id="Nombre" name="Nombre" value="${usuario.Nombre}" required />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="Correo">Correo Electrónico</label>
+                        <input type="email" class="form-control" id="Correo" name="Correo" value="${usuario.Correo}" readonly />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="Telefono">Teléfono</label>
+                        <input type="text" class="form-control" id="Telefono" name="Telefono" value="${usuario.Telefono}" required />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="Direccion">Dirección</label>
+                        <input type="text" class="form-control" id="Direccion" name="Direccion" value="${usuario.Direccion}" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Actualizar</button>
+                    <a href="/Usuarios/Perfil" class="btn btn-secondary">Cancelar</a>
+                </form>
+            `;
+        } else {
+            document.getElementById("perfilUsuario").innerHTML = "<p>No se encontró información del usuario.</p>";
+        }
+    } else {
+        document.getElementById("perfilUsuario").innerHTML = "<p>No se pudo obtener el usuario logueado.</p>";
+    }
+</script>

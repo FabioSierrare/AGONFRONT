@@ -1,44 +1,57 @@
-﻿@using Newtonsoft.Json
-@model List<AGONFRONT.Models.Usuarios>
+﻿@model List<AGONFRONT.Models.Usuarios>
+
 @{
-    ViewBag.Title = "Perfil Vendedor";
-    Layout = "~/Views/Shared/_LayoutGestionVendedor.cshtml";
+    // Obtener el correo del usuario desde la cookie
+    var emailUsuario = Request.Cookies["UserEmail"]?.Value;
+    var usuario = Model?.FirstOrDefault(u => u.Correo == emailUsuario);
 }
 
-<h2>Perfil del Vendedor</h2>
+@if (usuario != null)
+{
+    <div>
+        <h2>Editar Perfil</h2>
 
-<div id="perfilUsuario"></div>
+        @using (Html.BeginForm("UpdateUsuario", "Usuarios", FormMethod.Post))
+        {
+            <!-- Campos ocultos con datos que deben enviarse -->
+            @Html.HiddenFor(m => usuario.Id)
+            @Html.HiddenFor(m => usuario.Correo)
+            @Html.HiddenFor(m => usuario.Documento)
+            @Html.HiddenFor(m => usuario.Contraseña)
+            @Html.HiddenFor(m => usuario.TipoUsuario)
+            @Html.HiddenFor(m => usuario.TipoDocumento)
 
-<script>
-    function getCookie(name) {
-        let matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
-        return matches ? decodeURIComponent(matches[1]) : undefined;
-    }
+            <div class="form-group">
+                <label>Nombre</label>
+                @Html.TextBoxFor(m => usuario.Nombre, new { @class = "form-control", required = "required" })
+            </div>
 
-    let emailUsuario = getCookie("UserEmail");
+            <div class="form-group">
+                <label>Correo Electrónico</label>
+                <input type="email" class="form-control" value="@usuario.Correo" readonly />
+            </div>
 
-    if (emailUsuario) {
-        let usuarios = @Html.Raw(JsonConvert.SerializeObject(Model));
+            <div class="form-group">
+                <label>Teléfono</label>
+                @Html.TextBoxFor(m => usuario.Telefono, new { @class = "form-control", required = "required" })
+            </div>
 
-        let usuario = usuarios.find(u => u.Correo === emailUsuario);
+            <div class="form-group">
+                <label>Dirección</label>
+                @Html.TextBoxFor(m => usuario.Direccion, new { @class = "form-control" })
+            </div>
 
-        if (usuario) {
-            document.getElementById("perfilUsuario").innerHTML = `
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">${usuario.Nombre}</h5>
-                        <p class="card-text"><strong>Correo:</strong> ${usuario.Correo}</p>
-                        <p class="card-text"><strong>Teléfono:</strong> ${usuario.Telefono}</p>
-                        <p class="card-text"><strong>Dirección:</strong> ${usuario.Direccion}</p>
-                        <p class="card-text"><strong>Tipo de Usuario:</strong> ${usuario.TipoUsuario}</p>
-                        <p class="card-text"><strong>Fecha de Creación:</strong> ${new Date(usuario.FechaCreacion).toLocaleDateString()}</p>
-                    </div>
-                </div>
-            `;
-        } else {
-            document.getElementById("perfilUsuario").innerHTML = "<p>No se encontró información del usuario.</p>";
+            <button type="submit" class="btn btn-primary">Actualizar</button>
+            <a href="/Usuarios/Perfil" class="btn btn-secondary">Cancelar</a>
         }
-    } else {
-        document.getElementById("perfilUsuario").innerHTML = "<p>No se pudo obtener el usuario logueado.</p>";
-    }
-</script>
+    </div>
+}
+else
+{
+    <p>No se encontró información del usuario.</p>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
