@@ -40,7 +40,10 @@ namespace AGONFRONT.Models
         public int CategoriaId { get; set; }
 
         [Display(Name = " Id del Vendedor")]
-        public int VendedorId { get; set; }     
+        public int VendedorId { get; set; }
+
+        [Display(Name = " La url de la imagene")]
+        public string ImagenUrl { get; set; }
 
     }
 }

@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using AGONFRONT.Models;
 using Newtonsoft.Json;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace AGONFRONT.Controllers
 {
@@ -88,6 +91,77 @@ namespace AGONFRONT.Controllers
                 TempData["Error"] = $"Hubo un error al procesar la solicitud: {ex.Message}";
                 return RedirectToAction("Iniciar", "Home");
             }
+        }
+
+        public async Task<ActionResult> Misproductosvendedor()
+        {
+            List<Productos> productos = new List<Productos>();
+
+            // Verificar si el token está en las cookies o en la sesión
+            var tokenCookie = Request.Cookies["BearerToken"];
+            var tokenSession = Session["BearerToken"] as string;
+
+            if (tokenCookie == null && string.IsNullOrEmpty(tokenSession))
+            {
+                TempData["Error"] = "No tienes acceso a esta página. Por favor inicia sesión.";
+                return RedirectToAction("Iniciar", "Home");
+            }
+
+            string token = tokenCookie?.Value ?? tokenSession;
+
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                    HttpResponseMessage response = await client.GetAsync("api/Productos/GetProductos");
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        TempData["Error"] = "No se pudieron obtener los datos de envíos.";
+                        return RedirectToAction("Iniciar", "Home");
+                    }
+
+                    var res = await response.Content.ReadAsStringAsync();
+                    productos = JsonConvert.DeserializeObject<List<Productos>>(res) ?? new List<Productos>();
+
+                    // Obtener el ID del usuario desde el token
+                    string userId = GetLoggedInUserId(token);
+                    if (string.IsNullOrEmpty(userId))
+                    {
+                        TempData["Error"] = "No se pudo obtener la información del usuario.";
+                        return RedirectToAction("Iniciar", "Home");
+                    }
+
+                    // Filtrar envíos que pertenecen al usuario autenticado
+                    productos = productos.Where(p => p.VendedorId == int.Parse(userId)).ToList();
+
+                    if (!productos.Any())
+                    {
+                        TempData["Error"] = "No se encontraron envíos para el usuario logueado.";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ERROR] {ex.Message}");
+                TempData["Error"] = $"Error en la conexión con la API: {ex.Message}";
+                return RedirectToAction("Iniciar", "Home");
+            }
+
+            return View(productos);
+        }
+
+        // Método para obtener el ID del usuario desde el token JWT
+        public string GetLoggedInUserId(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+
+            return userIdClaim?.Value;
         }
 
         public async Task<ActionResult> UpdatePerfilVendedor()
@@ -199,8 +273,197 @@ namespace AGONFRONT.Controllers
             return View("UpdatePerfilVendedor");
         }
 
+        public async Task<ActionResult> GestionarProductos()
+        {
+            List<Productos> productos = new List<Productos>();
+
+            // Verificar si el token está en las cookies o en la sesión
+            var tokenCookie = Request.Cookies["BearerToken"];
+            var tokenSession = Session["BearerToken"] as string;
+
+            if (tokenCookie == null && string.IsNullOrEmpty(tokenSession))
+            {
+                TempData["Error"] = "No tienes acceso a esta página. Por favor inicia sesión.";
+                return RedirectToAction("Iniciar", "Home");
+            }
+
+            string token = tokenCookie?.Value ?? tokenSession;
+
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                    HttpResponseMessage response = await client.GetAsync("api/Productos/GetProductos");
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        TempData["Error"] = "No se pudieron obtener los productos.";
+                        return RedirectToAction("Iniciar", "Home");
+                    }
+
+                    var res = await response.Content.ReadAsStringAsync();
+                    productos = JsonConvert.DeserializeObject<List<Productos>>(res) ?? new List<Productos>();
+
+                    // Obtener el ID del usuario desde el token JWT
+                    string userId = GetLoggedInUserId(token);
+                    if (string.IsNullOrEmpty(userId))
+                    {
+                        TempData["Error"] = "No se pudo obtener la información del usuario.";
+                        return RedirectToAction("Iniciar", "Home");
+                    }
+
+                    // Filtrar los productos del usuario autenticado
+                    productos = productos.Where(p => p.VendedorId == int.Parse(userId)).ToList();
+
+                    if (!productos.Any())
+                    {
+                        TempData["Mensaje"] = "No tienes productos registrados.";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ERROR] {ex.Message}");
+                TempData["Error"] = $"Error en la conexión con la API: {ex.Message}";
+                return RedirectToAction("Iniciar", "Home");
+            }
+
+            var viewModel = new GestionarProductos
+            {
+                Productos = productos,
+                Categorias = await ObtenerCategorias()
+            };
+
+            return View("GestionarProductos", viewModel);
+        }
 
 
+        private async Task<List<Categoria>> ObtenerCategorias()
+        {
+            List<Categoria> categorias = new List<Categoria>();
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiUrl);
+                HttpResponseMessage response = await client.GetAsync("api/Categorias/GetCategorias");
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    categorias = JsonConvert.DeserializeObject<List<Categoria>>(res);
+                }
+            }
+            return categorias;
+        }
+
+        public async Task<ActionResult> AgregarProducto()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AgregarProducto(Productos producto)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiUrl);
+                var jsonContent = new StringContent(JsonConvert.SerializeObject(producto), Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync("api/Productos/AgregarProducto", jsonContent);
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Producto agregado con éxito.";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    TempData["Error"] = "No se pudo agregar el producto.";
+                    return View(producto);
+                }
+            }
+        }
+
+        public async Task<ActionResult> EditarProducto(int id)
+        {
+            var producto = await ObtenerProductoPorId(id);
+            return View(producto);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> EditarProducto(Productos producto)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiUrl);
+                var jsonContent = new StringContent(JsonConvert.SerializeObject(producto), Encoding.UTF8, "application/json");
+                var response = await client.PutAsync("api/Productos/ActualizarProducto", jsonContent);
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Producto actualizado con éxito.";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    TempData["Error"] = "No se pudo actualizar el producto.";
+                    return View(producto);
+                }
+            }
+        }
+
+        public async Task<ActionResult> EliminarProducto(int id)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiUrl);
+                var response = await client.DeleteAsync($"api/Productos/EliminarProducto/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Producto eliminado con éxito.";
+                }
+                else
+                {
+                    TempData["Error"] = "No se pudo eliminar el producto.";
+                }
+            }
+            return RedirectToAction("Index");
+        }
+
+        private async Task<List<Productos>> ObtenerProductos()
+        {
+            List<Productos> productos = new List<Productos>();
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiUrl);
+                HttpResponseMessage response = await client.GetAsync("api/Productos/GetProductos");
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    productos = JsonConvert.DeserializeObject<List<Productos>>(res);
+                }
+            }
+            return productos;
+        }
+
+        private async Task<Productos> ObtenerProductoPorId(int id)
+        {
+            Productos producto = null;
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiUrl);
+                HttpResponseMessage response = await client.GetAsync($"api/Productos/GetProducto/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    producto = JsonConvert.DeserializeObject<Productos>(res);
+                }
+                else
+                {
+                    TempData["Error"] = "No se pudo obtener el producto.";
+                }
+            }
+            return producto;
+        }
 
         // GET: X/Edit/5
         public ActionResult Edit(int id)

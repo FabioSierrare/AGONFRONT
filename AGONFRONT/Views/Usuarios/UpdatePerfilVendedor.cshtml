@@ -4,6 +4,7 @@
     // Obtener el correo del usuario desde la cookie
     var emailUsuario = Request.Cookies["UserEmail"]?.Value;
     var usuario = Model?.FirstOrDefault(u => u.Correo == emailUsuario);
+    Layout = "~/Views/Shared/_LayoutGestionVendedor.cshtml";
 }
 
 @if (usuario != null)

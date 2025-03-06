@@ -1,0 +1,49 @@
+﻿@model List<AGONFRONT.Models.Productos>
+@{
+    ViewBag.Title = "Mis Productos";
+    Layout = "~/Views/Shared/_LayoutGestionVendedor.cshtml";
+    var usuario = ViewBag.Usuario;
+    var productos = ViewBag.Productos as List<dynamic>;
+}
+<h2>Mis Productos</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+@if (Model != null && Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var producto in Model)
+            {
+                <tr>
+                    <td>@producto.Nombre</td>
+                    <td>@producto.Descripcion</td>
+                    <td>@producto.Precio.ToString("C")</td>
+                    <td>@producto.Stock</td>
+                    <td>
+                        <a href="@Url.Action("EditarProducto", "Productos", new { id = producto.Id })" class="btn btn-warning">Editar</a>
+                        <a href="@Url.Action("EliminarProducto", "Productos", new { id = producto.Id })" class="btn btn-danger">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No tienes productos registrados.</p>
+}
