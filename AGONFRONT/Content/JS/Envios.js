@@ -5,7 +5,7 @@ function viewShipmentDetails(orderId) {
 }
 
 // Función para manejar el formulario de política de envío
-document.getElementById('shippingPolicyForm').addEventListener('submit', function(event) {
+document.getElementById('shippingPolicyForm').addEventListener('submit', function (event) {
     event.preventDefault(); // Evita que el formulario se recargue
 
     const shippingMethod = document.getElementById('shipping-method').value;
@@ -28,7 +28,7 @@ document.getElementById('shippingPolicyForm').addEventListener('submit', functio
 });
 
 // Función para manejar el formulario de asignación de transporte
-document.getElementById('assignShippingForm').addEventListener('submit', function(event) {
+document.getElementById('assignShippingForm').addEventListener('submit', function (event) {
     event.preventDefault(); // Evita el comportamiento por defecto del formulario
 
     const orderId = document.getElementById('order-id').value;
@@ -82,6 +82,6 @@ function loadPage(page) {
 }
 
 // Cargar la página de inicio por defecto
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     loadPage('dashboard');
 });

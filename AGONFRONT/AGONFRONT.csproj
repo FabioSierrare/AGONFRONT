@@ -201,6 +201,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\EnviosController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProductosController.cs" />
     <Compile Include="Controllers\UsuariosController.cs" />
@@ -382,6 +383,7 @@
     <Content Include="Views\Usuarios\View.cshtml" />
     <Content Include="Views\Usuarios\Misproductosvendedor.cshtml" />
     <Content Include="Views\Usuarios\GestionarProductos.cshtml" />
+    <Content Include="Views\Envios\GestionEnvios.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
