@@ -28,5 +28,17 @@ namespace AGONFRONT.Models
         [DataType(DataType.Date)]
         public DateTime FechaPedido { get; set; }
 
+        [Display(Name = " Id del producto ")]
+        public int ProductoId { get; set; }
+
+        [Display(Name = " Id del vendedor")]
+        public int VendedorId { get; set; }
+
+        [Display(Name = " Cantidad del pedido")]
+        public int Cantidad { get; set; }
+
+        [Display(Name = " Precio del pedido")]
+        public decimal PrecioUnitario { get; set; }
+
     }
 }

@@ -384,6 +384,7 @@
     <Content Include="Views\Usuarios\Misproductosvendedor.cshtml" />
     <Content Include="Views\Usuarios\GestionarProductos.cshtml" />
     <Content Include="Views\Envios\GestionEnvios.cshtml" />
+    <Content Include="Views\Usuarios\GestionPedidos.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
