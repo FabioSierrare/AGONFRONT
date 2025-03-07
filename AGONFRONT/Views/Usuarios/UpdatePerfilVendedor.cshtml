@@ -6,7 +6,7 @@
     var usuario = Model?.FirstOrDefault(u => u.Correo == emailUsuario);
     Layout = "~/Views/Shared/_LayoutGestionVendedor.cshtml";
 }
-
+<link rel="stylesheet" href="~/Content/css/GestionProductos.css">
 @if (usuario != null)
 {
     <div>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -120,6 +121,44 @@ namespace AGONFRONT.Controllers
             HttpContext.Response.Cookies.Add(emailCookie);
         }
 
+        public static class TokenHelper
+        {
+            public static int? GetUserIdFromToken(HttpContextBase httpContext)
+            {
+                var tokenCookie = httpContext.Request.Cookies["BearerToken"];
+                var tokenSession = httpContext.Session["BearerToken"] as string;
+
+                string token = tokenCookie?.Value ?? tokenSession;
+
+                if (string.IsNullOrEmpty(token))
+                    return null;
+
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(token);
+                var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "UserId");
+
+                return userIdClaim != null ? int.Parse(userIdClaim.Value) : (int?)null;
+            }
+        }
+
+        public void SaveUserIdFromToken()
+        {
+            int? userId = TokenHelper.GetUserIdFromToken(HttpContext);
+
+            if (userId.HasValue)
+            {
+                var idCookie = new HttpCookie("UserId", userId.Value.ToString())
+                {
+                    HttpOnly = true,  // Protección contra JavaScript
+                    Secure = true,    // Solo en HTTPS
+                    SameSite = SameSiteMode.Lax,
+                    Expires = DateTime.Now.AddHours(1)  // Expira en 1 hora
+                };
+
+                HttpContext.Response.Cookies.Add(idCookie);
+            }
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
@@ -130,5 +169,6 @@ namespace AGONFRONT.Controllers
             // Redirigir al usuario a la página de inicio de sesión
             return RedirectToAction("Iniciar", "Home");
         }
+
     }
 }

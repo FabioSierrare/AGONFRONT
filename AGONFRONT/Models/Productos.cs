@@ -19,7 +19,6 @@ namespace AGONFRONT.Models
         [Display(Name = " Nombre")]
         public string Nombre { get; set; }
 
-        [Required(ErrorMessage = " El campo {0} es requerido")]
         [Display(Name = " Descripcion del producto")]
         public string Descripcion { get; set; }
 
@@ -42,8 +41,8 @@ namespace AGONFRONT.Models
         [Display(Name = " Id del Vendedor")]
         public int VendedorId { get; set; }
 
-        [Display(Name = " La url de la imagene")]
-        public string ImagenUrl { get; set; }
+        [Display(Name = " UrlImagen")]
+        public string UrlImagen { get; set; }
 
     }
 }

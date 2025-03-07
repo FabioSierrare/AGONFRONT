@@ -12,6 +12,7 @@ using System.Web.Mvc;
 using AGONFRONT.Models;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
+using static AGONFRONT.Controllers.HomeController;
 
 namespace AGONFRONT.Controllers
 {
@@ -21,32 +22,21 @@ namespace AGONFRONT.Controllers
         // GET: X
         public ActionResult Register()
         {
-            // Verificar si el token está presente en las cookies o en la sesión
-            var tokenCookie = Request.Cookies["BearerToken"];
-            var tokenSession = Session["BearerToken"] as string;
 
-            // Verificar si existe el token en las cookies o la sesión
-            if (tokenCookie == null && string.IsNullOrEmpty(tokenSession))
-            {
-                TempData["Error"] = "No tienes acceso a esta página. Por favor inicia sesión.";
-                return RedirectToAction("Iniciar", "Home"); // Redirige al login
-            }
-
-            // Si el token está presente en la cookie o sesión, se permite el acceso
-            string token = tokenCookie?.Value ?? tokenSession;
-
-            if (string.IsNullOrEmpty(token))
-            {
-                TempData["Error"] = "No tienes acceso a esta página. Por favor inicia sesión.";
-                return RedirectToAction("Iniciar", "Home");
-            }
-
-            // Si el token es válido, renderiza la vista
             return View();
         }
 
-        
-    
+        public ActionResult RegistroCliente()
+        {
+            return View();
+        }
+        public ActionResult RegistroVendedor()
+        {
+            return View();
+        }
+
+
+
         // GET: X/Create
         public ActionResult Create()
         {
@@ -66,7 +56,7 @@ namespace AGONFRONT.Controllers
                     string json = JsonConvert.SerializeObject(model);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    HttpResponseMessage response = await client.PostAsync("api/Usuarios/GetUsuarios", content);
+                    HttpResponseMessage response = await client.PostAsync("api/Usuarios/PostUsuarios", content);
 
                     // Verificar el código de estado de la respuesta
                     if (response.IsSuccessStatusCode)
@@ -277,17 +267,16 @@ namespace AGONFRONT.Controllers
         {
             List<Productos> productos = new List<Productos>();
 
-            // Verificar si el token está en las cookies o en la sesión
-            var tokenCookie = Request.Cookies["BearerToken"];
+            var tokenCookie = Request.Cookies["BearerToken"]?.Value; // ✅ Extraer el valor del cookie
             var tokenSession = Session["BearerToken"] as string;
 
-            if (tokenCookie == null && string.IsNullOrEmpty(tokenSession))
+            string token = tokenCookie ?? tokenSession;
+
+            if (string.IsNullOrEmpty(token))
             {
                 TempData["Error"] = "No tienes acceso a esta página. Por favor inicia sesión.";
                 return RedirectToAction("Iniciar", "Home");
             }
-
-            string token = tokenCookie?.Value ?? tokenSession;
 
             try
             {
@@ -300,14 +289,14 @@ namespace AGONFRONT.Controllers
 
                     if (!response.IsSuccessStatusCode)
                     {
-                        TempData["Error"] = "No se pudieron obtener los productos.";
+                        TempData["Error"] = "No se pudieron obtener los datos de envíos.";
                         return RedirectToAction("Iniciar", "Home");
                     }
 
                     var res = await response.Content.ReadAsStringAsync();
                     productos = JsonConvert.DeserializeObject<List<Productos>>(res) ?? new List<Productos>();
 
-                    // Obtener el ID del usuario desde el token JWT
+                    // ✅ Obtener el ID del usuario desde el token
                     string userId = GetLoggedInUserId(token);
                     if (string.IsNullOrEmpty(userId))
                     {
@@ -315,13 +304,10 @@ namespace AGONFRONT.Controllers
                         return RedirectToAction("Iniciar", "Home");
                     }
 
-                    // Filtrar los productos del usuario autenticado
-                    productos = productos.Where(p => p.VendedorId == int.Parse(userId)).ToList();
+                    ViewBag.UsuarioId = userId; // ✅ Pasar ID del usuario a la vista
 
-                    if (!productos.Any())
-                    {
-                        TempData["Mensaje"] = "No tienes productos registrados.";
-                    }
+                    // Filtrar productos del usuario autenticado
+                    productos = productos.Where(p => p.VendedorId == int.Parse(userId)).ToList();
                 }
             }
             catch (Exception ex)
@@ -331,15 +317,8 @@ namespace AGONFRONT.Controllers
                 return RedirectToAction("Iniciar", "Home");
             }
 
-            var viewModel = new GestionarProductos
-            {
-                Productos = productos,
-                Categorias = await ObtenerCategorias()
-            };
-
-            return View("GestionarProductos", viewModel);
+            return View(productos);
         }
-
 
         private async Task<List<Categoria>> ObtenerCategorias()
         {
@@ -356,31 +335,34 @@ namespace AGONFRONT.Controllers
             }
             return categorias;
         }
-
-        public async Task<ActionResult> AgregarProducto()
+        public async Task<ActionResult> AgregarProducto(Productos model)
         {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> AgregarProducto(Productos producto)
-        {
-            using (var client = new HttpClient())
+            try
             {
-                client.BaseAddress = new Uri(apiUrl);
-                var jsonContent = new StringContent(JsonConvert.SerializeObject(producto), Encoding.UTF8, "application/json");
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Clear();
 
-                var response = await client.PostAsync("api/Productos/AgregarProducto", jsonContent);
-                if (response.IsSuccessStatusCode)
-                {
-                    TempData["Success"] = "Producto agregado con éxito.";
-                    return RedirectToAction("Index");
+                    string json = JsonConvert.SerializeObject(model);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    HttpResponseMessage response = await client.PostAsync("api/Productos/PostProductos", content);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var errorContent = await response.Content.ReadAsStringAsync();
+                        TempData["Error"] = $"Error de API: {response.StatusCode} - {errorContent}";
+                        return RedirectToAction("Iniciar", "Home");
+                    }
                 }
-                else
-                {
-                    TempData["Error"] = "No se pudo agregar el producto.";
-                    return View(producto);
-                }
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Hubo un error al procesar la solicitud: {ex.Message}";
+                return RedirectToAction("Iniciar", "Home");
             }
         }
 
@@ -464,51 +446,6 @@ namespace AGONFRONT.Controllers
             }
             return producto;
         }
-
-        // GET: X/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: X/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, Usuarios model)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: X/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: X/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, Usuarios model)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
 
     }
 }
