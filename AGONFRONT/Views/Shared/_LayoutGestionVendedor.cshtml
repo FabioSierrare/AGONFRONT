@@ -36,7 +36,7 @@
                         <li>@Html.ActionLink("Dashboard", "Index", "Dashboard")</li>
                         <li>@Html.ActionLink("GestionProductos", "GestionarProductos", "Usuarios")</li>
                         <li>@Html.ActionLink("Mis Productos", "Misproductosvendedor", "Usuarios")</li>
-                        <li>@Html.ActionLink("Estadísticas de Ventas", "Index", "EstadisticaVenta")</li>
+                        <li>@Html.ActionLink("Estadísticas de Ventas", "EstadisticasVentas", "EstadisticasVentas")</li>
                         <li>@Html.ActionLink("Gestión de Pedidos", "GestionPedidos", "Usuarios")</li>
                         <li>@Html.ActionLink("Promociones y Descuentos", "Index", "GestionPromociones")</li>
                         <li>@Html.ActionLink("Gestión de Envíos", "GestionEnvios", "Envios")</li>
@@ -56,6 +56,9 @@
         </main>
     </div>
 
-    <script src="~/Content/JS/Dasborad.js"></script>
+    @RenderSection("Scripts", required: false)
+    @RenderSection("Styles", required: false)
+    
+
 </body>
 </html>
