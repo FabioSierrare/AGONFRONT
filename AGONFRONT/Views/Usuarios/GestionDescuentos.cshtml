@@ -1,0 +1,97 @@
+﻿@model List<AGONFRONT.Models.Descuentos>
+
+@{
+    ViewBag.Title = "Gestión de descuentos";
+    Layout = "~/Views/Shared/_LayoutGestionVendedor.cshtml";
+    <link rel="stylesheet" href="~/Content/css/GestionPromociones.css">
+}
+
+<h2>Gestión de Promociones</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+<!-- Lista de descuentos -->
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Tipo</th>
+            <th>Nombre</th>
+            <th>Código</th>
+            <th>Descuento</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Fin</th>
+            <th>Vendedor ID</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var descuento in Model)
+        {
+            <tr>
+                <td>@descuento.Tipo</td>
+                <td>@descuento.Nombre</td>
+                <td>@descuento.Codigo</td>
+                <td>@descuento.Descuento %</td>
+                <td>@descuento.FechaInicio.ToShortDateString()</td>
+                <td>@descuento.FechaFin.ToShortDateString()</td>
+                <td>@descuento.VendedorId</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<hr>
+
+<!-- Formulario para agregar descuento -->
+<h3>Agregar Nuevo Descuento</h3>
+
+@using (Html.BeginForm("AgregarDescuento", "Descuentos", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    <div class="form-group">
+        @Html.Label("Tipo", htmlAttributes: new { @class = "control-label" })
+        @Html.TextBox("Tipo", null, new { @class = "form-control", required = "required" })
+    </div>
+
+    <div class="form-group">
+        @Html.Label("Nombre", htmlAttributes: new { @class = "control-label" })
+        @Html.TextBox("Nombre", null, new { @class = "form-control", required = "required" })
+    </div>
+
+    <div class="form-group">
+        @Html.Label("Código", htmlAttributes: new { @class = "control-label" })
+        @Html.TextBox("Codigo", null, new { @class = "form-control", required = "required" })
+    </div>
+
+    <div class="form-group">
+        @Html.Label("Descuento (%)", htmlAttributes: new { @class = "control-label" })
+        @Html.TextBox("Descuento", null, new { @class = "form-control", type = "number", required = "required" })
+    </div>
+
+    <div class="form-group">
+        @Html.Label("Fecha de Inicio", htmlAttributes: new { @class = "control-label" })
+        @Html.TextBox("FechaInicio", null, new { @class = "form-control", type = "date", required = "required" })
+    </div>
+
+    <div class="form-group">
+        @Html.Label("Fecha Final", htmlAttributes: new { @class = "control-label" })
+        @Html.TextBox("FechaFin", null, new { @class = "form-control", type = "date", required = "required" })
+    </div>
+
+    <div class="form-group">
+        @Html.Label("Vendedor ID", htmlAttributes: new { @class = "control-label" })
+        @Html.TextBox("VendedorId", null, new { @class = "form-control", type = "number", required = "required" })
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+}

@@ -9,15 +9,23 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AGONFRONT.Models
 {
-    public class Promociones
+    public class Descuentos
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        [Display(Name = " Tipo")]
+        [Required(ErrorMessage = " El campo {0} es requerido")]
+        public string Tipo { get; set; }
+
         [Display(Name = " Nombre")]
         [Required(ErrorMessage = " El campo {0} es requerido")]
         public string Nombre { get; set; }
+
+        [Display(Name = " Codigo")]
+        [Required(ErrorMessage = " El campo {0} es requerido")]
+        public string Codigo { get; set; }
 
         [Display(Name = " Descuento")]
         [Required(ErrorMessage = " El campo {0} es requerido")]
@@ -30,5 +38,8 @@ namespace AGONFRONT.Models
         [Display(Name = "Fecha final del descuento")]
         [DataType(DataType.DateTime)]
         public DateTime FechaFin { get; set; }
+
+        [Required(ErrorMessage = " El campo {0} es requerido")]
+        public int VendedorId { get; set; } 
     }
 }

@@ -226,7 +226,7 @@
     <Compile Include="Models\Pedidos.cs" />
     <Compile Include="Models\Permisos.cs" />
     <Compile Include="Models\Productos.cs" />
-    <Compile Include="Models\Promociones.cs" />
+    <Compile Include="Models\Descuentos.cs" />
     <Compile Include="Models\ReporteAcciones.cs" />
     <Compile Include="Models\RespuestasFAQ.cs" />
     <Compile Include="Models\RolesPermisos.cs" />
@@ -390,6 +390,7 @@
     <Content Include="Views\Envios\GestionEnvios.cshtml" />
     <Content Include="Views\Usuarios\GestionPedidos.cshtml" />
     <Content Include="Views\EstadisticasVentas\EstadisticasVentas.cshtml" />
+    <Content Include="Views\Usuarios\GestionDescuentos.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

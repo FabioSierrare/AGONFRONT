@@ -506,6 +506,99 @@ namespace AGONFRONT.Controllers
 
             return View(pedidos);
         }
+        public async Task<ActionResult> GestionDescuentos()
+        {
+            List<Descuentos> descuentos = new List<Descuentos>();
+
+            // Verificar si el token está en las cookies o en la sesión
+            var tokenCookie = Request.Cookies["BearerToken"];
+            var tokenSession = Session["BearerToken"] as string;
+
+            if (tokenCookie == null && string.IsNullOrEmpty(tokenSession))
+            {
+                TempData["Error"] = "No tienes acceso a esta página. Por favor inicia sesión.";
+                return RedirectToAction("Iniciar", "Home");
+            }
+
+            string token = tokenCookie?.Value ?? tokenSession;
+
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                    HttpResponseMessage response = await client.GetAsync("api/Descuentos/GetDescuentos");
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        TempData["Error"] = "No se pudieron obtener las promociones.";
+                        return RedirectToAction("Iniciar", "Home");
+                    }
+
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+                    descuentos = JsonConvert.DeserializeObject<List<Descuentos>>(jsonResponse) ?? new List<Descuentos>();
+
+                    // Obtener el ID del usuario desde el token
+                    string userId = GetLoggedInUserId(token);
+                    if (string.IsNullOrEmpty(userId))
+                    {
+                        TempData["Error"] = "No se pudo obtener la información del usuario.";
+                        return RedirectToAction("Iniciar", "Home");
+                    }
+
+                    // Filtrar promociones que pertenecen al usuario autenticado
+                    descuentos = descuentos.Where(p => p.VendedorId == int.Parse(userId)).ToList();
+
+                    if (!descuentos.Any())
+                    {
+                        TempData["Error"] = "No se encontraron promociones para el usuario logueado.";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ERROR] {ex.Message}");
+                TempData["Error"] = $"Error en la conexión con la API: {ex.Message}";
+                return RedirectToAction("Iniciar", "Home");
+            }
+
+            return View(descuentos);
+        }
+        public async Task<ActionResult> AgregarDescuento(Descuentos model)
+        {
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Clear();
+
+                    string json = JsonConvert.SerializeObject(model);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    HttpResponseMessage response = await client.PostAsync("api/Descuentos/PostDescuentos", content);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var errorContent = await response.Content.ReadAsStringAsync();
+                        TempData["Error"] = $"Error de API: {response.StatusCode} - {errorContent}";
+                        return RedirectToAction("GestionPromociones");
+                    }
+                }
+
+                TempData["Success"] = "Descuento agregado correctamente.";
+                return RedirectToAction("GestionPromociones");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Hubo un error al procesar la solicitud: {ex.Message}";
+                return RedirectToAction("GestionPromociones");
+            }
+        }
 
     }
+
 }
+
