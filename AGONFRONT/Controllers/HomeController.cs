@@ -67,6 +67,7 @@ namespace AGONFRONT.Controllers
                 {
                     var res = await response.Content.ReadAsStringAsync();
                     token = JsonConvert.DeserializeObject<Token>(res);
+                    var tipousuario = GetUserTypeFromToken(token.token);
 
                     if (token != null && !string.IsNullOrEmpty(token.token))
                     {
@@ -77,7 +78,16 @@ namespace AGONFRONT.Controllers
                         SetUserEmailCookie(model.Correo);
 
 
-                        return RedirectToAction("UpdatePerfilVendedor", "Usuarios");
+                        if (tipousuario == "Vendedor")
+                        {
+                            return RedirectToAction("UpdatePerfilVendedor", "Usuarios");
+                        }
+
+                        if (tipousuario == "Cliente")
+                        {
+                            return RedirectToAction("Productos", "Productos");
+                        }
+                        return RedirectToAction("Productos", "Productos");
                     }
                     else
                     {
@@ -169,6 +179,19 @@ namespace AGONFRONT.Controllers
             // Redirigir al usuario a la página de inicio de sesión
             return RedirectToAction("Iniciar", "Home");
         }
+
+        public string GetUserTypeFromToken(string token)
+        {
+            if (string.IsNullOrEmpty(token))
+                return null;
+
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var userTypeClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "TipoUsuario");
+
+            return userTypeClaim?.Value;
+        }
+
 
     }
 }
