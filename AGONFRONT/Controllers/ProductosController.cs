@@ -73,8 +73,22 @@ namespace AGONFRONT.Controllers
                     TempData["Error"] = "No se pudieron obtener los productos de la API.";
                 }
             }
+            // Crear una cookie con las IDs de los productos
+            var productosIds = productos.Select(p => p.Id).ToList(); // Obtener las IDs de los productos
+            var productosIdsString = string.Join(",", productosIds); // Convertir las IDs a una cadena separada por comas
+
+            // Crear la cookie para almacenar las IDs de los productos
+            HttpCookie productosCookie = new HttpCookie("productosIds", productosIdsString)
+            {
+                Expires = DateTime.Now.AddHours(1),  // Establece la expiración de la cookie (1 hora)
+                HttpOnly = true  // Asegura que la cookie solo sea accesible desde el servidor
+            };
+
+            // Guardar la cookie en la respuesta HTTP
+            Response.Cookies.Add(productosCookie);
 
             return View(productos);
+
         }
 
 
@@ -157,6 +171,47 @@ namespace AGONFRONT.Controllers
             return View(tuberculos);
 
         }
+
+        // Acción para ver el listado de productos (por ejemplo)
+        public async Task<ActionResult> Detalles(int id)
+        {
+            Productos producto = null;
+
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl); // Asegúrate de que apiUrl esté bien configurado
+
+                    // Hacemos la llamada a la API usando el endpoint correcto
+                    HttpResponseMessage response = await client.GetAsync($"api/Productos/GetProducto/{id}");
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var res = await response.Content.ReadAsStringAsync();
+                        producto = JsonConvert.DeserializeObject<Productos>(res);
+                    }
+                    else
+                    {
+                        TempData["Error"] = "No se pudo obtener el producto de la API. Código de estado: " + response.StatusCode;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Error al hacer la solicitud a la API: " + ex.Message;
+            }
+
+            // Si el producto no se encuentra o hubo un error, redirigir con un mensaje de error
+            if (producto == null)
+            {
+                TempData["Error"] = "El producto no fue encontrado o hubo un problema con la conexión a la API.";
+                return RedirectToAction("Productos");
+            }
+
+            return View(producto);
+        }
+
         public async Task<ActionResult> Cereales()
         {
             List<Productos> cereal = new List<Productos>();

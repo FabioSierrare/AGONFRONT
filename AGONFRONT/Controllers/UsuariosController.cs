@@ -510,7 +510,6 @@ namespace AGONFRONT.Controllers
         {
             List<Descuentos> descuentos = new List<Descuentos>();
 
-            // Verificar si el token está en las cookies o en la sesión
             var tokenCookie = Request.Cookies["BearerToken"];
             var tokenSession = Session["BearerToken"] as string;
 
@@ -540,7 +539,6 @@ namespace AGONFRONT.Controllers
                     var jsonResponse = await response.Content.ReadAsStringAsync();
                     descuentos = JsonConvert.DeserializeObject<List<Descuentos>>(jsonResponse) ?? new List<Descuentos>();
 
-                    // Obtener el ID del usuario desde el token
                     string userId = GetLoggedInUserId(token);
                     if (string.IsNullOrEmpty(userId))
                     {
@@ -548,7 +546,8 @@ namespace AGONFRONT.Controllers
                         return RedirectToAction("Iniciar", "Home");
                     }
 
-                    // Filtrar promociones que pertenecen al usuario autenticado
+                    ViewBag.VendedorId = userId; // ✅ AQUÍ SE PASA A LA VISTA
+
                     descuentos = descuentos.Where(p => p.VendedorId == int.Parse(userId)).ToList();
 
                     if (!descuentos.Any())
@@ -559,22 +558,32 @@ namespace AGONFRONT.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR] {ex.Message}");
                 TempData["Error"] = $"Error en la conexión con la API: {ex.Message}";
                 return RedirectToAction("Iniciar", "Home");
             }
 
             return View(descuentos);
         }
+
+        [HttpPost]
         public async Task<ActionResult> AgregarDescuento(Descuentos model)
         {
             try
             {
+                if (model.VendedorId == 0)
+                {
+                    int? userId = HomeController.TokenHelper.GetUserIdFromToken(HttpContext);
+                    if (userId == null)
+                    {
+                        TempData["Error"] = "No se pudo obtener el ID del vendedor.";
+                        return RedirectToAction("GestionDescuentos");
+                    }
+                    model.VendedorId = userId.Value;
+                }
+
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
-                    client.DefaultRequestHeaders.Clear();
-
                     string json = JsonConvert.SerializeObject(model);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -584,21 +593,18 @@ namespace AGONFRONT.Controllers
                     {
                         var errorContent = await response.Content.ReadAsStringAsync();
                         TempData["Error"] = $"Error de API: {response.StatusCode} - {errorContent}";
-                        return RedirectToAction("GestionPromociones");
+                        return RedirectToAction("GestionDescuentos");
                     }
                 }
 
                 TempData["Success"] = "Descuento agregado correctamente.";
-                return RedirectToAction("GestionPromociones");
+                return RedirectToAction("GestionDescuentos");
             }
             catch (Exception ex)
             {
                 TempData["Error"] = $"Hubo un error al procesar la solicitud: {ex.Message}";
-                return RedirectToAction("GestionPromociones");
+                return RedirectToAction("GestionDescuentos");
             }
         }
-
     }
-
 }
-

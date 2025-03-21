@@ -391,6 +391,7 @@
     <Content Include="Views\Usuarios\GestionPedidos.cshtml" />
     <Content Include="Views\EstadisticasVentas\EstadisticasVentas.cshtml" />
     <Content Include="Views\Usuarios\GestionDescuentos.cshtml" />
+    <Content Include="Views\Productos\Detalles.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

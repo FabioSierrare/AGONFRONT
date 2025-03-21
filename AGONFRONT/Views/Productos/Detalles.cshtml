@@ -1,0 +1,77 @@
+﻿@model AGONFRONT.Models.Productos
+
+@{
+    ViewBag.Title = "Detalles del Producto";
+}
+
+<div class="container my-5">
+    <!-- Mensaje de error si existe -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+    <div class="row">
+        <!-- Columna de la Imagen del Producto -->
+        <div class="col-md-6">
+            <img src="@Model.UrlImagen" class="img-fluid rounded shadow-sm" alt="@Model.Nombre" style="width: 100%; height: auto;">
+        </div>
+
+        <!-- Columna de la Información del Producto -->
+        <div class="col-md-6">
+            <h2 class="fw-bold">@Model.Nombre</h2>
+            <p class="text-muted">@Model.Descripcion</p>
+            <hr>
+            <h3 class="text-primary">@Model.Precio.ToString("C")</h3>
+            <p><strong>Categoría:</strong> @Model.CategoriaId</p>
+            <p><strong>Stock:</strong> @Model.Stock</p>
+
+            <!-- Botones de acción -->
+            <div class="d-flex justify-content-between">
+                <button class="btn btn-success">
+                    <i class="bi bi-cart-plus"></i> Agregar al Carrito
+                </button>
+                <a href="#" class="btn btn-primary">
+                    <i class="bi bi-star"></i> Ver Reseñas
+                </a>
+            </div>
+
+            <hr>
+            <h5>Especificaciones:</h5>
+            <ul>
+                <li><strong>Tipo:</strong> Producto agrícola premium</li>
+                <li><strong>Cantidad:</strong> Paquete de 500g</li>
+                <li><strong>Rendimiento:</strong> Alta productividad</li>
+                <li><strong>Tiempo de entrega:</strong> 2-5 días hábiles</li>
+            </ul>
+
+            <a href="@Url.Action("Productos", "Productos")" class="btn btn-secondary mt-3">
+                <i class="bi bi-arrow-left"></i> Volver a productos
+            </a>
+        </div>
+    </div>
+
+    <!-- Reseñas del Producto -->
+    <div class="row mt-5">
+        <div class="col-md-12">
+            <h4>Reseñas de los Usuarios</h4>
+            <div class="card mb-3 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Carlos Hernández</h5>
+                    <p class="card-text">Excelente calidad, muy recomendado.</p>
+                    <p class="card-text"><small class="text-muted">Publicado hace 3 días</small></p>
+                </div>
+            </div>
+            <div class="card mb-3 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Marta Rodríguez</h5>
+                    <p class="card-text">Entrega rápida y en excelente estado.</p>
+                    <p class="card-text"><small class="text-muted">Publicado hace 2 semanas</small></p>
+                </div>
+            </div>
+            <a href="#" class="btn btn-outline-primary">Ver más reseñas</a>
+        </div>
+    </div>
+</div>
