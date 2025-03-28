@@ -13,6 +13,7 @@ using AGONFRONT.Models;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using static AGONFRONT.Controllers.HomeController;
+using System.Globalization;
 
 namespace AGONFRONT.Controllers
 {
@@ -145,47 +146,60 @@ namespace AGONFRONT.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> EditarMiProducto(int Id, int Precio, int Stock)
+        public async Task<ActionResult> Editarmiproducto(Productos productos)
         {
+            // Obtener el token de la cookie o la sesión
+            var tokenCookie = Request.Cookies["BearerToken"];
+            var tokenSession = Session["BearerToken"] as string;
+            string token = tokenCookie?.Value ?? tokenSession;
+
+            // Verificar si el token está vacío
+            if (string.IsNullOrEmpty(token))
+            {
+                TempData["Error"] = "No tienes acceso a esta acción. Por favor inicia sesión.";
+                return RedirectToAction("Iniciar", "Home");
+            }
+
             try
             {
-                var token = Request.Cookies["BearerToken"]?.Value ?? Session["BearerToken"] as string;
-                if (string.IsNullOrEmpty(token))
-                {
-                    TempData["Error"] = "No tienes acceso. Inicia sesión.";
-                    return RedirectToAction("Iniciar", "Home");
-                }
-
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                    var productoActualizado = new
+                    var jsonContent = new StringContent(JsonConvert.SerializeObject(productos), Encoding.UTF8, "application/json");
+
+                    HttpResponseMessage response = await client.PutAsync($"api/Productos/PutProductos/{productos.Id}", jsonContent);
+
+                    if (response.IsSuccessStatusCode)
                     {
-                        Id = Id,
-                        Precio = Precio,
-                        Stock = Stock
-                    };
-
-                    var jsonContent = new StringContent(JsonConvert.SerializeObject(productoActualizado), Encoding.UTF8, "application/json");
-                    var response = await client.PutAsync($"api/Productos/EditarProducto/{Id}", jsonContent);
-
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        throw new Exception($"Error al actualizar el producto. Código: {response.StatusCode}");
+                        TempData["Success"] = "Producto actualizado correctamente.";
                     }
+                    else
+                    {
+                        // Obtener el error detallado que devuelve la API
+                        string errorMessage = await response.Content.ReadAsStringAsync();
 
-                    TempData["Success"] = "Producto actualizado con éxito.";
+                        // Mostrar el mensaje de error en TempData
+                        TempData["Error"] = $"❌ Error al actualizar controlador:\n{errorMessage}";
+
+                        // Imprimirlo en consola para depuración
+                        Console.WriteLine($"[API ERROR]: {errorMessage}");
+
+                        return RedirectToAction("Misproductosvendedor");
+                    }
                 }
             }
             catch (Exception ex)
             {
-                TempData["Error"] = $"Ocurrió un error: {ex.Message}";
+                TempData["Error"] = $"⚠️ Excepción no controlada:\n{ex.Message}\n{ex.InnerException?.Message}";
+                return RedirectToAction("Misproductosvendedor");
             }
 
             return RedirectToAction("Misproductosvendedor");
         }
+
+
 
         [HttpPost]
         public async Task<ActionResult> EliminarMiProducto(int id)
@@ -445,33 +459,6 @@ namespace AGONFRONT.Controllers
             {
                 TempData["Error"] = $"Hubo un error al procesar la solicitud: {ex.Message}";
                 return RedirectToAction("Iniciar", "Home");
-            }
-        }
-
-        public async Task<ActionResult> EditarProducto(int id)
-        {
-            var producto = await ObtenerProductoPorId(id);
-            return View(producto);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> EditarProducto(Productos producto)
-        {
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(apiUrl);
-                var jsonContent = new StringContent(JsonConvert.SerializeObject(producto), Encoding.UTF8, "application/json");
-                var response = await client.PutAsync("api/Productos/ActualizarProducto", jsonContent);
-                if (response.IsSuccessStatusCode)
-                {
-                    TempData["Success"] = "Producto actualizado con éxito.";
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    TempData["Error"] = "No se pudo actualizar el producto.";
-                    return View(producto);
-                }
             }
         }
 
