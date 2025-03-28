@@ -144,6 +144,88 @@ namespace AGONFRONT.Controllers
             return View(productos);
         }
 
+        [HttpPost]
+        public async Task<ActionResult> EditarMiProducto(int Id, int Precio, int Stock)
+        {
+            try
+            {
+                var token = Request.Cookies["BearerToken"]?.Value ?? Session["BearerToken"] as string;
+                if (string.IsNullOrEmpty(token))
+                {
+                    TempData["Error"] = "No tienes acceso. Inicia sesión.";
+                    return RedirectToAction("Iniciar", "Home");
+                }
+
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                    var productoActualizado = new
+                    {
+                        Id = Id,
+                        Precio = Precio,
+                        Stock = Stock
+                    };
+
+                    var jsonContent = new StringContent(JsonConvert.SerializeObject(productoActualizado), Encoding.UTF8, "application/json");
+                    var response = await client.PutAsync($"api/Productos/EditarProducto/{Id}", jsonContent);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new Exception($"Error al actualizar el producto. Código: {response.StatusCode}");
+                    }
+
+                    TempData["Success"] = "Producto actualizado con éxito.";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Ocurrió un error: {ex.Message}";
+            }
+
+            return RedirectToAction("Misproductosvendedor");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> EliminarMiProducto(int id)
+        {
+            try
+            {
+                var token = Request.Cookies["BearerToken"]?.Value ?? Session["BearerToken"] as string;
+                if (string.IsNullOrEmpty(token))
+                {
+                    TempData["Error"] = "No tienes acceso. Inicia sesión.";
+                    return RedirectToAction("Iniciar", "Home");
+                }
+
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                    var response = await client.DeleteAsync($"api/Productos/EliminarProducto/{id}");
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new Exception($"Error al eliminar el producto. Código: {response.StatusCode}");
+                    }
+
+                    TempData["Success"] = "Producto eliminado con éxito.";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Ocurrió un error: {ex.Message}";
+            }
+
+            return RedirectToAction("Misproductosvendedor");
+        }
+
+
+
+
+
         // Método para obtener el ID del usuario desde el token JWT
         public string GetLoggedInUserId(string token)
         {

@@ -24,7 +24,7 @@ namespace AGONFRONT.Models
 
         [Required(ErrorMessage = " El campo {0} es requerido")]
         [Display(Name = " Precio del producto")]
-        public decimal Precio { get; set; }
+        public int Precio { get; set; }
 
         [Required(ErrorMessage = " El campo {0} es requerido")]
         [Display(Name = " Stock del producto")]

@@ -1,19 +1,20 @@
 ﻿@model List<AGONFRONT.Models.Productos>
+
 @{
     ViewBag.Title = "Mis Productos";
     Layout = "~/Views/Shared/_LayoutGestionVendedor.cshtml";
-    var usuario = ViewBag.Usuario;
-    var productos = ViewBag.Productos as List<dynamic>;
     <link rel="stylesheet" href="~/Content/css/GestionProductos.css">
-
 }
+
 <h2>Mis Productos</h2>
 
 @if (TempData["Error"] != null)
 {
-    <div class="alert alert-danger">
-        @TempData["Error"]
-    </div>
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
 }
 
 @if (Model != null && Model.Any())
@@ -21,10 +22,12 @@
     <table class="table">
         <thead>
             <tr>
+                <th>ID</th>
                 <th>Nombre</th>
                 <th>Descripción</th>
                 <th>Precio</th>
                 <th>Stock</th>
+                <th>Fecha de Creación</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -32,13 +35,40 @@
             @foreach (var producto in Model)
             {
                 <tr>
-                    <td>@producto.Nombre</td>
-                    <td>@producto.Descripcion</td>
-                    <td>@producto.Precio.ToString("C")</td>
-                    <td>@producto.Stock</td>
+                    <!-- Formulario de edición -->
+                    @using (Html.BeginForm("EditarMiProducto", "Usuarios", FormMethod.Post))
+                    {
+                        <td>
+                            @producto.Id
+                            @Html.Hidden("Id", producto.Id)
+                        </td>
+                        <td>
+                            @Html.Hidden("Nombre", producto.Nombre)
+                            @producto.Nombre
+                        </td>
+                        <td>@producto.Descripcion</td>
+                        <td>
+                            <input type="number" name="Precio" value="@producto.Precio" class="form-control" required />
+                        </td>
+                        <td>
+                            <input type="number" name="Stock" value="@producto.Stock" class="form-control" required />
+                        </td>
+                        <td>
+                            @Html.Hidden("FechaCreacion", producto.FechaCreacion.ToString("yyyy-MM-ddTHH:mm:ss"))
+                            @producto.FechaCreacion.ToString("yyyy-MM-dd")
+                        </td>
+                        <td>
+                            <button type="submit" class="btn btn-warning">Guardar</button>
+                        </td>
+                    }
+
+                    <!-- Formulario de eliminación -->
                     <td>
-                        <a href="@Url.Action("EditarProducto", "Productos", new { id = producto.Id })" class="btn btn-warning">Editar</a>
-                        <a href="@Url.Action("EliminarProducto", "Productos", new { id = producto.Id })" class="btn btn-danger">Eliminar</a>
+                        @using (Html.BeginForm("EliminarMiProducto", "Usuarios", FormMethod.Post, new { onsubmit = "return confirm('¿Estás seguro de que deseas eliminar este producto?');" }))
+                        {
+                            @Html.Hidden("Id", producto.Id)
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        }
                     </td>
                 </tr>
             }
