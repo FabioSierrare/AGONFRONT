@@ -1,6 +1,8 @@
 ﻿@model List<AGONFRONT.Models.Productos>
 
 @{
+    Layout = "~/Views/Shared/_LayoutGestionVendedor.cshtml";
+    <link rel="stylesheet" href="~/Content/css/MisProductos.css">
     ViewBag.Title = "Mis Productos";
 }
 
@@ -33,40 +35,43 @@
 
 
 
-            <div class="row">
-                <div class="col-md-2"><strong>ID:</strong> @producto.Id</div>
-                <div class="col-md-2"><strong>Nombre:</strong> @producto.Nombre</div>
-                <div class="col-md-3"><strong>Descripción:</strong> @producto.Descripcion</div>
-                @Html.Hidden("FechaCreacion", producto.FechaCreacion.ToString("yyyy-MM-ddTHH:mm:ss"))
-                @Html.Hidden("CategoriaId", producto.CategoriaId)
-                @Html.Hidden("VendedorId", producto.VendedorId)
+                <div class="row">
+                    <div class="col-md-2"><strong>ID:</strong> @producto.Id</div>
+                    <div class="col-md-2"><strong>Nombre:</strong> @producto.Nombre</div>
+                    <div class="col-md-3"><strong>Descripción:</strong> @producto.Descripcion</div>
+                    @Html.Hidden("FechaCreacion", producto.FechaCreacion.ToString("yyyy-MM-ddTHH:mm:ss"))
+                    @Html.Hidden("CategoriaId", producto.CategoriaId)
+                    @Html.Hidden("VendedorId", producto.VendedorId)
 
 
-                <div class="col-md-2">
-                    <label>Precio</label>
-                    <input type="text" name="Precio"
-                           value="@producto.Precio.ToString(System.Globalization.CultureInfo.InvariantCulture)"
-                           class="form-control" required />
+                    <div class="col-md-2">
+                        <label>Precio</label>
+                        <input type="text" name="Precio"
+                               value="@producto.Precio.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                               class="form-control" required />
+                    </div>
+
+                    <div class="col-md-2">
+                        <label>Stock</label>
+                        <input type="number" name="Stock" value="@producto.Stock"
+                               class="form-control" required />
+                    </div>
+
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button type="submit" class="btn btn-warning">Guardar</button>
+                    </div>
                 </div>
-
-                <div class="col-md-2">
-                    <label>Stock</label>
-                    <input type="number" name="Stock" value="@producto.Stock"
-                           class="form-control" required />
-                </div>
-
-                <div class="col-md-1 d-flex align-items-end">
-                    <button type="submit" class="btn btn-warning">Guardar</button>
-                </div>
-            </div>
             }
 
             <!-- Eliminar -->
             @using (Html.BeginForm("EliminarMiProducto", "Usuarios", FormMethod.Post, new { onsubmit = "return confirm('¿Estás seguro de que deseas eliminar este producto?');" }))
             {
-                @Html.Hidden("Id", producto.Id)
+                <input type="hidden" name="id" value="@producto.Id" />
+                @Html.Hidden("_method", "DELETE") <!-- Esto simula que la solicitud es DELETE -->
                 <button type="submit" class="btn btn-danger mt-2">Eliminar</button>
             }
+
+
         </div>
     }
 }

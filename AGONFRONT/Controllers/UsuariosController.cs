@@ -84,6 +84,8 @@ namespace AGONFRONT.Controllers
             }
         }
 
+        //Estos controladortes son de la vista de mi producto vendedor
+        //-------------------------------------------------------------
         public async Task<ActionResult> Misproductosvendedor()
         {
             List<Productos> productos = new List<Productos>();
@@ -200,45 +202,55 @@ namespace AGONFRONT.Controllers
         }
 
 
-
         [HttpPost]
         public async Task<ActionResult> EliminarMiProducto(int id)
         {
+            var tokenCookie = Request.Cookies["BearerToken"];
+            var tokenSession = Session["BearerToken"] as string;
+            string token = tokenCookie?.Value ?? tokenSession;
+
+            if (string.IsNullOrEmpty(token))
+            {
+                TempData["Error"] = "No tienes acceso a esta acción. Por favor inicia sesión.";
+                return RedirectToAction("Iniciar", "Home");
+            }
+
             try
             {
-                var token = Request.Cookies["BearerToken"]?.Value ?? Session["BearerToken"] as string;
-                if (string.IsNullOrEmpty(token))
-                {
-                    TempData["Error"] = "No tienes acceso. Inicia sesión.";
-                    return RedirectToAction("Iniciar", "Home");
-                }
-
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                    var response = await client.DeleteAsync($"api/Productos/EliminarProducto/{id}");
+                    // Capturar detalles del error
+                    Console.WriteLine($"[REQUEST] DELETE api/Productos/DeleteProductos/{id}");
 
-                    if (!response.IsSuccessStatusCode)
+                    HttpResponseMessage response = await client.DeleteAsync($"api/Productos/DeleteProductos/{id}");
+
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"[RESPONSE] Status: {response.StatusCode} | Content-Type: {response.Content.Headers.ContentType}");
+                    Console.WriteLine($"[RESPONSE BODY] {responseContent}");
+
+                    if (response.IsSuccessStatusCode)
                     {
-                        throw new Exception($"Error al eliminar el producto. Código: {response.StatusCode}");
+                        TempData["Success"] = "Producto eliminado correctamente.";
                     }
-
-                    TempData["Success"] = "Producto eliminado con éxito.";
+                    else
+                    {
+                        TempData["Error"] = $"❌ Error al eliminar el producto: {responseContent}";
+                    }
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"[EXCEPTION] {ex.Message}");
                 TempData["Error"] = $"Ocurrió un error: {ex.Message}";
             }
 
             return RedirectToAction("Misproductosvendedor");
         }
 
-
-
-
+        //--------------------------------------------------------------------------------------------------
 
         // Método para obtener el ID del usuario desde el token JWT
         public string GetLoggedInUserId(string token)
@@ -359,6 +371,9 @@ namespace AGONFRONT.Controllers
             return View("UpdatePerfilVendedor");
         }
 
+        //Aca estan todos los controladores de gestionar productos
+        //--------------------------------------------------------------------------------------
+
         public async Task<ActionResult> GestionarProductos()
         {
             List<Productos> productos = new List<Productos>();
@@ -415,22 +430,6 @@ namespace AGONFRONT.Controllers
 
             return View(productos);
         }
-
-        private async Task<List<Categoria>> ObtenerCategorias()
-        {
-            List<Categoria> categorias = new List<Categoria>();
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(apiUrl);
-                HttpResponseMessage response = await client.GetAsync("api/Categorias/GetCategorias");
-                if (response.IsSuccessStatusCode)
-                {
-                    var res = await response.Content.ReadAsStringAsync();
-                    categorias = JsonConvert.DeserializeObject<List<Categoria>>(res);
-                }
-            }
-            return categorias;
-        }
         public async Task<ActionResult> AgregarProducto(Productos model)
         {
             try
@@ -449,19 +448,17 @@ namespace AGONFRONT.Controllers
                     {
                         var errorContent = await response.Content.ReadAsStringAsync();
                         TempData["Error"] = $"Error de API: {response.StatusCode} - {errorContent}";
-                        return RedirectToAction("Iniciar", "Home");
+                        return RedirectToAction("GestionarProductos", "Home");
                     }
                 }
-
-                return RedirectToAction("Index", "Home");
             }
             catch (Exception ex)
             {
-                TempData["Error"] = $"Hubo un error al procesar la solicitud: {ex.Message}";
-                return RedirectToAction("Iniciar", "Home");
+                TempData["Error"] = $"Hubo un error al procesar la solicitud: {ex.Message}";     
             }
-        }
 
+            return RedirectToAction("GestionarProductos");
+        }
         public async Task<ActionResult> EliminarProducto(int id)
         {
             using (var client = new HttpClient())
@@ -477,7 +474,7 @@ namespace AGONFRONT.Controllers
                     TempData["Error"] = "No se pudo eliminar el producto.";
                 }
             }
-            return RedirectToAction("Index");
+            return View("GestionarProductos");
         }
 
         private async Task<List<Productos>> ObtenerProductos()
@@ -494,6 +491,23 @@ namespace AGONFRONT.Controllers
                 }
             }
             return productos;
+        }
+        //--------------------------------------------------------------------------------------
+
+        private async Task<List<Categoria>> ObtenerCategorias()
+        {
+            List<Categoria> categorias = new List<Categoria>();
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiUrl);
+                HttpResponseMessage response = await client.GetAsync("api/Categorias/GetCategorias");
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    categorias = JsonConvert.DeserializeObject<List<Categoria>>(res);
+                }
+            }
+            return categorias;
         }
 
         private async Task<Productos> ObtenerProductoPorId(int id)
@@ -575,6 +589,9 @@ namespace AGONFRONT.Controllers
 
             return View(pedidos);
         }
+
+        //Esta es de la vista de descuentos
+        //----------------------------------------------------------------
         public async Task<ActionResult> GestionDescuentos()
         {
             List<Descuentos> descuentos = new List<Descuentos>();
@@ -675,5 +692,6 @@ namespace AGONFRONT.Controllers
                 return RedirectToAction("GestionDescuentos");
             }
         }
+        //-------------------------------------------------------------------------------------------------------
     }
 }
