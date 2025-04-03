@@ -532,6 +532,8 @@ namespace AGONFRONT.Controllers
         public async Task<ActionResult> GestionPedidos()
         {
             List<Pedidos> pedidos = new List<Pedidos>();
+            List<Usuarios> clientes = new List<Usuarios>();
+            List<Productos> productos = new List<Productos>();
 
             // Verificar si el token está en las cookies o en la sesión
             var tokenCookie = Request.Cookies["BearerToken"];
@@ -552,31 +554,28 @@ namespace AGONFRONT.Controllers
                     client.BaseAddress = new Uri(apiUrl);
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                    HttpResponseMessage response = await client.GetAsync("api/Pedidos/GetPedidos");
-
-                    if (!response.IsSuccessStatusCode)
+                    // Obtener pedidos
+                    HttpResponseMessage responsePedidos = await client.GetAsync("api/Pedidos/GetPedidos");
+                    if (responsePedidos.IsSuccessStatusCode)
                     {
-                        TempData["Error"] = "No se pudieron obtener los pedidos.";
-                        return RedirectToAction("Iniciar", "Home");
+                        string jsonPedidos = await responsePedidos.Content.ReadAsStringAsync();
+                        pedidos = JsonConvert.DeserializeObject<List<Pedidos>>(jsonPedidos) ?? new List<Pedidos>();
                     }
 
-                    var jsonResponse = await response.Content.ReadAsStringAsync();
-                    pedidos = JsonConvert.DeserializeObject<List<Pedidos>>(jsonResponse) ?? new List<Pedidos>();
-
-                    // Obtener el ID del usuario desde el token
-                    string userId = GetLoggedInUserId(token);
-                    if (string.IsNullOrEmpty(userId))
+                    // Obtener clientes
+                    HttpResponseMessage responseClientes = await client.GetAsync("api/Usuarios/GetUsuarios");
+                    if (responseClientes.IsSuccessStatusCode)
                     {
-                        TempData["Error"] = "No se pudo obtener la información del usuario.";
-                        return RedirectToAction("Iniciar", "Home");
+                        string jsonClientes = await responseClientes.Content.ReadAsStringAsync();
+                        clientes = JsonConvert.DeserializeObject<List<Usuarios>>(jsonClientes) ?? new List<Usuarios>();
                     }
 
-                    // Filtrar pedidos que pertenecen al usuario autenticado
-                    pedidos = pedidos.Where(p => p.VendedorId == int.Parse(userId)).ToList();
-
-                    if (!pedidos.Any())
+                    // Obtener productos
+                    HttpResponseMessage responseProductos = await client.GetAsync("api/Productos/GetProductos");
+                    if (responseProductos.IsSuccessStatusCode)
                     {
-                        TempData["Error"] = "No se encontraron pedidos para el usuario logueado.";
+                        string jsonProductos = await responseProductos.Content.ReadAsStringAsync();
+                        productos = JsonConvert.DeserializeObject<List<Productos>>(jsonProductos) ?? new List<Productos>();
                     }
                 }
             }
@@ -586,6 +585,10 @@ namespace AGONFRONT.Controllers
                 TempData["Error"] = $"Error en la conexión con la API: {ex.Message}";
                 return RedirectToAction("Iniciar", "Home");
             }
+
+            // Enviar datos a la vista usando ViewBag
+            ViewBag.Clientes = clientes;
+            ViewBag.Productos = productos;
 
             return View(pedidos);
         }
@@ -692,6 +695,105 @@ namespace AGONFRONT.Controllers
                 return RedirectToAction("GestionDescuentos");
             }
         }
+        public async Task<ActionResult> Dashboard()
+        {
+            int totalPedidos = 0;
+            decimal totalIngresos = 0;
+            List<Pedidos> pedidos = new List<Pedidos>();
+            List<IngresosDiarios> ingresosDiarios = new List<IngresosDiarios>();
+            List<ProductosMasVendidos> productosMasVendidos = new List<ProductosMasVendidos>();
+            List<Usuarios> clientes = new List<Usuarios>();
+            List<Productos> productos = new List<Productos>();
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiUrl);
+
+                try
+                {
+                    pedidos = await ObtenerPedidos(client);
+                    ingresosDiarios = await ObtenerIngresosDiarios(client);
+                    productosMasVendidos = await ObtenerProductosMasVendidos(client);
+                    clientes = await ObtenerClientes(client);
+                    productos = await ObtenerProductos(client);
+
+                    var pedidosCompletados = pedidos.Where(p => p.Estado == "Completado").ToList();
+                    totalPedidos = pedidosCompletados.Count;
+                    totalIngresos = pedidosCompletados.Sum(p => p.Total);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error en DashboardController: {ex.Message}");
+                }
+            }
+
+            ViewBag.TotalPedidos = totalPedidos;
+            ViewBag.TotalIngresos = totalIngresos;
+            ViewBag.IngresosDiarios = JsonConvert.SerializeObject(ingresosDiarios);
+            ViewBag.ProductosMasVendidos = JsonConvert.SerializeObject(productosMasVendidos);
+            ViewBag.Clientes = clientes;
+            ViewBag.Productos = productos;
+
+            return View(pedidos);
+        }
+
+        private async Task<List<IngresosDiarios>> ObtenerIngresosDiarios(HttpClient client)
+        {
+            var response = await client.GetAsync("api/Pedidos/GetIngresosPorDia");
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<IngresosDiarios>>(json) ?? new List<IngresosDiarios>();
+            }
+            return new List<IngresosDiarios>();
+        }
+
+        private async Task<List<ProductosMasVendidos>> ObtenerProductosMasVendidos(HttpClient client)
+        {
+            var response = await client.GetAsync("api/Pedidos/GetProductosMasVendidos");
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<ProductosMasVendidos>>(json) ?? new List<ProductosMasVendidos>();
+            }
+            return new List<ProductosMasVendidos>();
+        }
+
+        private async Task<List<Pedidos>> ObtenerPedidos(HttpClient client)
+        {
+            var response = await client.GetAsync("api/Pedidos/GetPedidos");
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<Pedidos>>(json) ?? new List<Pedidos>();
+            }
+            return new List<Pedidos>();
+        }
+
+        private async Task<List<Usuarios>> ObtenerClientes(HttpClient client)
+        {
+            var response = await client.GetAsync("api/Usuarios/GetUsuarios");
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<Usuarios>>(json) ?? new List<Usuarios>();
+            }
+            return new List<Usuarios>();
+        }
+
+        private async Task<List<Productos>> ObtenerProductos(HttpClient client)
+        {
+            var response = await client.GetAsync("api/Productos/GetProductos");
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<Productos>>(json) ?? new List<Productos>();
+            }
+            return new List<Productos>();
+        }
+
+
+
         //-------------------------------------------------------------------------------------------------------
     }
 }

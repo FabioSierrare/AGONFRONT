@@ -1,68 +1,100 @@
 // Gráfico de ingresos por día
-var incomeChartCtx = document.getElementById('incomeChart').getContext('2d');
-var incomeChart = new Chart(incomeChartCtx, {
-    type: 'line',
-    data: {
-        labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
-        datasets: [{
-            label: 'Ingresos',
-            data: [1000, 2000, 1500, 2500, 3000, 3500, 4000],
-            backgroundColor: 'rgba(39, 174, 96, 0.2)',
-            borderColor: 'rgba(39, 174, 96, 1)',
-            borderWidth: 2,
-            fill: true
-        }]
+document.addEventListener("DOMContentLoaded", function () {
+    function cargarGrafico(id, dataKey, type, label, bgColor, borderColor) {
+        var canvas = document.getElementById(id);
+        if (canvas) {
+            try {
+                var parsedData = JSON.parse(canvas.getAttribute("data-" + dataKey));
+                if (parsedData.length > 0) {
+                    new Chart(canvas.getContext("2d"), {
+                        type: type,
+                        data: {
+                            labels: parsedData.map(item => item.Fecha || item.Producto),
+                            datasets: [{
+                                label: label,
+                                data: parsedData.map(item => item.TotalIngresos || item.CantidadVendida),
+                                backgroundColor: bgColor,
+                                borderColor: borderColor,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false, // Esto impide que Chart.js fuerce una relación de aspecto
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: Math.max(...parsedData.map(item => item.TotalIngresos || item.CantidadVendida)) * 1.2
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error(`Error al parsear datos de ${id}:`, e);
+            }
+        }
+    }
+
+    // Cargar gráficos al iniciar
+    cargarGrafico("ingresosChart", "ingresos", "line", "Ingresos", "rgba(52, 152, 219, 0.5)", "#3498db");
+    cargarGrafico("productsChart", "productos", "bar", "Unidades Vendidas", "#e74c3c", "#c0392b");
+
+    // Verificar y actualizar gráfico de productos
+    var productosCanvas = document.getElementById("productsChart");
+    if (productosCanvas) {
+        var productosData = productosCanvas.getAttribute("data-productos");
+        if (productosData) {
+            try {
+                var productos = JSON.parse(productosData);
+                actualizarGraficoProductos(productos);
+            } catch (e) {
+                console.error("Error al parsear productos:", e);
+            }
+        }
     }
 });
 
-// Gráfico de productos más vendidos
-var productsChartCtx = document.getElementById('productsChart').getContext('2d');
-var productsChart = new Chart(productsChartCtx, {
-    type: 'bar',
-    data: {
-        labels: ['Maíz', 'Fertilizantes', 'Tractor', 'Semillas Trigo', 'Arado'],
-        datasets: [{
-            label: 'Ventas',
-            data: [500, 300, 200, 150, 100],
-            backgroundColor: '#3498db',
-            borderColor: '#2980b9',
-            borderWidth: 1
-        }]
-    }
-});
-
-// Función para cargar el contenido dinámicamente en el dashboard
-function loadPage(page) {
-    const content = document.getElementById('main-content');
-    switch (page) {
-        case 'dashboard':
-            content.innerHTML = <h2>Resumen de Ventas</h2><p>Aquí se mostrarán las métricas clave del vendedor...</p>;
-            break;
-        case 'mis-productos':
-            content.innerHTML = <h2>Mis Productos</h2><p>Aquí podrás agregar, editar y eliminar productos...</p>;
-            break;
-        case 'estadisticas':
-            content.innerHTML = <h2>Estadísticas de Ventas</h2><p>Gráficos y reportes detallados sobre las ventas...</p>;
-            break;
-        case 'pedidos':
-            content.innerHTML = <h2>Gestión de Pedidos</h2><p>Aquí podrás ver y actualizar el estado de los pedidos...</p>;
-            break;
-        case 'promociones':
-            content.innerHTML = <h2>Promociones y Descuentos</h2><p>Gestiona tus descuentos y promociones aquí...</p>;
-            break;
-        case 'envios':
-            content.innerHTML = <h2>Gestión de Envíos</h2><p>Visualiza y ajusta tus políticas de envío...</p>;
-            break;
-        case 'perfil':
-            content.innerHTML = <h2>Perfil de Vendedor</h2><p>Aquí puedes ver y actualizar tu información personal...</p>;
-            break;
-        default:
-            content.innerHTML = <h2>Bienvenido</h2><p>Selecciona una sección del menú para comenzar.</p>;
-            break;
-    }
+// Función para actualizar el gráfico de ingresos
+function actualizarGraficoIngresos(ingresos) {
+    var ctx = document.getElementById("ingresosChart").getContext("2d");
+    new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: ingresos.map(i => i.Fecha),
+            datasets: [{
+                label: "Ingresos",
+                data: ingresos.map(i => i.TotalIngresos),
+                backgroundColor: "rgba(52, 152, 219, 0.5)",
+                borderColor: "#3498db",
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
 }
 
-// Cargar la página de inicio por defecto
-document.addEventListener('DOMContentLoaded', function () {
-    loadPage('dashboard');
-});
+// Función para actualizar el gráfico de productos
+function actualizarGraficoProductos(productos) {
+    var ctx = document.getElementById("productsChart").getContext("2d");
+    new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: productos.map(p => p.Producto),
+            datasets: [{
+                label: "Unidades Vendidas",
+                data: productos.map(p => p.CantidadVendida),
+                backgroundColor: "#e74c3c",
+                borderColor: "#c0392b",
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}

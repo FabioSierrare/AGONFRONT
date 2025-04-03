@@ -7,28 +7,21 @@
 }
 
 body {
-    background-color: #f7f7f7;
-    display: flex;
-}
-
-.container {
-    display: flex;
-    width: 100%;
-}
-
-/* Estilos generales para la barra de navegación */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
-}
-
-body {
     background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
 }
 
-/* Navbar principal */
+/* Contenedor principal */
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* Navbar */
 .navbar {
     background-color: #2c3e50;
     color: white;
@@ -57,50 +50,63 @@ body {
     gap: 20px;
 }
 
-.nav-links li {
-    display: inline;
-}
+    .nav-links li a {
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+        padding: 8px 15px;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
 
-.nav-links li a {
-    color: white;
-    text-decoration: none;
-    font-size: 16px;
-    padding: 8px 15px;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-}
+        .nav-links li a:hover {
+            background-color: #34495e;
+        }
 
-.nav-links li a:hover {
-    background-color: #34495e;
-}
-
-.notifications {
-    position: relative;
-}
-
-.notification-icon {
-    font-size: 24px;
-    cursor: pointer;
-}
-
-.notification-count {
-    position: absolute;
-    top: -5px;
-    right: -10px;
-    background-color: red;
-    color: white;
-    font-size: 12px;
-    border-radius: 50%;
-    padding: 5px;
-    min-width: 18px;
-    text-align: center;
-}
-
-/* Estilo para el contenido principal */
-.main-content {
+/* Tabla de pedidos */
+.table {
     width: 100%;
-    margin-top: 70px; /* Deja espacio para la barra de navegación */
-    padding: 20px;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+    .table th, .table td {
+        text-align: center;
+        padding: 12px;
+        border: 1px solid #dee2e6;
+    }
+
+    .table thead {
+        background-color: #343a40;
+        color: #ffffff;
+    }
+
+    .table tbody tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    .table tbody tr:hover {
+        background-color: #ddd;
+    }
+
+/* Etiquetas de estado */
+.badge {
+    padding: 6px 10px;
+    font-size: 14px;
+    border-radius: 12px;
+    color: white;
+}
+
+.bg-warning {
+    background-color: #ffc107;
+}
+
+.bg-success {
+    background-color: #28a745;
+}
+
+.bg-danger {
+    background-color: #dc3545;
 }
 
 /* Responsividad */
@@ -116,96 +122,8 @@ body {
         padding: 10px 0;
     }
 
-    .nav-links li {
-        width: 100%;
-        text-align: left;
-    }
-
-    .nav-links li a {
-        padding: 10px 20px;
-        width: 100%;
-    }
-}
-
-
-/* Tabla de pedidos */
-.orders-list table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 30px;
-}
-
-.orders-list th, .orders-list td {
-    padding: 10px;
-    text-align: center;
-    border-bottom: 1px solid #ddd;
-}
-
-.orders-list th {
-    background-color: #f1f1f1;
-}
-
-.orders-list tr:hover {
-    background-color: #f9f9f9;
-}
-
-/* Selector de estado */
-.order-status {
-    padding: 5px 10px;
-    font-size: 14px;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-}
-
-/* Botones */
-.view-details {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    cursor: pointer;
-    border-radius: 4px;
-}
-
-.view-details:hover {
-    background-color: #2980b9;
-}
-
-/* Modal de detalles */
-.modal {
-    display: none; /* Esconde el modal por defecto */
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgb(0, 0, 0);
-    background-color: rgba(0, 0, 0, 0.4);
-}
-
-.modal-content {
-    background-color: white;
-    margin: 15% auto;
-    padding: 20px;
-    border-radius: 8px;
-    width: 70%;
-}
-
-.close-btn {
-    color: #aaa;
-    font-size: 28px;
-    font-weight: bold;
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    cursor: pointer;
-}
-
-.close-btn:hover,
-.close-btn:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
+        .nav-links li a {
+            padding: 10px 20px;
+            width: 100%;
+        }
 }

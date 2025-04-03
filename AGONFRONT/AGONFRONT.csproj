@@ -209,6 +209,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\IngresosDiarios.cs" />
     <Compile Include="Models\ProductosMasVendidos.cs" />
     <Compile Include="Models\VentasPorSemana.cs" />
     <Compile Include="Models\Estadisticasx.cs" />
@@ -392,6 +393,7 @@
     <Content Include="Views\EstadisticasVentas\EstadisticasVentas.cshtml" />
     <Content Include="Views\Usuarios\GestionDescuentos.cshtml" />
     <Content Include="Views\Productos\Detalles.cshtml" />
+    <Content Include="Views\Usuarios\Dashboard.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

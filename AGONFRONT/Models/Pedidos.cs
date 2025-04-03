@@ -37,6 +37,9 @@ namespace AGONFRONT.Models
         [Display(Name = " Cantidad del pedido")]
         public int Cantidad { get; set; }
 
+        [Display(Name = " Metodo de Pago")]
+        public string MetodoPago { get; set; }
+
         [Display(Name = " Precio del pedido")]
         public decimal PrecioUnitario { get; set; }
 
