@@ -85,7 +85,7 @@ namespace AGONFRONT.Controllers
 
                         if (tipousuario == "Cliente")
                         {
-                            return RedirectToAction("Productos", "Productos");
+                            return RedirectToAction("EditarPerfilCliente", "Cliente");
                         }
                         return RedirectToAction("Productos", "Productos");
                     }

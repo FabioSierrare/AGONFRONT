@@ -1,0 +1,128 @@
+﻿@model List<AGONFRONT.Models.Usuarios>
+
+@{
+    var emailUsuario = Request.Cookies["UserEmail"]?.Value;
+    var usuario = Model?.FirstOrDefault(u => u.Correo == emailUsuario);
+    Layout = "~/Views/Shared/_LayoutLoged.cshtml";
+}
+
+<link rel="stylesheet" href="~/Content/css/GestionProductos.css" />
+
+@if (usuario != null)
+{
+    <div class="container my-5">
+        <div class="card p-4">
+            <h3 class="text-center mb-4">Mi Perfil</h3>
+            <div class="row align-items-center">
+                <!-- Foto -->
+                <div class="col-md-3 text-center">
+                    <img src="~/Content/img/default-user.png" alt="Foto de perfil" class="img-thumbnail mb-2" style="width: 150px; height: 150px; object-fit: cover;" />
+                    @using (Html.BeginForm("CambiarFoto", "Usuarios", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        <input type="file" name="Foto" class="form-control mb-2" required />
+                        <button type="submit" class="btn btn-success">Cambiar Foto</button>
+                    }
+                </div>
+
+                <!-- Datos personales -->
+                <div class="col-md-9">
+                    <h5>Información Personal</h5>
+                    <p><strong>Nombre:</strong> @usuario.Nombre</p>
+                    <p><strong>Tipo de Documento:</strong> @usuario.TipoDocumento</p>
+                    <p><strong>Numero de documento:</strong> @usuario.Documento</p>
+                    <p><strong>Correo Electrónico:</strong> @usuario.Correo</p>
+                    <p><strong>Número de Teléfono:</strong> @usuario.Telefono</p>
+                    <p><strong>Dirección:</strong> @usuario.Direccion</p>
+
+                    <div class="mt-3 d-flex flex-wrap gap-2">
+                        <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#editarPerfilModal">Editar Perfil</button>
+                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#cambiarContraseñaModal">Cambiar Contraseña</button>
+                        <a href="@Url.Action("HistorialCompras", "Cliente")" class="btn btn-info">Ver Historial de Compras</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Editar perfil -->
+    <div class="modal fade" id="editarPerfilModal" tabindex="-1" aria-labelledby="editarPerfilModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editarPerfilModalLabel">Editar Perfil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                @using (Html.BeginForm("UpdateCliente", "Cliente", FormMethod.Post))
+                {
+                    <div class="modal-body">
+                        <!-- Hidden fields que no se deben editar -->
+                        @Html.Hidden("Id", usuario.Id)
+                        @Html.Hidden("Documento", usuario.Documento)
+                        @Html.Hidden("Contraseña", usuario.Contraseña)
+                        @Html.Hidden("TipoUsuario", usuario.TipoUsuario)
+                        @Html.Hidden("TipoDocumento", usuario.TipoDocumento)
+                        @Html.Hidden("FechaCreacion", usuario.FechaCreacion)
+
+                        <!-- Campos editables -->
+                        <div class="mb-3">
+                            <label>Nombre</label>
+                            <input type="text" name="Nombre" class="form-control" value="@usuario.Nombre" required />
+                        </div>
+                        <div class="mb-3">
+                            <label>Correo</label>
+                            <input type="email" name="Correo" class="form-control" value="@usuario.Correo" required />
+                        </div>
+                        <div class="mb-3">
+                            <label>Teléfono</label>
+                            <input type="tel" name="Telefono" class="form-control" value="@usuario.Telefono" required />
+                        </div>
+                        <div class="mb-3">
+                            <label>Dirección</label>
+                            <textarea name="Direccion" class="form-control" rows="3" required>@usuario.Direccion</textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal: Cambiar contraseña -->
+    <div class="modal fade" id="cambiarContraseñaModal" tabindex="-1" aria-labelledby="cambiarContraseñaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cambiarContraseñaModalLabel">Cambiar Contraseña</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                @using (Html.BeginForm("CambiarContraseña", "Usuarios", FormMethod.Post))
+                {
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label>Contraseña Actual</label>
+                            <input type="password" name="ContraseñaActual" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                            <label>Nueva Contraseña</label>
+                            <input type="password" name="NuevaContraseña" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                            <label>Confirmar Nueva Contraseña</label>
+                            <input type="password" name="ConfirmarContraseña" class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-warning">Cambiar Contraseña</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <p class="text-danger text-center mt-4">No se encontró información del usuario.</p>
+}
