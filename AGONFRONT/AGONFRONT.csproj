@@ -201,6 +201,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\BusquedasController.cs" />
     <Compile Include="Controllers\ClienteController.cs" />
     <Compile Include="Controllers\EnviosController.cs" />
     <Compile Include="Controllers\EstadisticasVentasController.cs" />
@@ -210,6 +211,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Busquedas.cs" />
     <Compile Include="Models\IngresosDiarios.cs" />
     <Compile Include="Models\ProductosMasVendidos.cs" />
     <Compile Include="Models\VentasPorSemana.cs" />
@@ -396,6 +398,9 @@
     <Content Include="Views\Productos\Detalles.cshtml" />
     <Content Include="Views\Usuarios\Dashboard.cshtml" />
     <Content Include="Views\Cliente\EditarPerfilCliente.cshtml" />
+    <Content Include="Views\Busquedas\Busquedas.cshtml" />
+    <Content Include="Views\Busquedas\_PartialAsideCategorias.cshtml" />
+    <Content Include="Views\Busquedas\_PartialProductosBusqueda.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

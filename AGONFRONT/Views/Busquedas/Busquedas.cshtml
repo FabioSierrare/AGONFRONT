@@ -1,0 +1,11 @@
+﻿@model List<AGONFRONT.Models.Busquedas>
+
+@{
+    ViewBag.Title = "Busquedas";
+    Layout = "~/Views/Shared/_LayoutLoged.cshtml";
+}
+
+<div class="row">
+    @Html.Partial("_PartialAsideCategorias")
+    @Html.Partial("_PartialProductosBusqueda", Model)
+</div>
