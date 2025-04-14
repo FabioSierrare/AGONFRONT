@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using static AGONFRONT.Controllers.HomeController;
 using System.Globalization;
+using AGONFRONT.Utils;
 
 namespace AGONFRONT.Controllers
 {
@@ -49,6 +50,9 @@ namespace AGONFRONT.Controllers
         {
             try
             {
+                // 🔒 Encriptar la contraseña antes de enviarla
+                model.Contraseña = Encriptador.Encriptar(model.Contraseña);
+
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
@@ -59,15 +63,13 @@ namespace AGONFRONT.Controllers
 
                     HttpResponseMessage response = await client.PostAsync("api/Usuarios/PostUsuarios", content);
 
-                    // Verificar el código de estado de la respuesta
                     if (response.IsSuccessStatusCode)
                     {
                         var res = await response.Content.ReadAsStringAsync();
-                        // Si es exitosa, puedes procesar la respuesta aquí
+                        // Puedes manejar la respuesta aquí si lo necesitas
                     }
                     else
                     {
-                        // Obtener más detalles sobre el código de estado y el contenido de la respuesta
                         var errorContent = await response.Content.ReadAsStringAsync();
                         TempData["Error"] = $"Error de API: {response.StatusCode} - {errorContent}";
                         return RedirectToAction("Iniciar", "Home");
@@ -78,7 +80,6 @@ namespace AGONFRONT.Controllers
             }
             catch (Exception ex)
             {
-                // Si algo sale mal en el código, capturar el error
                 TempData["Error"] = $"Hubo un error al procesar la solicitud: {ex.Message}";
                 return RedirectToAction("Iniciar", "Home");
             }

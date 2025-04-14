@@ -3,6 +3,7 @@
 @{
     var emailUsuario = Request.Cookies["UserEmail"]?.Value;
     var usuario = Model?.FirstOrDefault(u => u.Correo == emailUsuario);
+    var pedidos = ViewBag.Pedidos as List<AGONFRONT.Models.Pedidos>;
     Layout = "~/Views/Shared/_LayoutLoged.cshtml";
 }
 
@@ -14,7 +15,6 @@
         <div class="card p-4">
             <h3 class="text-center mb-4">Mi Perfil</h3>
             <div class="row align-items-center">
-                <!-- Foto -->
                 <div class="col-md-3 text-center">
                     <img src="~/Content/img/default-user.png" alt="Foto de perfil" class="img-thumbnail mb-2" style="width: 150px; height: 150px; object-fit: cover;" />
                     @using (Html.BeginForm("CambiarFoto", "Usuarios", FormMethod.Post, new { enctype = "multipart/form-data" }))
@@ -24,20 +24,19 @@
                     }
                 </div>
 
-                <!-- Datos personales -->
                 <div class="col-md-9">
                     <h5>Información Personal</h5>
                     <p><strong>Nombre:</strong> @usuario.Nombre</p>
                     <p><strong>Tipo de Documento:</strong> @usuario.TipoDocumento</p>
-                    <p><strong>Numero de documento:</strong> @usuario.Documento</p>
+                    <p><strong>Número de Documento:</strong> @usuario.Documento</p>
                     <p><strong>Correo Electrónico:</strong> @usuario.Correo</p>
-                    <p><strong>Número de Teléfono:</strong> @usuario.Telefono</p>
+                    <p><strong>Teléfono:</strong> @usuario.Telefono</p>
                     <p><strong>Dirección:</strong> @usuario.Direccion</p>
 
                     <div class="mt-3 d-flex flex-wrap gap-2">
                         <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#editarPerfilModal">Editar Perfil</button>
                         <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#cambiarContraseñaModal">Cambiar Contraseña</button>
-                        <a href="@Url.Action("HistorialCompras", "Cliente")" class="btn btn-info">Ver Historial de Compras</a>
+                        <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#historialVentasModal">Ver Historial de Compras</button>
                     </div>
                 </div>
             </div>
@@ -55,7 +54,6 @@
                 @using (Html.BeginForm("UpdateCliente", "Cliente", FormMethod.Post))
                 {
                     <div class="modal-body">
-                        <!-- Hidden fields que no se deben editar -->
                         @Html.Hidden("Id", usuario.Id)
                         @Html.Hidden("Documento", usuario.Documento)
                         @Html.Hidden("Contraseña", usuario.Contraseña)
@@ -63,7 +61,6 @@
                         @Html.Hidden("TipoDocumento", usuario.TipoDocumento)
                         @Html.Hidden("FechaCreacion", usuario.FechaCreacion)
 
-                        <!-- Campos editables -->
                         <div class="mb-3">
                             <label>Nombre</label>
                             <input type="text" name="Nombre" class="form-control" value="@usuario.Nombre" required />
@@ -88,7 +85,6 @@
             </div>
         </div>
     </div>
-
 
     <!-- Modal: Cambiar contraseña -->
     <div class="modal fade" id="cambiarContraseñaModal" tabindex="-1" aria-labelledby="cambiarContraseñaModalLabel" aria-hidden="true">
@@ -118,6 +114,59 @@
                         <button type="submit" class="btn btn-warning">Cambiar Contraseña</button>
                     </div>
                 }
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Historial de compras (filtrados por usuario) -->
+    <div class="modal fade" id="historialVentasModal" tabindex="-1" aria-labelledby="historialVentasModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="historialVentasModalLabel">Historial de Compras</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    @{
+                        var pedidosFiltrados = pedidos?.Where(p => p.ClienteId == usuario.Id).ToList();
+                    }
+
+                    @if (pedidosFiltrados != null && pedidosFiltrados.Any())
+                    {
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Fecha</th>
+                                    <th>Producto ID</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio Unitario</th>
+                                    <th>Total</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < pedidosFiltrados.Count; i++)
+                                {
+                                    var p = pedidosFiltrados[i];
+                                    <tr>
+                                        <td>@(i + 1)</td>
+                                        <td>@p.FechaPedido.ToString("dd/MM/yyyy")</td>
+                                        <td>@p.ProductoId</td>
+                                        <td>@p.Cantidad</td>
+                                        <td>@p.PrecioUnitario.ToString("C")</td>
+                                        <td>@(p.Cantidad * p.PrecioUnitario).ToString("C")</td>
+                                        <td>@p.Estado</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p class="text-center">No se encontraron pedidos para este usuario.</p>
+                    }
+                </div>
             </div>
         </div>
     </div>
