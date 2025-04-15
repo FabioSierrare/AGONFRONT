@@ -290,6 +290,7 @@
     <Content Include="Content\css\pagina5.css" />
     <Content Include="Content\css\pagina6.css" />
     <Content Include="Content\css\PerfilVendedor.css" />
+    <Content Include="Content\css\whatsapp.css" />
     <Content Include="Content\css\x.css" />
     <Content Include="Content\img\Aceites.jpg" />
     <Content Include="Content\img\Agricultor.jpg" />
