@@ -18,7 +18,9 @@ using AGONFRONT.Filters;
 
 namespace AGONFRONT.Controllers
 {
+    //Para toda la parte de cliente:
     [AuthorizeByRole("Cliente")]
+    
     public class ClienteController : Controller
     {
         private readonly string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
