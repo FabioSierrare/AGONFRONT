@@ -14,9 +14,11 @@ using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using static AGONFRONT.Controllers.HomeController;
 using System.Globalization;
+using AGONFRONT.Filters;
 
 namespace AGONFRONT.Controllers
 {
+    [AuthorizeByRole("Cliente")]
     public class ClienteController : Controller
     {
         private readonly string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();

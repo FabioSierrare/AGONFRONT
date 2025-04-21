@@ -15,6 +15,7 @@ using System.IdentityModel.Tokens.Jwt;
 using static AGONFRONT.Controllers.HomeController;
 using System.Globalization;
 using AGONFRONT.Utils;
+using AGONFRONT.Filters;
 
 namespace AGONFRONT.Controllers
 {
@@ -87,6 +88,7 @@ namespace AGONFRONT.Controllers
 
         //Estos controladortes son de la vista de mi producto vendedor
         //-------------------------------------------------------------
+        [AuthorizeByRole("Vendedor")]
         public async Task<ActionResult> Misproductosvendedor()
         {
             List<Productos> productos = new List<Productos>();
@@ -147,7 +149,7 @@ namespace AGONFRONT.Controllers
 
             return View(productos);
         }
-
+        [AuthorizeByRole("Vendedor")]
         [HttpPost]
         public async Task<ActionResult> Editarmiproducto(Productos productos)
         {
@@ -202,7 +204,7 @@ namespace AGONFRONT.Controllers
             return RedirectToAction("Misproductosvendedor");
         }
 
-
+        [AuthorizeByRole("Vendedor")]
         [HttpPost]
         public async Task<ActionResult> EliminarMiProducto(int id)
         {
@@ -262,7 +264,7 @@ namespace AGONFRONT.Controllers
 
             return userIdClaim?.Value;
         }
-
+        [AuthorizeByRole("Vendedor")]
         public async Task<ActionResult> UpdatePerfilVendedor()
         {
             List<Usuarios> usuarios = new List<Usuarios>();
@@ -324,6 +326,7 @@ namespace AGONFRONT.Controllers
         }
 
         [HttpPost]
+       
         public async Task<ActionResult> UpdateUsuario(Usuarios usuario)
         {
             // Obtener el token de la cookie o la sesión
@@ -374,7 +377,7 @@ namespace AGONFRONT.Controllers
 
         //Aca estan todos los controladores de gestionar productos
         //--------------------------------------------------------------------------------------
-
+        [AuthorizeByRole("Vendedor")]
         public async Task<ActionResult> GestionarProductos()
         {
             List<Productos> productos = new List<Productos>();
@@ -431,6 +434,7 @@ namespace AGONFRONT.Controllers
 
             return View(productos);
         }
+        [AuthorizeByRole("Vendedor")]
         public async Task<ActionResult> AgregarProducto(Productos model)
         {
             try
@@ -460,6 +464,7 @@ namespace AGONFRONT.Controllers
 
             return RedirectToAction("GestionarProductos");
         }
+        [AuthorizeByRole("Vendedor")]
         public async Task<ActionResult> EliminarProducto(int id)
         {
             using (var client = new HttpClient())
@@ -478,6 +483,7 @@ namespace AGONFRONT.Controllers
             return View("GestionarProductos");
         }
 
+        [AuthorizeByRole("Vendedor")]
         private async Task<List<Productos>> ObtenerProductos()
         {
             List<Productos> productos = new List<Productos>();
@@ -494,7 +500,7 @@ namespace AGONFRONT.Controllers
             return productos;
         }
         //--------------------------------------------------------------------------------------
-
+        [AuthorizeByRole("Vendedor")]
         private async Task<List<Categoria>> ObtenerCategorias()
         {
             List<Categoria> categorias = new List<Categoria>();
@@ -510,7 +516,7 @@ namespace AGONFRONT.Controllers
             }
             return categorias;
         }
-
+        [AuthorizeByRole("Vendedor")]
         private async Task<Productos> ObtenerProductoPorId(int id)
         {
             Productos producto = null;
@@ -530,6 +536,7 @@ namespace AGONFRONT.Controllers
             }
             return producto;
         }
+        [AuthorizeByRole("Vendedor")]
         public async Task<ActionResult> GestionPedidos()
         {
             List<Pedidos> pedidos = new List<Pedidos>();
@@ -596,6 +603,7 @@ namespace AGONFRONT.Controllers
 
         //Esta es de la vista de descuentos
         //----------------------------------------------------------------
+        [AuthorizeByRole("Vendedor")]
         public async Task<ActionResult> GestionDescuentos()
         {
             List<Descuentos> descuentos = new List<Descuentos>();
@@ -656,6 +664,7 @@ namespace AGONFRONT.Controllers
         }
 
         [HttpPost]
+        [AuthorizeByRole("Vendedor")]
         public async Task<ActionResult> AgregarDescuento(Descuentos model)
         {
             try
@@ -696,6 +705,7 @@ namespace AGONFRONT.Controllers
                 return RedirectToAction("GestionDescuentos");
             }
         }
+        [AuthorizeByRole("Vendedor")]
         public async Task<ActionResult> Dashboard()
         {
             int totalPedidos = 0;
@@ -737,6 +747,7 @@ namespace AGONFRONT.Controllers
 
             return View(pedidos);
         }
+        
 
         private async Task<List<IngresosDiarios>> ObtenerIngresosDiarios(HttpClient client)
         {

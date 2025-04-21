@@ -212,6 +212,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Busquedas.cs" />
+    <Compile Include="Models\Filtros.cs" />
     <Compile Include="Models\IngresosDiarios.cs" />
     <Compile Include="Models\ProductosMasVendidos.cs" />
     <Compile Include="Models\VentasPorSemana.cs" />

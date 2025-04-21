@@ -13,6 +13,7 @@
             using Microsoft.Ajax.Utilities;
             using Newtonsoft.Json;
             using AGONFRONT.Utils;
+            
 
             namespace AGONFRONT.Controllers
             {
@@ -83,6 +84,9 @@
                                     {
                                         SetTokenCookie(token.token);
                                         SetUserEmailCookie(model.Correo);
+
+                                        Session["RolUsuario"] = tipousuario;
+                                        Session["BearerToken"] = token.token;
 
                                         if (tipousuario == "Vendedor")
                                             return RedirectToAction("UpdatePerfilVendedor", "Usuarios");
@@ -202,6 +206,24 @@
                         var userTypeClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "TipoUsuario");
 
                         return userTypeClaim?.Value;
+                    }
+
+
+                    public ActionResult AccesoDenegado()
+                    {
+                        ViewBag.Mensaje = "No tienes permisos para acceder a esta sección.";
+                        return View();
+                    }
+
+                    public ActionResult MisDatos()
+                    {
+                        if (Session["RolUsuario"] == null)
+                        {
+                            return RedirectToAction("Iniciar", "Home");
+                        }
+
+                        // continuar
+                        return View();
                     }
 
 
