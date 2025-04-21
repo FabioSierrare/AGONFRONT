@@ -35,6 +35,7 @@ namespace AGONFRONT.Controllers
             return userIdClaim?.Value;
         }
 
+
         public async Task<ActionResult> EditarPerfilCliente()
         {
             List<Usuarios> usuarios = new List<Usuarios>();
