@@ -1,19 +1,30 @@
 ﻿@model List<AGONFRONT.Models.Usuarios>
 
 @{
-    var emailUsuario = Request.Cookies["UserEmail"]?.Value;
-    var usuario = Model?.FirstOrDefault(u => u.Correo == emailUsuario);
-    var pedidos = ViewBag.Pedidos as List<AGONFRONT.Models.Pedidos>;
     Layout = "~/Views/Shared/_LayoutLoged.cshtml";
-}
 
-<link rel="stylesheet" href="~/Content/css/GestionProductos.css" />
+    var emailUsuario = Request.Cookies["UserEmail"]?.Value;
+    var idUsuarioCookie = Request.Cookies["UserId"]?.Value;
+
+    var usuario = Model?.FirstOrDefault(u => u.Correo == emailUsuario);
+
+    if (usuario == null && !string.IsNullOrEmpty(idUsuarioCookie))
+    {
+        if (int.TryParse(idUsuarioCookie, out int idUsuario))
+        {
+            usuario = Model?.FirstOrDefault(u => u.Id == idUsuario);
+        }
+    }
+
+    var pedidos = ViewBag.Pedidos as List<AGONFRONT.Models.Pedidos>;
+}
 
 @if (usuario != null)
 {
     <div class="container my-5">
         <div class="card p-4">
             <h3 class="text-center mb-4">Mi Perfil</h3>
+
             <div class="row align-items-center">
                 <div class="col-md-3 text-center">
                     <img src="~/Content/img/default-user.png" alt="Foto de perfil" class="img-thumbnail mb-2" style="width: 150px; height: 150px; object-fit: cover;" />
@@ -28,8 +39,8 @@
                     <h5>Información Personal</h5>
                     <p><strong>Nombre:</strong> @usuario.Nombre</p>
                     <p><strong>Tipo de Documento:</strong> @usuario.TipoDocumento</p>
-                    <p><strong>Número de Documento:</strong> @usuario.Documento</p>
-                    <p><strong>Correo Electrónico:</strong> @usuario.Correo</p>
+                    <p><strong>Documento:</strong> @usuario.Documento</p>
+                    <p><strong>Correo:</strong> @usuario.Correo</p>
                     <p><strong>Teléfono:</strong> @usuario.Telefono</p>
                     <p><strong>Dirección:</strong> @usuario.Direccion</p>
 
@@ -43,16 +54,16 @@
         </div>
     </div>
 
-    <!-- Modal: Editar perfil -->
+    <!-- Modal Editar Perfil -->
     <div class="modal fade" id="editarPerfilModal" tabindex="-1" aria-labelledby="editarPerfilModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editarPerfilModalLabel">Editar Perfil</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
                 @using (Html.BeginForm("UpdateCliente", "Cliente", FormMethod.Post))
                 {
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar Perfil</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
                     <div class="modal-body">
                         @Html.Hidden("Id", usuario.Id)
                         @Html.Hidden("Documento", usuario.Documento)
@@ -86,16 +97,16 @@
         </div>
     </div>
 
-    <!-- Modal: Cambiar contraseña -->
+    <!-- Modal Cambiar Contraseña -->
     <div class="modal fade" id="cambiarContraseñaModal" tabindex="-1" aria-labelledby="cambiarContraseñaModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="cambiarContraseñaModalLabel">Cambiar Contraseña</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
                 @using (Html.BeginForm("CambiarContraseña", "Usuarios", FormMethod.Post))
                 {
+                    <div class="modal-header">
+                        <h5 class="modal-title">Cambiar Contraseña</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
                     <div class="modal-body">
                         <div class="mb-3">
                             <label>Contraseña Actual</label>
@@ -118,22 +129,20 @@
         </div>
     </div>
 
-    <!-- Modal: Historial de compras (filtrados por usuario) -->
+    <!-- Modal Historial de Compras -->
     <div class="modal fade" id="historialVentasModal" tabindex="-1" aria-labelledby="historialVentasModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="historialVentasModalLabel">Historial de Compras</h5>
+                    <h5 class="modal-title">Historial de Compras</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
-                    @{
-                        var pedidosFiltrados = pedidos?.Where(p => p.ClienteId == usuario.Id).ToList();
-                    }
-
-                    @if (pedidosFiltrados != null && pedidosFiltrados.Any())
+                    @if (pedidos != null && pedidos.Any(p => p.ClienteId == usuario.Id))
                     {
-                        <table class="table table-bordered table-striped">
+                        var pedidosUsuario = pedidos.Where(p => p.ClienteId == usuario.Id).ToList();
+
+                        <table class="table table-striped">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -146,17 +155,17 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @for (int i = 0; i < pedidosFiltrados.Count; i++)
+                                @for (int i = 0; i < pedidosUsuario.Count; i++)
                                 {
-                                    var p = pedidosFiltrados[i];
+                                    var pedido = pedidosUsuario[i];
                                     <tr>
                                         <td>@(i + 1)</td>
-                                        <td>@p.FechaPedido.ToString("dd/MM/yyyy")</td>
-                                        <td>@p.ProductoId</td>
-                                        <td>@p.Cantidad</td>
-                                        <td>@p.PrecioUnitario.ToString("C")</td>
-                                        <td>@(p.Cantidad * p.PrecioUnitario).ToString("C")</td>
-                                        <td>@p.Estado</td>
+                                        <td>@pedido.FechaPedido.ToString("dd/MM/yyyy")</td>
+                                        <td>@pedido.ProductoId</td>
+                                        <td>@pedido.Cantidad</td>
+                                        <td>@pedido.PrecioUnitario.ToString("C")</td>
+                                        <td>@(pedido.Cantidad * pedido.PrecioUnitario).ToString("C")</td>
+                                        <td>@pedido.Estado</td>
                                     </tr>
                                 }
                             </tbody>
@@ -164,7 +173,7 @@
                     }
                     else
                     {
-                        <p class="text-center">No se encontraron pedidos para este usuario.</p>
+                        <p class="text-center">No tienes compras registradas.</p>
                     }
                 </div>
             </div>
@@ -173,5 +182,5 @@
 }
 else
 {
-    <p class="text-danger text-center mt-4">No se encontró información del usuario.</p>
+    <p class="text-danger text-center">No se encontró información del usuario.</p>
 }
