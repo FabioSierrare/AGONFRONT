@@ -92,7 +92,7 @@
                                             return RedirectToAction("UpdatePerfilVendedor", "Usuarios");
 
                                         if (tipousuario == "Cliente")
-                                            return RedirectToAction("EditarPerfilCliente", "Cliente");
+                                            return RedirectToAction("Productos", "Productos");
 
                                         return RedirectToAction("Productos", "Productos");
                                     }

@@ -1952,3 +1952,8 @@ C:\Users\Pc\Desktop\Ecommerce\Front#05\AGONFRONT\obj\Debug\AGONFRONT.csproj.Core
 C:\Users\Pc\Desktop\Ecommerce\Front#05\AGONFRONT\obj\Debug\AGONFRONT.csproj.Up2Date
 C:\Users\Pc\Desktop\Ecommerce\Front#05\AGONFRONT\obj\Debug\AGONFRONT.dll
 C:\Users\Pc\Desktop\Ecommerce\Front#05\AGONFRONT\obj\Debug\AGONFRONT.pdb
+C:\Users\Daniel\Source\Repos\AGONFRONT\AGONFRONT\bin\Microsoft.Azure.KeyVault.Core.dll
+C:\Users\Daniel\Source\Repos\AGONFRONT\AGONFRONT\bin\Microsoft.WindowsAzure.Storage.dll
+C:\Users\Daniel\Source\Repos\AGONFRONT\AGONFRONT\bin\Microsoft.Azure.KeyVault.Core.xml
+C:\Users\Daniel\Source\Repos\AGONFRONT\AGONFRONT\bin\Microsoft.WindowsAzure.Storage.pdb
+C:\Users\Daniel\Source\Repos\AGONFRONT\AGONFRONT\bin\Microsoft.WindowsAzure.Storage.xml

@@ -16,6 +16,8 @@ using static AGONFRONT.Controllers.HomeController;
 using System.Globalization;
 using AGONFRONT.Utils;
 using AGONFRONT.Filters;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace AGONFRONT.Controllers
 {
@@ -434,11 +436,47 @@ namespace AGONFRONT.Controllers
 
             return View(productos);
         }
+        private async Task<string> SubirImagenAzure(HttpPostedFileBase imagen)
+        {
+            string storageConnectionString = ConfigurationManager.ConnectionStrings["AzureStorageConnectionString"].ConnectionString;
+            string containerName = "imagenes-productos"; // tu contenedor
+
+            var storageAccount = CloudStorageAccount.Parse(storageConnectionString);
+            var blobClient = storageAccount.CreateCloudBlobClient();
+            var container = blobClient.GetContainerReference(containerName);
+
+            await container.CreateIfNotExistsAsync();
+            await container.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
+
+            string nombreArchivo = Guid.NewGuid().ToString() + System.IO.Path.GetExtension(imagen.FileName);
+            var blockBlob = container.GetBlockBlobReference(nombreArchivo);
+
+            blockBlob.Properties.ContentType = imagen.ContentType;
+            await blockBlob.UploadFromStreamAsync(imagen.InputStream);
+
+            return blockBlob.Uri.AbsoluteUri;
+        }
+
         [AuthorizeByRole("Vendedor")]
-        public async Task<ActionResult> AgregarProducto(Productos model)
+        [HttpPost]
+        public async Task<ActionResult> AgregarProducto(Productos model, HttpPostedFileBase Imagen)
         {
             try
             {
+                if (Imagen != null && Imagen.ContentLength > 0)
+                {
+                    // Subir imagen a Azure y obtener URL
+                    var urlImagen = await SubirImagenAzure(Imagen);
+
+                    // Guardar la URL en el producto
+                    model.UrlImagen = urlImagen;
+                }
+                else
+                {
+                    TempData["Error"] = "Debes subir una imagen para el producto.";
+                    return RedirectToAction("GestionarProductos");
+                }
+
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
@@ -453,17 +491,18 @@ namespace AGONFRONT.Controllers
                     {
                         var errorContent = await response.Content.ReadAsStringAsync();
                         TempData["Error"] = $"Error de API: {response.StatusCode} - {errorContent}";
-                        return RedirectToAction("GestionarProductos", "Home");
+                        return RedirectToAction("GestionarProductos");
                     }
                 }
             }
             catch (Exception ex)
             {
-                TempData["Error"] = $"Hubo un error al procesar la solicitud: {ex.Message}";     
+                TempData["Error"] = $"Hubo un error al procesar la solicitud: {ex.Message}";
             }
 
             return RedirectToAction("GestionarProductos");
         }
+
         [AuthorizeByRole("Vendedor")]
         public async Task<ActionResult> EliminarProducto(int id)
         {

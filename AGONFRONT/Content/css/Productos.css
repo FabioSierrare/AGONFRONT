@@ -1,0 +1,18 @@
+.body-content {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Este sí limita solo el carrusel */
+#promocionesCarrusel {
+    max-height: 80vh; /* Carrusel máximo al 80% de pantalla */
+    overflow: hidden;
+}
+
+    #promocionesCarrusel img {
+        object-fit: cover;
+        height: 100%;
+        width: 100%;
+    }

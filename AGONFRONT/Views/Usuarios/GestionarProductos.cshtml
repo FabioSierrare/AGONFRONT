@@ -20,16 +20,13 @@
     <h3>Agregar Producto</h3>
     @using (Html.BeginForm("AgregarProducto", "Usuarios", FormMethod.Post, new { enctype = "multipart/form-data" }))
     {
-        <!-- Campo oculto para la ID del usuario logueado -->
         <p>ID del Usuario: @ViewBag.UsuarioId</p>
         <input type="hidden" name="VendedorId" value="@ViewBag.UsuarioId" />
-
-        <!-- Campo oculto para la fecha de registro -->
         <input type="hidden" name="FechaCreacion" value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")" />
 
         <div class="mb-3">
             <label for="nombreProducto" class="form-label">Nombre del Producto</label>
-            <input type="text" class="form-control" name="Nombre" id="nombreProducto" required>
+            <input type="text" class="form-control" name="Nombre" id="nombreProducto" required />
         </div>
 
         <div class="mb-3">
@@ -45,27 +42,28 @@
                 new SelectListItem { Text = "Hortaliza", Value = "1" },
                 new SelectListItem { Text = "Fruta", Value = "2" },
                 new SelectListItem { Text = "Verdura", Value = "3" }
+
             }, "Value", "Text"), new { @class = "form-control", required = "required" })
             @Html.ValidationMessage("CategoriaId", "", new { @class = "text-danger" })
         </div>
 
         <div class="mb-3">
             <label for="precioProducto" class="form-label">Precio</label>
-            <input type="number" class="form-control form-control-lg" name="Precio" id="precioProducto" step="0.01" required>
+            <input type="number" class="form-control form-control-lg" name="Precio" id="precioProducto" step="0.01" required />
         </div>
 
         <div class="mb-3">
             <label for="stockProducto" class="form-label">Stock</label>
-            <input type="number" class="form-control form-control-lg" name="Stock" id="stockProducto" required>
+            <input type="number" class="form-control form-control-lg" name="Stock" id="stockProducto" required />
         </div>
 
+        <!-- AQUI CAMBIA: campo para subir imagen -->
         <div class="mb-3">
-            <label for="urlImagen" class="form-label">UrlImagen</label>
-            <input type="text" class="form-control form-control-lg" name="UrlImagen" id="urlImagen" required>
+            <label for="Imagen" class="form-label">Imagen del Producto</label>
+            <input type="file" class="form-control form-control-lg" name="Imagen" id="Imagen" accept="image/*" required />
         </div>
 
         <button type="submit" class="btn btn-primary">Agregar Producto</button>
-
     }
 </div>
 

@@ -41,60 +41,33 @@ namespace AGONFRONT.Controllers
             List<Pedidos> pedidos = new List<Pedidos>();
 
             var tokenCookie = Request.Cookies["BearerToken"];
-            var tokenExpirationCookie = Request.Cookies["TokenExpirationTime"];
             var tokenSession = Session["BearerToken"] as string;
-
-            if (tokenCookie == null && string.IsNullOrEmpty(tokenSession))
-            {
-                TempData["Error"] = "No tienes acceso a esta página. Por favor inicia sesión.";
-                return RedirectToAction("Iniciar", "Home");
-            }
-
             string token = tokenCookie?.Value ?? tokenSession;
-
-            if (tokenExpirationCookie != null &&
-                DateTime.TryParse(tokenExpirationCookie.Value, out var expiryDate) &&
-                DateTime.Now > expiryDate)
-            {
-                Response.Cookies.Remove("BearerToken");
-                Response.Cookies.Remove("TokenExpirationTime");
-
-                TempData["Error"] = "La sesión ha expirado. Por favor inicia sesión nuevamente.";
-                return RedirectToAction("Iniciar", "Home");
-            }
 
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(apiUrl);
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                // Obtener usuarios
+                // Cargar usuarios
                 var responseUsuarios = await client.GetAsync("api/Usuarios/GetUsuarios");
-
                 if (responseUsuarios.IsSuccessStatusCode)
                 {
                     var resUsuarios = await responseUsuarios.Content.ReadAsStringAsync();
                     usuarios = JsonConvert.DeserializeObject<List<Usuarios>>(resUsuarios);
                 }
-                else
-                {
-                    TempData["Error"] = "No se pudieron obtener los datos del usuario.";
-                }
 
-                // Obtener pedidos
+                // Cargar pedidos
                 var responsePedidos = await client.GetAsync("api/Pedidos/GetPedidos");
-
                 if (responsePedidos.IsSuccessStatusCode)
                 {
                     var resPedidos = await responsePedidos.Content.ReadAsStringAsync();
-                    var todosLosPedidos = JsonConvert.DeserializeObject<List<Pedidos>>(resPedidos);
-
-                    // Obtener ID del usuario desde el token
+                    pedidos = JsonConvert.DeserializeObject<List<Pedidos>>(resPedidos);
                 }
             }
 
-            ViewBag.Pedidos = pedidos;
-            return View(usuarios);
+            ViewBag.Pedidos = pedidos; // ⬅️ los pedidos en el ViewBag
+            return View(usuarios);     // ⬅️ los usuarios en el Model
         }
 
 
@@ -146,66 +119,5 @@ namespace AGONFRONT.Controllers
 
             return View("EditarPerfilCliente");
         }
-
-        public async Task<ActionResult> HistorialPedidos()
-        {
-            List<Pedidos> pedidos = new List<Pedidos>();
-
-            // Verificar si el token está en las cookies
-            var tokenCookie = Request.Cookies["BearerToken"];
-            var tokenExpirationCookie = Request.Cookies["TokenExpirationTime"];
-            var tokenSession = Session["BearerToken"] as string;
-
-            // Depuración para ver si las cookies están presentes
-            Console.WriteLine("BearerToken Cookie en Request: " + tokenCookie?.Value);
-            Console.WriteLine("TokenExpirationTime Cookie en Request: " + tokenExpirationCookie?.Value);
-
-            // Si el token está ausente, redirigir al login
-            if (tokenCookie == null && string.IsNullOrEmpty(tokenSession))
-            {
-                TempData["Error"] = "No tienes acceso a esta página. Por favor inicia sesión.";
-                return RedirectToAction("Iniciar", "Home"); // Redirige al login
-            }
-
-            // Si el token está presente en las cookies, continuar
-            string token = tokenCookie?.Value ?? tokenSession;
-
-            // Verificar la fecha de expiración de la cookie
-            DateTime? expirationTime = null;
-            if (tokenExpirationCookie != null)
-            {
-                expirationTime = DateTime.TryParse(tokenExpirationCookie.Value, out var expiryDate) ? expiryDate : (DateTime?)null;
-            }
-
-            // Si la fecha de expiración ha pasado, eliminar la cookie y redirigir
-            if (expirationTime.HasValue && DateTime.Now > expirationTime.Value)
-            {
-                HttpContext.Response.Cookies.Remove("BearerToken");
-                HttpContext.Response.Cookies.Remove("TokenExpirationTime");
-
-                TempData["Error"] = "La sesión ha expirado. Por favor inicia sesión nuevamente.";
-                return RedirectToAction("Iniciar", "Home");
-            }
-
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(apiUrl);
-
-                HttpResponseMessage response = await client.GetAsync("api/Pedidos/GetPeddidos");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var res = await response.Content.ReadAsStringAsync();
-                    pedidos = JsonConvert.DeserializeObject<List<Pedidos>>(res);
-                }
-                else
-                {
-                    TempData["Error"] = "No se pudieron obtener los datos del usuario.";
-                }
-            }
-
-            return View(pedidos);
-        }
-
     }
 }
