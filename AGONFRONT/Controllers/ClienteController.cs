@@ -23,6 +23,13 @@ namespace AGONFRONT.Controllers
     
     public class ClienteController : Controller
     {
+        public ActionResult RespuestasFAQ()
+        {
+
+            return View();
+        }
+
+
         private readonly string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
 
         // Método para obtener el ID del usuario desde el token JWT
@@ -119,6 +126,43 @@ namespace AGONFRONT.Controllers
             }
 
             return View("EditarPerfilCliente");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AgregarRespuestasFAQ(RespuestasFAQ model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    TempData["Error"] = "Por favor, completa todos los campos requeridos.";
+                    return RedirectToAction("GestionarFAQ");
+                }
+
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Clear();
+
+                    string json = JsonConvert.SerializeObject(model);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    HttpResponseMessage response = await client.PostAsync("api/RespuestasFAQ", content);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var errorContent = await response.Content.ReadAsStringAsync();
+                        TempData["Error"] = $"Error de API: {response.StatusCode} - {errorContent}";
+                        return RedirectToAction("GestionarFAQ");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Hubo un error al procesar la solicitud: {ex.Message}";
+            }
+
+            return View("RespuestasFAQ");
         }
     }
 }

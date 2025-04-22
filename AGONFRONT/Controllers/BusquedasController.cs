@@ -36,13 +36,6 @@ namespace AGONFRONT.Controllers
             Console.WriteLine("BearerToken Cookie en Request: " + tokenCookie?.Value);
             Console.WriteLine("TokenExpirationTime Cookie en Request: " + tokenExpirationCookie?.Value);
 
-            // Si el token está ausente, redirigir al login
-            if (tokenCookie == null && string.IsNullOrEmpty(tokenSession))
-            {
-                TempData["Error"] = "No tienes acceso a esta página. Por favor inicia sesión.";
-                return RedirectToAction("Iniciar", "Home"); // Redirige al login
-            }
-
             // Si el token está presente en las cookies, continuar
             string token = tokenCookie?.Value ?? tokenSession;
 

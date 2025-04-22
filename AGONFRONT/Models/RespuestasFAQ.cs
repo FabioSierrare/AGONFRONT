@@ -16,11 +16,9 @@ namespace AGONFRONT.Models
         public int Id { get; set; }
 
         [Display(Name = " Pregunta")]
-        [Required(ErrorMessage = " El campo {0} es requerido")]
         public string Pregunta { get; set; }
 
         [Display(Name = " Respuesta")]
-        [Required(ErrorMessage = " El campo {0} es requerido")]
         public string Respuesta { get; set; }
     }
 }

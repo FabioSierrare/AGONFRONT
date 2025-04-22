@@ -21,10 +21,10 @@
 </head>
 <body>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-<a href="https://api.whatsapp.com/send?phone=3026657941&text=Nuestro%20equipo%20est%C3%A1%20listo%20para%20responder%20tus%20dudas%20y%20brindarte%20la%20mejor%20atenci%C3%B3n." class="float" target="_blank">
-<i class="fab fa-whatsapp my-float"></i>
-</a>
-  
+    <a href="https://api.whatsapp.com/send?phone=3026657941&text=Nuestro%20equipo%20est%C3%A1%20listo%20para%20responder%20tus%20dudas%20y%20brindarte%20la%20mejor%20atenci%C3%B3n." class="float" target="_blank">
+        <i class="fab fa-whatsapp my-float"></i>
+    </a>
+
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center" href="#">
@@ -41,7 +41,7 @@
                     <li class="nav-item">@Html.ActionLink("Productos", "Index", "Productos", new { area = "" }, new { @class = "nav-link" })</li>
                     <li class="nav-item">@Html.ActionLink("Registro", "Register", "Usuarios", new { area = "" }, new { @class = "nav-link" })</li>
                     <li class="nav-item">@Html.ActionLink("Iniciar sesión", "Iniciar", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-    </ul>
+                </ul>
             </div>
         </div>
     </nav>
@@ -49,24 +49,21 @@
     <div class="container body-content">
         @RenderBody()
     </div>
-    <footer class="bg-dark text-white py-2">
-        <div class="container-fluid">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <a href="https://facebook.com" class="text-white me-3" target="_blank">
-                        <i class="bi bi-facebook" style="font-size: 2rem;"></i>
-                    </a>
-                    <a href="https://instagram.com" class="text-white me-3" target="_blank">
-                        <i class="bi bi-instagram" style="font-size: 2rem;"></i>
-                    </a>
-                    <a href="https://twitter.com" class="text-white me-3" target="_blank">
-                        <i class="bi bi-twitter" style="font-size: 2rem;"></i>
-                    </a>
-                </div>
-                <div class="d-flex align-items-center text-muted">
-                    <i class="bi bi-question-circle" style="font-size: 1.5rem; margin-right: 8px; color: #fff;"></i>
-                    <span style="color: #fff;">¿Necesitas ayuda?</span>
-                </div>
+    <footer class="bg-dark text-white py-2 mt-4">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div>
+                <a href="https://facebook.com" target="_blank" class="text-white me-3">
+                    <i class="bi bi-facebook" style="font-size: 1.8rem;"></i>
+                </a>
+                <a href="https://instagram.com" target="_blank" class="text-white me-3">
+                    <i class="bi bi-instagram" style="font-size: 1.8rem;"></i>
+                </a>
+                <a href="https://twitter.com" target="_blank" class="text-white me-3">
+                    <i class="bi bi-twitter" style="font-size: 1.8rem;"></i>
+                </a>
+            </div>
+            <div>
+                <a class="dropdown-item" href="@Url.Action("RespuestasFAQ", "Cliente")">¿Necesitas ayuda?</a>
             </div>
         </div>
     </footer>

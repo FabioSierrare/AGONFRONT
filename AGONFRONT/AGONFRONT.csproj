@@ -269,6 +269,7 @@
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\css\Dasborad.css" />
     <Content Include="Content\css\Envios.css" />
+    <Content Include="Content\css\FAQ.css" />
     <Content Include="Content\css\Productos.css" />
     <Content Include="Content\css\EstadisticaVenta.css" />
     <Content Include="Content\css\GestionPedidos.css" />
@@ -411,6 +412,7 @@
     <Content Include="Views\Busquedas\Busquedas.cshtml" />
     <Content Include="Views\Busquedas\_PartialAsideCategorias.cshtml" />
     <Content Include="Views\Busquedas\_PartialProductosBusqueda.cshtml" />
+    <Content Include="Views\Cliente\RespuestasFAQ.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
