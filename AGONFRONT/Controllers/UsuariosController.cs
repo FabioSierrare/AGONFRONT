@@ -744,6 +744,7 @@ namespace AGONFRONT.Controllers
                 return RedirectToAction("GestionDescuentos");
             }
         }
+
         [AuthorizeByRole("Vendedor")]
         public async Task<ActionResult> Dashboard()
         {

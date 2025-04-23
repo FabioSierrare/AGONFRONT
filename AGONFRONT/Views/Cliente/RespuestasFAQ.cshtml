@@ -20,9 +20,9 @@
     <div class="section container mt-4">
         <h2>Nuevo en Mi Tienda</h2>
 
+        @* Aquí puedes agregar un listado de preguntas frecuentes (esto no cambia) *@
         @{
-            var faqs = new[]
-            {
+            var faqs = new[] {
                 new { Question = "¿Qué es Mi Tienda?", Answer = "Mi Tienda es una plataforma de compras en línea donde puedes encontrar productos exclusivos." },
                 new { Question = "¿Cómo hago una compra?", Answer = "Selecciona el producto, añádelo al carrito y completa el proceso de pago." },
                 new { Question = "¿Qué beneficios tengo como nuevo usuario?", Answer = "Los nuevos usuarios acceden a cupones de descuento, envío gratis en su primer pedido y ofertas exclusivas." },
@@ -49,15 +49,12 @@
     <div class="container mt-4">
         <h3>Agregar nueva pregunta frecuente</h3>
 
-        @using (Html.BeginForm("AgregarRespuestasFAQ", "AgregarRespuestasFAQ", FormMethod.Post))
+        @using (Html.BeginForm("AgregarRespuestasFAQ", "Cliente", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
 
-            <!-- Campo oculto para Id -->
-            <input type="hidden" name="Id" value="@Model.Id" />
-
-            <!-- Campo oculto para Respuesta -->
-            <input type="hidden" name="Respuesta" value="@Model.Respuesta" />
+            <input type="hidden" name="Id" value="@(Model != null ? Model.Id : 0)" />
+            <input type="hidden" name="Respuesta" value="@(Model != null ? Model.Respuesta : 0)" />
 
             <div class="mb-3">
                 @Html.LabelFor(m => m.Pregunta, new { @class = "form-label" })
@@ -68,7 +65,6 @@
             <button type="submit" class="btn btn-primary">Guardar</button>
         }
     </div>
-
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>

@@ -133,10 +133,17 @@ namespace AGONFRONT.Controllers
         {
             try
             {
-                if (!ModelState.IsValid)
+                // Validar si la pregunta no está vacía
+                if (string.IsNullOrEmpty(model.Pregunta))
                 {
-                    TempData["Error"] = "Por favor, completa todos los campos requeridos.";
-                    return RedirectToAction("GestionarFAQ");
+                    TempData["Error"] = "Por favor, completa la pregunta.";
+                    return RedirectToAction("RespuestasFAQ");
+                }
+
+                // Si la respuesta está vacía, asignamos null
+                if (string.IsNullOrEmpty(model.Respuesta))
+                {
+                    model.Respuesta = null;
                 }
 
                 using (var client = new HttpClient())
@@ -144,25 +151,27 @@ namespace AGONFRONT.Controllers
                     client.BaseAddress = new Uri(apiUrl);
                     client.DefaultRequestHeaders.Clear();
 
-                    string json = JsonConvert.SerializeObject(model);
+                    var json = JsonConvert.SerializeObject(model);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    HttpResponseMessage response = await client.PostAsync("api/RespuestasFAQ", content);
+                    var response = await client.PostAsync("api/RespuestasFAQ/PostRespuestaFAQ", content);
 
                     if (!response.IsSuccessStatusCode)
                     {
                         var errorContent = await response.Content.ReadAsStringAsync();
                         TempData["Error"] = $"Error de API: {response.StatusCode} - {errorContent}";
-                        return RedirectToAction("GestionarFAQ");
+                        return RedirectToAction("RespuestasFAQ");
                     }
                 }
+
+                TempData["Success"] = "Pregunta frecuente agregada correctamente.";
+                return RedirectToAction("RespuestasFAQ");
             }
             catch (Exception ex)
             {
                 TempData["Error"] = $"Hubo un error al procesar la solicitud: {ex.Message}";
+                return RedirectToAction("RespuestasFAQ");
             }
-
-            return View("RespuestasFAQ");
         }
     }
 }
