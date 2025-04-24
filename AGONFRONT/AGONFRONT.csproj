@@ -213,6 +213,7 @@
     <Compile Include="Controllers\EstadisticasVentasController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProductosController.cs" />
+    <Compile Include="Controllers\RecuperacionController.cs" />
     <Compile Include="Controllers\UsuariosController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -221,6 +222,9 @@
     <Compile Include="Models\Filtros.cs" />
     <Compile Include="Models\IngresosDiarios.cs" />
     <Compile Include="Models\ProductosMasVendidos.cs" />
+    <Compile Include="Models\RecuperarContraseñaDTO.cs" />
+    <Compile Include="Models\RespuestaDTO.cs" />
+    <Compile Include="Models\RestablecerContraseña.cs" />
     <Compile Include="Models\VentasPorSemana.cs" />
     <Compile Include="Models\Estadisticasx.cs" />
     <Compile Include="Models\Categoria.cs" />
@@ -247,6 +251,7 @@
     <Compile Include="Models\Usuarios.cs" />
     <Compile Include="Models\UsuariosNotificados.cs" />
     <Compile Include="Models\Valoraciones.cs" />
+    <Compile Include="Models\VerificarCodigoDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\Encriptador.cs" />
   </ItemGroup>
@@ -413,6 +418,9 @@
     <Content Include="Views\Busquedas\_PartialAsideCategorias.cshtml" />
     <Content Include="Views\Busquedas\_PartialProductosBusqueda.cshtml" />
     <Content Include="Views\Cliente\RespuestasFAQ.cshtml" />
+    <Content Include="Views\Recuperacion\RecuperarContraseña.cshtml" />
+    <Content Include="Views\Recuperacion\VerificarCodigo.cshtml" />
+    <Content Include="Views\Recuperacion\NuevaContraseña.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
