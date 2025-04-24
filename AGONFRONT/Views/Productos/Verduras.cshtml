@@ -10,11 +10,12 @@
     <h2 class="text-center mb-4">Verduras</h2>
 
     <div class="row">
-        @foreach (var producto in Model.Where(p => p.CategoriaId == 3)) // Filtrado en la vista
+        @foreach (var producto in Model.Where(p => p.CategoriaId == 1)) // Filtrado en la vista
         {
             <div class="col-md-3 mb-4 productoRow" data-categoria="@producto.CategoriaId">
                 <div class="card">
                     <div class="card-body">
+                        <img src="@producto.UrlImagen" class="card-img-top" alt="@producto.Nombre" style="height: 200px; object-fit: cover;">
                         <h5 class="card-title">@producto.Nombre</h5>
                         <p class="card-text">@producto.Descripcion</p>
                         <p class="card-text"><strong>$@producto.Precio</strong></p>

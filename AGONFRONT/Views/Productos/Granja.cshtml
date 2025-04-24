@@ -7,10 +7,10 @@
 <h2>Frutas</h2>
 
 <div class="container my-5">
-    <h2 class="text-center mb-4">Cerales</h2>
+    <h2 class="text-center mb-4">Granja</h2>
 
     <div class="row">
-        @foreach (var producto in Model.Where(p => p.CategoriaId == 4)) // Filtrado en la vista
+        @foreach (var producto in Model.Where(p => p.CategoriaId == 5)) // Filtrado en la vista
         {
             <div class="col-md-3 mb-4 productoRow" data-categoria="@producto.CategoriaId">
                 <div class="card">

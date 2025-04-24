@@ -138,6 +138,34 @@ namespace AGONFRONT.Controllers
             return View(verduras);
 
         }
+
+        public async Task<ActionResult> Granja()
+        {
+            List<Productos> granja = new List<Productos>();
+
+            using (var client = new HttpClient())
+            {
+                // Asignamos la URL base al cliente HttpClient
+                client.BaseAddress = new Uri(apiUrl);
+
+                // Usamos la ruta relativa ahora
+                HttpResponseMessage response = await client.GetAsync("api/Productos/GetProductos");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    granja = JsonConvert.DeserializeObject<List<Productos>>(res);
+                }
+                else
+                {
+                    TempData["Error"] = "No se pudieron obtener los productos de la API.";
+                }
+            }
+
+            return View(granja);
+
+        }
+
         public async Task<ActionResult> Tuberculos()
         {
             List<Productos> tuberculos = new List<Productos>();
