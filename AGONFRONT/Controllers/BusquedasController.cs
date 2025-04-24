@@ -78,5 +78,44 @@ namespace AGONFRONT.Controllers
             return View(producto);
         }
 
+        [HttpGet]
+        public async Task<ActionResult> FiltrarProductos(List<string> categorias, int? precioMin, int? precioMax, List<string> ubicaciones)
+        {
+            List<Busquedas> productosFiltrados = new List<Busquedas>();
+
+            var tokenCookie = Request.Cookies["BearerToken"];
+            string token = tokenCookie?.Value ?? (Session["BearerToken"] as string);
+
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                    // Aquí puedes enviar los filtros por query string o por body (GET = query string)
+                    string query = $"?categorias={string.Join(",", categorias ?? new List<string>())}&precioMin={precioMin}&precioMax={precioMax}&ubicaciones={string.Join(",", ubicaciones ?? new List<string>())}";
+
+                    HttpResponseMessage response = await client.GetAsync($"api/Productos/Filtrar{query}");
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new HttpStatusCodeResult(response.StatusCode);
+                    }
+
+                    var json = await response.Content.ReadAsStringAsync();
+                    productosFiltrados = JsonConvert.DeserializeObject<List<Busquedas>>(json);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ERROR FILTRO] {ex.Message}");
+                return new HttpStatusCodeResult(500, ex.Message);
+            }
+
+            return PartialView("_PartialProductosBusqueda", productosFiltrados);
+        }
+
+
     }
 }

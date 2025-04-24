@@ -1,4 +1,5 @@
 ﻿@model List<AGONFRONT.Models.Busquedas>
+@using System.Linq
 
 @{
     ViewBag.Title = "Busquedas";
@@ -9,3 +10,89 @@
     @Html.Partial("_PartialAsideCategorias")
     @Html.Partial("_PartialProductosBusqueda", Model)
 </div>
+
+@section Scripts {
+    @*<script>
+        const productos = @Html.Raw(Json.Encode(Model));
+        console.log(productos); // Ahora tienes acceso al modelo en JS
+    </script>
+    <script>
+        document.getElementById('formFiltros').addEventListener('change', function () {
+            // Obtener las categorías seleccionadas
+            var categoriasSeleccionadas = Array.from(document.querySelectorAll('input[name="categorias"]:checked')).map(input => input.value);
+
+            // Obtener el rango de precio
+            var precioMin = document.querySelector('input[name="precioMin"]').value;
+            var precioMax = document.querySelector('input[name="precioMax"]').value;
+
+            console.log(productos); // Ahora tienes acceso al modelo en JS
+
+            // Filtrar productos
+            var productos = @Html.Raw(Json.Encode(Model));
+
+            productos.forEach(function (producto) {
+                var categoria = producto.categoria;
+                var precio = parseFloat(producto.precio);
+                
+                var cumpleFiltro = true;
+
+                // Filtro por categoría
+                if (categoriasSeleccionadas.length > 0 && !categoriasSeleccionadas.includes(categoria)) {
+                    cumpleFiltro = false;
+                }
+
+                // Filtro por precio
+                if ((precioMin && precio < parseFloat(precioMin)) || (precioMax && precio > parseFloat(precioMax))) {
+                    cumpleFiltro = false;
+                }
+
+                // Filtro por ubicación
+                
+
+                // Mostrar u ocultar el producto según los filtros
+                if (cumpleFiltro) {
+                    producto.style.display = 'block';  // Mostrar el producto
+                } else {
+                    producto.style.display = 'none';  // Ocultar el producto
+                }
+            });
+        });
+    </script>*@
+<script>
+    document.getElementById('formFiltros').addEventListener('change', function () {
+        console.log('⚡ Evento de cambio detectado');
+
+        var categoriasSeleccionadas = Array.from(document.querySelectorAll('input[name="categorias"]:checked')).map(input => input.value);
+        var precioMin = parseFloat(document.querySelector('input[name="precioMin"]').value) || 0;
+        var precioMax = parseFloat(document.querySelector('input[name="precioMax"]').value) || Infinity;
+
+        var productos = document.querySelectorAll('.producto');
+
+        productos.forEach(function (producto) {
+            var categoria = producto.getAttribute('data-categoria');
+            var precio = parseFloat(producto.getAttribute('data-precio'));
+
+            var cumpleFiltro = true;
+
+            if (categoriasSeleccionadas.length > 0 &&
+                !categoriasSeleccionadas.map(c => c.toLowerCase()).includes(categoria.toLowerCase())) {
+                cumpleFiltro = false;
+            }
+
+            if (precio < precioMin || precio > precioMax) {
+                cumpleFiltro = false;
+            }
+
+            if (cumpleFiltro) {
+                producto.classList.remove('d-none');
+                producto.classList.add('d-flex');
+            } else {
+                producto.classList.remove('d-flex');
+                producto.classList.add('d-none');
+            }
+        });
+    });
+
+
+</script>
+}

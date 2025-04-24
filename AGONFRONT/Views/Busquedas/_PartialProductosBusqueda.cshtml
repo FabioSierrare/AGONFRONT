@@ -1,19 +1,29 @@
-﻿@model List<AGONFRONT.Models.Busquedas>
-
-    <div class="col-9 d-flex-column">
-        @foreach (var producto in Model)
+﻿
+<div class="col-9 d-flex flex-column gap-3" id="data-categoria">
+    @if (Model.Count == 0)
+    {
+        <div class="alert alert-info">No hay productos que coincidan con los filtros seleccionados.</div>
+    }
+    else
+    {
+        foreach (var producto in Model)
         {
-            <div class="d-flex align-items-center bg-white p-3" style="border-radius: 5px;">
+            <div class="d-flex align-items-center bg-white p-3 rounded shadow-sm producto"
+                 data-categoria="@producto.Categoria"
+                 data-precio="@producto.PrecioConDescuento">
+                <!-- Asegúrate de que 'Ubicacion' esté en tu modelo -->
                 <div class="col-3 flex-shrink-0">
-                    <img src="@producto.UrlImagen" class="img-fluid rounded" alt="Producto">
+                    <img src="@producto.UrlImagen" class="img-fluid rounded" alt="@producto.NombreProducto" style="max-height: 100px; object-fit: cover;">
                 </div>
                 <div class="col-8 ms-3">
-                    <!-- Añadí margen izquierdo para separación -->
-                    <h6 class="text-uppercase fw-bold mb-2">@producto.Categoria</h6> <!-- Márgenes en el título -->
-                    <p class="mb-2">@producto.NombreProducto</p> <!-- Márgenes en la descripción -->
-                    @Html.Raw(producto.Precio != producto.PrecioConDescuento
-                        ? $"<p class=\"text-muted text-decoration-line-through mb-2\">${producto.Precio}</p>"
-                        : "")
+                    <h6 class="text-uppercase fw-bold mb-2">@producto.Categoria</h6>
+                    <p class="mb-2">@producto.NombreProducto</p>
+
+                    @if (producto.Precio != producto.PrecioConDescuento)
+                    {
+                        <p class="text-muted text-decoration-line-through mb-2">$@producto.Precio</p>
+                    }
+
                     <h4 class="text-success fw-bold mb-2">
                         $@producto.PrecioConDescuento
                         @if (producto.Precio != producto.PrecioConDescuento)
@@ -21,11 +31,8 @@
                             <span class="text-success fs-6">@producto.Descuento% OFF</span>
                         }
                     </h4>
-
                 </div>
             </div>
-            <br>
-         }
-    </div>
-
-
+        }
+    }
+</div>
