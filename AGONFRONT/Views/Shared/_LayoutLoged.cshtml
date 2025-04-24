@@ -53,12 +53,13 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Categorías</a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="@Url.Action("Categorias", "Home", new { id = "Frutas" })">Frutas</a></li>
-                                <li><a class="dropdown-item" href="@Url.Action("Categorias", "Home", new { id = "Verduras" })">Verduras</a></li>
-                                <li><a class="dropdown-item" href="@Url.Action("Categorias", "Home", new { id = "Tuberculos" })">Tubérculos</a></li>
-                                <li><a class="dropdown-item" href="@Url.Action("Categorias", "Home", new { id = "Cereales" })">Cereales</a></li>
+                                <li><a class="dropdown-item" href="@Url.Action("Frutas", "Productos", new { id = "Frutas" })">Frutas</a></li>
+                                <li><a class="dropdown-item" href="@Url.Action("Verduras", "Productos", new { id = "Verduras" })">Verduras</a></li>
+                                <li><a class="dropdown-item" href="@Url.Action("Tuberculos", "Productos", new { id = "Tuberculos" })">Tubérculos</a></li>
+                                <li><a class="dropdown-item" href="@Url.Action("Cereales", "Productos", new { id = "Cereales" })">Cereales</a></li>
                             </ul>
                         </li>
+                        <li class="nav-item"><a class="nav-link" href="@Url.Action("Productos", "Productos")">Productos</a></li>
                         <li class="nav-item"><a class="nav-link" href="@Url.Action("Ofertas", "Home")">Ofertas</a></li>
                         <li class="nav-item"><a class="nav-link" href="@Url.Action("Carrito", "Carrito")"><i class="bi bi-cart4"></i> Carrito</a></li>
                         <li class="nav-item dropdown">
@@ -69,7 +70,7 @@
                                 <li><a class="dropdown-item" href="@Url.Action("EditarPerfilCliente", "Cliente")">Ver Perfil</a></li>
                                 <li><a class="dropdown-item" href="@Url.Action("EditarPerfilCliente", "Cliente")">Configuración</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="@Url.Action("Logout", "Home")">Cerrar Sesión</a></li>
+                                <li><a class="dropdown-item text-danger" href="@Url.Action("Iniciar", "Home")">Cerrar Sesión</a></li>
                             </ul>
                         </li>
                     </ul>
