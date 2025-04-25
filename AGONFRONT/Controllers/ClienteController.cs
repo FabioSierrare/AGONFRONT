@@ -15,12 +15,13 @@ using System.IdentityModel.Tokens.Jwt;
 using static AGONFRONT.Controllers.HomeController;
 using System.Globalization;
 using AGONFRONT.Filters;
+using AGONFRONT.Utils;
 
 namespace AGONFRONT.Controllers
 {
     //Para toda la parte de cliente:
     [AuthorizeByRole("Cliente")]
-    
+
     public class ClienteController : Controller
     {
         public ActionResult RespuestasFAQ()
@@ -82,14 +83,11 @@ namespace AGONFRONT.Controllers
         [HttpPost]
         public async Task<ActionResult> UpdateCliente(Usuarios usuario)
         {
-            // Obtener el token de la cookie o la sesión
+            List<Usuarios> usuarios = new List<Usuarios>();
             var tokenCookie = Request.Cookies["BearerToken"];
             var tokenSession = Session["BearerToken"] as string;
-
-            // Corregir la asignación del token
             string token = tokenCookie?.Value ?? tokenSession;
 
-            // Verificar si el token está vacío
             if (string.IsNullOrEmpty(token))
             {
                 TempData["Error"] = "No tienes acceso a esta acción. Por favor inicia sesión.";
@@ -108,24 +106,65 @@ namespace AGONFRONT.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["Success"] = "Usuario actualizado correctamente.";
+
+                    // IMPORTANTE: Actualiza la cookie si cambia el correo
+                    Response.Cookies["UserEmail"].Value = usuario.Correo;
+
+                    // Redirige al método que carga la vista con el modelo completo
+                    return RedirectToAction("EditarPerfilCliente", "Cliente");
                 }
                 else
                 {
-                    // Leer el contenido de la respuesta para ver los detalles del error
                     string errorMessage = await response.Content.ReadAsStringAsync();
-
-                    // Guardar el mensaje detallado en TempData para mostrarlo en la vista
                     TempData["Error"] = $"Error al actualizar usuario: {errorMessage}";
-
-                    // También puedes imprimirlo en la consola para depuración
                     Console.WriteLine($"Error en API: {errorMessage}");
 
-                    // Regresar a la vista sin redirigir para mostrar los errores
+                    return RedirectToAction("EditarPerfilCliente", "Cliente");
+                }
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> CambiarContraseña(Usuarios usuario)
+        {
+            var tokenCookie = Request.Cookies["BearerToken"];
+            var tokenSession = Session["BearerToken"] as string;
+
+            string token = tokenCookie?.Value ?? tokenSession;
+
+            if (string.IsNullOrEmpty(token))
+            {
+                TempData["Error"] = "No tienes acceso a esta acción. Por favor inicia sesión.";
+                return RedirectToAction("Iniciar", "Home");
+            }
+
+            // Encriptar la nueva contraseña antes de enviarla
+            usuario.Contraseña = Encriptador.Encriptar(usuario.Contraseña);
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiUrl);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var jsonContent = new StringContent(JsonConvert.SerializeObject(usuario), Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await client.PutAsync($"api/Usuarios/PutUsuarios/{usuario.Id}", jsonContent);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Contraseña actualizada correctamente.";
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    TempData["Error"] = $"Error al actualizar la contraseña: {errorMessage}";
+                    Console.WriteLine($"Error en API: {errorMessage}");
+
                     return View("EditarPerfilCliente");
                 }
             }
 
-            return View("EditarPerfilCliente");
+            return RedirectToAction("Iniciar", "Home");
         }
 
         [HttpPost]

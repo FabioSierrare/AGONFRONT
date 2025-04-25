@@ -53,134 +53,159 @@
             </div>
         </div>
     </div>
-
-    <!-- Modal Editar Perfil -->
-    <div class="modal fade" id="editarPerfilModal" tabindex="-1" aria-labelledby="editarPerfilModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                @using (Html.BeginForm("UpdateCliente", "Cliente", FormMethod.Post))
-                {
-                    <div class="modal-header">
-                        <h5 class="modal-title">Editar Perfil</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-                    <div class="modal-body">
-                        @Html.Hidden("Id", usuario.Id)
-                        @Html.Hidden("Documento", usuario.Documento)
-                        @Html.Hidden("Contraseña", usuario.Contraseña)
-                        @Html.Hidden("TipoUsuario", usuario.TipoUsuario)
-                        @Html.Hidden("TipoDocumento", usuario.TipoDocumento)
-                        @Html.Hidden("FechaCreacion", usuario.FechaCreacion)
-
-                        <div class="mb-3">
-                            <label>Nombre</label>
-                            <input type="text" name="Nombre" class="form-control" value="@usuario.Nombre" required />
-                        </div>
-                        <div class="mb-3">
-                            <label>Correo</label>
-                            <input type="email" name="Correo" class="form-control" value="@usuario.Correo" required />
-                        </div>
-                        <div class="mb-3">
-                            <label>Teléfono</label>
-                            <input type="tel" name="Telefono" class="form-control" value="@usuario.Telefono" required />
-                        </div>
-                        <div class="mb-3">
-                            <label>Dirección</label>
-                            <textarea name="Direccion" class="form-control" rows="3" required>@usuario.Direccion</textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Cambiar Contraseña -->
-    <div class="modal fade" id="cambiarContraseñaModal" tabindex="-1" aria-labelledby="cambiarContraseñaModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                @using (Html.BeginForm("CambiarContraseña", "Usuarios", FormMethod.Post))
-                {
-                    <div class="modal-header">
-                        <h5 class="modal-title">Cambiar Contraseña</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label>Contraseña Actual</label>
-                            <input type="password" name="ContraseñaActual" class="form-control" required />
-                        </div>
-                        <div class="mb-3">
-                            <label>Nueva Contraseña</label>
-                            <input type="password" name="NuevaContraseña" class="form-control" required />
-                        </div>
-                        <div class="mb-3">
-                            <label>Confirmar Nueva Contraseña</label>
-                            <input type="password" name="ConfirmarContraseña" class="form-control" required />
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-warning">Cambiar Contraseña</button>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Historial de Compras -->
-    <div class="modal fade" id="historialVentasModal" tabindex="-1" aria-labelledby="historialVentasModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Historial de Compras</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body">
-                    @if (pedidos != null && pedidos.Any(p => p.ClienteId == usuario.Id))
-                    {
-                        var pedidosUsuario = pedidos.Where(p => p.ClienteId == usuario.Id).ToList();
-
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Fecha</th>
-                                    <th>Producto ID</th>
-                                    <th>Cantidad</th>
-                                    <th>Precio Unitario</th>
-                                    <th>Total</th>
-                                    <th>Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (int i = 0; i < pedidosUsuario.Count; i++)
-                                {
-                                    var pedido = pedidosUsuario[i];
-                                    <tr>
-                                        <td>@(i + 1)</td>
-                                        <td>@pedido.FechaPedido.ToString("dd/MM/yyyy")</td>
-                                        <td>@pedido.ProductoId</td>
-                                        <td>@pedido.Cantidad</td>
-                                        <td>@pedido.PrecioUnitario.ToString("C")</td>
-                                        <td>@(pedido.Cantidad * pedido.PrecioUnitario).ToString("C")</td>
-                                        <td>@pedido.Estado</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    }
-                    else
-                    {
-                        <p class="text-center">No tienes compras registradas.</p>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
 }
 else
 {
     <p class="text-danger text-center">No se encontró información del usuario.</p>
 }
+
+<!-- Modal Editar Perfil -->
+<div class="modal fade" id="editarPerfilModal" tabindex="-1" aria-labelledby="editarPerfilModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @using (Html.BeginForm("UpdateCliente", "Cliente", FormMethod.Post))
+            {
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Perfil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    @Html.Hidden("Id", usuario.Id)
+                    @Html.Hidden("Documento", usuario.Documento)
+                    @Html.Hidden("Contraseña", usuario.Contraseña)
+                    @Html.Hidden("TipoUsuario", usuario.TipoUsuario)
+                    @Html.Hidden("TipoDocumento", usuario.TipoDocumento)
+                    @Html.Hidden("FechaCreacion", usuario.FechaCreacion)
+
+                    <div class="mb-3">
+                        <label>Nombre</label>
+                        <input type="text" name="Nombre" class="form-control" value="@usuario.Nombre" required />
+                    </div>
+                    <div class="mb-3">
+                        <label>Correo</label>
+                        <input type="email" name="Correo" class="form-control" value="@usuario.Correo" required />
+                    </div>
+                    <div class="mb-3">
+                        <label>Teléfono</label>
+                        <input type="tel" name="Telefono" class="form-control" value="@usuario.Telefono" required />
+                    </div>
+                    <div class="mb-3">
+                        <label>Dirección</label>
+                        <textarea name="Direccion" class="form-control" rows="3" required>@usuario.Direccion</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Modal Cambiar Contraseña -->
+<div class="modal fade" id="cambiarContraseñaModal" tabindex="-1" aria-labelledby="cambiarContraseñaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @using (Html.BeginForm("CambiarContraseña", "Cliente", FormMethod.Post))
+            {
+                <div class="modal-header">
+                    <h5 class="modal-title">Cambiar Contraseña</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    @Html.Hidden("Id", usuario.Id)
+                    @Html.Hidden("Nombre", usuario.Nombre)
+                    @Html.Hidden("Correo", usuario.Correo)
+                    @Html.Hidden("Telefono", usuario.Telefono)
+                    @Html.Hidden("Direccion", usuario.Direccion)
+                    @Html.Hidden("Documento", usuario.Documento)
+                    @Html.Hidden("TipoDocumento", usuario.TipoDocumento)
+                    @Html.Hidden("TipoUsuario", usuario.TipoUsuario)
+                    @Html.Hidden("FechaCreacion", usuario.FechaCreacion)
+                    @Html.Hidden("ContraseñaGuardada", usuario.Contraseña)
+
+                    <div class="mb-3">
+                        <label>Nueva Contraseña</label>
+                        <input type="password" name="Contraseña" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label>Confirmar Nueva Contraseña</label>
+                        <input type="password" name="ConfirmarContraseña" class="form-control" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-warning">Cambiar Contraseña</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Modal Historial de Compras -->
+<div class="modal fade" id="historialVentasModal" tabindex="-1" aria-labelledby="historialVentasModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Historial de Compras</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                @if (pedidos != null && pedidos.Any(p => p.ClienteId == usuario.Id))
+                {
+                    var pedidosUsuario = pedidos.Where(p => p.ClienteId == usuario.Id).ToList();
+
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Fecha</th>
+                                <th>Producto ID</th>
+                                <th>Cantidad</th>
+                                <th>Precio Unitario</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < pedidosUsuario.Count; i++)
+                            {
+                                var pedido = pedidosUsuario[i];
+                                <tr>
+                                    <td>@(i + 1)</td>
+                                    <td>@pedido.FechaPedido.ToString("dd/MM/yyyy")</td>
+                                    <td>@pedido.ProductoId</td>
+                                    <td>@pedido.Cantidad</td>
+                                    <td>@pedido.PrecioUnitario.ToString("C")</td>
+                                    <td>@(pedido.Cantidad * pedido.PrecioUnitario).ToString("C")</td>
+                                    <td>@pedido.Estado</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-center">No tienes compras registradas.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.querySelector("#cambiarContraseñaModal form");
+        const nueva = form.querySelector("input[name='Contraseña']");
+        const confirmar = form.querySelector("input[name='ConfirmarContraseña']");
+
+        form.addEventListener("submit", function (e) {
+            // Validar que las nuevas contraseñas coincidan
+            if (nueva.value !== confirmar.value) {
+                e.preventDefault();
+                alert("❌ Las nuevas contraseñas no coinciden.");
+                confirmar.focus();
+                return;
+            }
+        });
+    });
+</script>
