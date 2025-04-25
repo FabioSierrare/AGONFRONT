@@ -89,7 +89,7 @@
                                         Session["BearerToken"] = token.token;
 
                                         if (tipousuario == "Vendedor")
-                                            return RedirectToAction("UpdatePerfilVendedor", "Usuarios");
+                                            return RedirectToAction("Dashboard", "Usuarios");
 
                                         if (tipousuario == "Cliente")
                                             return RedirectToAction("Productos", "Productos");

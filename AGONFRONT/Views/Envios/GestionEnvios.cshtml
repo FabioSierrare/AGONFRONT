@@ -32,7 +32,6 @@
                             <th>Estado</th>
                             <th>Fecha de Envío</th>
                             <th>Fecha de Entrega</th>
-                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -46,7 +45,6 @@
                                 <td><span class="badge bg-info">@envio.estado_Del_Envio</span></td>
                                 <td>@(envio.fechaEnvio != null ? Convert.ToDateTime(envio.FechaEnvio).ToString("yyyy-MM-dd HH:mm:ss") : "Sin fecha")</td>
                                 <td>@(envio.fechaEntrega != null ? Convert.ToDateTime(envio.FechaEntrega).ToString("yyyy-MM-dd HH:mm:ss") : "Sin fecha")</td>
-                                <td><button class="btn btn-primary btn-sm" onclick="viewShipmentDetails(@envio.IdPedido)">Ver</button></td>
                             </tr>
                         }
                     </tbody>

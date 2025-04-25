@@ -229,6 +229,8 @@ namespace AGONFRONT.Controllers
 
                     // Capturar detalles del error
                     Console.WriteLine($"[REQUEST] DELETE api/Productos/DeleteProductos/{id}");
+                    Console.WriteLine($"[IN] Entró al método EliminarMiProducto con ID: {id}");
+
 
                     HttpResponseMessage response = await client.DeleteAsync($"api/Productos/DeleteProductos/{id}");
 
@@ -370,11 +372,11 @@ namespace AGONFRONT.Controllers
                     Console.WriteLine($"Error en API: {errorMessage}");
 
                     // Regresar a la vista sin redirigir para mostrar los errores
-                    return View("UpdatePerfilVendedor");
+                    return RedirectToAction("UpdatePerfilVendedor");
                 }
             }
 
-            return View("UpdatePerfilVendedor");
+            return RedirectToAction("UpdatePerfilVendedor");
         }
 
         //Aca estan todos los controladores de gestionar productos
@@ -509,7 +511,7 @@ namespace AGONFRONT.Controllers
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(apiUrl);
-                var response = await client.DeleteAsync($"api/Productos/EliminarProducto/{id}");
+                var response = await client.DeleteAsync($"api/Productos/DeleteProductos/{id}");
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["Success"] = "Producto eliminado con éxito.";

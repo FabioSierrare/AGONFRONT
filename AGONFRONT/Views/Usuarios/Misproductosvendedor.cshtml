@@ -67,7 +67,6 @@
             @using (Html.BeginForm("EliminarMiProducto", "Usuarios", FormMethod.Post, new { onsubmit = "return confirm('¿Estás seguro de que deseas eliminar este producto?');" }))
             {
                 <input type="hidden" name="id" value="@producto.Id" />
-                @Html.Hidden("_method", "DELETE") <!-- Esto simula que la solicitud es DELETE -->
                 <button type="submit" class="btn btn-danger mt-2">Eliminar</button>
             }
 

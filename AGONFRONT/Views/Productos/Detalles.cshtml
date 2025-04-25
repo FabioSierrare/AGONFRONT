@@ -1,6 +1,7 @@
 ﻿@model AGONFRONT.Models.Productos
 
 @{
+    Layout = "~/Views/Shared/_LayoutLoged.cshtml";
     ViewBag.Title = "Detalles del Producto";
 }
 
@@ -33,9 +34,7 @@
                 <button class="btn btn-success">
                     <i class="bi bi-cart-plus"></i> Agregar al Carrito
                 </button>
-                <a href="#" class="btn btn-primary">
-                    <i class="bi bi-star"></i> Ver Reseñas
-                </a>
+                
             </div>
 
             <hr>
@@ -47,9 +46,6 @@
                 <li><strong>Tiempo de entrega:</strong> 2-5 días hábiles</li>
             </ul>
 
-            <a href="@Url.Action("Productos", "Productos")" class="btn btn-secondary mt-3">
-                <i class="bi bi-arrow-left"></i> Volver a productos
-            </a>
         </div>
     </div>
 
@@ -71,7 +67,6 @@
                     <p class="card-text"><small class="text-muted">Publicado hace 2 semanas</small></p>
                 </div>
             </div>
-            <a href="#" class="btn btn-outline-primary">Ver más reseñas</a>
         </div>
     </div>
 </div>

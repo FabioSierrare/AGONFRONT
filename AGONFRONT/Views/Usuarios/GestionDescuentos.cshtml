@@ -59,7 +59,7 @@
     @using (Html.BeginForm("AgregarDescuento", "Usuarios", FormMethod.Post, new { @class = "form-horizontal" }))
     {
         <!-- Mostramos el ID por depuración -->
-        <p><strong>ID Usuario (debug):</strong> @ViewBag.VendedorId</p>
+        <p><strong>ID Usuario :</strong> @ViewBag.VendedorId</p>
 
         <!-- Campo oculto para enviar el ID del vendedor -->
         <input type="hidden" name="VendedorId" value="@ViewBag.VendedorId" />
