@@ -1,0 +1,56 @@
+﻿@model List<AGONFRONT.Models.ProductosDescuentosDTO>
+
+@{
+    ViewBag.Title = "Ofertas";
+    Layout = "~/Views/Shared/_LayoutLoged.cshtml";
+}
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">
+        @ViewBag.ErrorMessage
+    </div>
+}
+<div class="container mt-5">
+    <h2 class="mb-4">🔥 Ofertas Destacadas</h2>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <img src="@item.UrlImagen" class="card-img-top" alt="@item.Nombre" style="height: 200px; object-fit: cover;" />
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Nombre</h5>
+                            <p class="card-text text-muted text-decoration-line-through">
+                                $@item.PrecioOriginal.ToString("N2")
+                            </p>
+                            <p class="card-text fs-5 fw-bold text-danger">
+                                $@item.PrecioFinal.ToString("N2")
+                            </p>
+                            <span class="badge bg-success">
+                                @item.PorcentajeDescuento% de descuento
+                            </span>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0 d-flex gap-2">
+                            <a href="@Url.Action("Detalles", "Productos", new { id = item.ProductoId })" class="btn btn-warning flex-fill">Ver Detalles</a>
+                            <a href="@Url.Action("AgregarAlCarrito", "Carrito", new { id = item.ProductoId })" class="btn btn-outline-primary flex-fill">
+                                Añadir al carrito
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    No hay productos en oferta actualmente.
+                </div>
+            </div>
+        }
+    </div>
+</div>
+

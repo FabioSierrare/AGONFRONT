@@ -212,8 +212,10 @@
     <Compile Include="Controllers\EnviosController.cs" />
     <Compile Include="Controllers\EstadisticasVentasController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\OfertasController.cs" />
     <Compile Include="Controllers\ProductosController.cs" />
     <Compile Include="Controllers\RecuperacionController.cs" />
+    <Compile Include="Controllers\TerminosyCondicionesController.cs" />
     <Compile Include="Controllers\UsuariosController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -221,6 +223,7 @@
     <Compile Include="Models\Busquedas.cs" />
     <Compile Include="Models\Filtros.cs" />
     <Compile Include="Models\IngresosDiarios.cs" />
+    <Compile Include="Models\ProductosDescuentosDTO.cs" />
     <Compile Include="Models\ProductosMasVendidos.cs" />
     <Compile Include="Models\RecuperarContraseñaDTO.cs" />
     <Compile Include="Models\RespuestaDTO.cs" />
@@ -304,6 +307,7 @@
     <Content Include="Content\css\pagina5.css" />
     <Content Include="Content\css\pagina6.css" />
     <Content Include="Content\css\PerfilVendedor.css" />
+    <Content Include="Content\css\Terminos y politicas.css" />
     <Content Include="Content\css\whatsapp.css" />
     <Content Include="Content\css\x.css" />
     <Content Include="Content\img\Aceites.jpg" />
@@ -422,6 +426,8 @@
     <Content Include="Views\Recuperacion\VerificarCodigo.cshtml" />
     <Content Include="Views\Recuperacion\NuevaContraseña.cshtml" />
     <Content Include="Views\Productos\Granja.cshtml" />
+    <Content Include="Views\Ofertas\Ofertas.cshtml" />
+    <Content Include="Views\TerminosyCondiciones\TerminosyPoliticas.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

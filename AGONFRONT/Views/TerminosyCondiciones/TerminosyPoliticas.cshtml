@@ -1,0 +1,121 @@
+﻿@{
+    ViewBag.Title = "TerminosyPoliticas";
+    Layout = "~/Views/Shared/_LayoutLoged.cshtml";
+}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+<link href="~/Content/css/Terminos y politicas.css" rel="stylesheet" />
+
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4">Términos y Condiciones & Políticas de Privacidad</h2>
+
+        @{
+            var secciones = new[] {
+                new {
+                    Titulo = "Términos y Condiciones de Uso",
+                    Contenido = @"
+                        Al acceder a nuestro sitio web y utilizar nuestros servicios, usted acepta cumplir con estos términos.
+                        No está permitido el uso indebido de los productos, el contenido o la plataforma para fines ilícitos o no autorizados.
+                        Todos los precios, promociones y disponibilidad de productos están sujetos a cambios sin previo aviso.
+                        Nos reservamos el derecho de rechazar o cancelar pedidos por cualquier motivo.
+                    "
+                },
+                new {
+                    Titulo = "Condiciones de Compra",
+                    Contenido = @"
+                        Para realizar compras, el usuario debe registrarse con información verídica.
+                        Los métodos de pago aceptados son tarjetas de crédito, débito y otros medios digitales.
+                        Nos comprometemos a entregar los productos en el plazo establecido, salvo causas de fuerza mayor.
+                    "
+                },
+                new {
+                    Titulo = "Política de Envíos",
+                    Contenido = @"
+                        Realizamos envíos a nivel nacional. Los tiempos de entrega pueden variar según la ubicación.
+                        Se proporcionará un número de seguimiento para cada pedido.
+                        El cliente es responsable de asegurarse de que la dirección proporcionada sea correcta.
+                    "
+                },
+                new {
+                    Titulo = "Política de Devoluciones",
+                    Contenido = @"
+                        Se aceptan devoluciones dentro de los 7 días posteriores a la recepción, siempre que el producto esté en perfectas condiciones.
+                        Los reembolsos se procesan una vez que recibimos el producto devuelto.
+                        Algunos productos pueden no ser elegibles para devolución (como productos personalizados).
+                    "
+                },
+                new {
+                    Titulo = "Política de Privacidad",
+                    Contenido = @"
+                        Toda la información personal proporcionada por el usuario será tratada con confidencialidad.
+                        Solo usamos los datos para procesar pedidos y mejorar nuestros servicios.
+                        Nunca compartimos tus datos con terceros sin tu consentimiento, excepto cuando lo exija la ley.
+                    "
+                },
+                new {
+                    Titulo = "Seguridad de los Datos",
+                    Contenido = @"
+                        Nuestro sitio utiliza tecnología de cifrado SSL para proteger tus datos.
+                        Recomendamos cambiar tu contraseña regularmente y no compartirla con nadie.
+                    "
+                },
+                new {
+                    Titulo = "Modificaciones",
+                    Contenido = @"
+                        Nos reservamos el derecho de actualizar estas políticas en cualquier momento.
+                        Los cambios serán notificados a través del sitio web o por correo electrónico.
+                        El uso continuado del sitio implica la aceptación de dichos cambios.
+                    "
+                }
+            };
+        }
+
+        @foreach (var item in secciones)
+        {
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>@item.Titulo</span>
+                    <button class="toggle-btn">+</button>
+                </div>
+                <div class="faq-answer">
+                    <p>@item.Contenido</p>
+                </div>
+            </div>
+        }
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleButtons = document.querySelectorAll('.toggle-btn');
+
+            toggleButtons.forEach(button => {
+                const answer = button.closest('.faq-item').querySelector('.faq-answer');
+                answer.style.display = 'none';
+
+                button.addEventListener('click', function () {
+                    const faqItem = this.closest('.faq-item');
+                    const answer = faqItem.querySelector('.faq-answer');
+
+                    if (answer.style.display === 'none' || answer.style.display === '') {
+                        answer.style.display = 'block';
+                        this.textContent = '−';
+                    } else {
+                        answer.style.display = 'none';
+                        this.textContent = '+';
+                    }
+                });
+            });
+
+            document.querySelectorAll('.faq-question').forEach(question => {
+                question.addEventListener('click', function (e) {
+                    if (!e.target.classList.contains('toggle-btn')) {
+                        const btn = this.querySelector('.toggle-btn');
+                        btn.click();
+                    }
+                });
+            });
+        });
+    </script>
+
