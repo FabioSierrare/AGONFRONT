@@ -7,9 +7,12 @@
 }
 
 body {
-    background-color: #f7f7f7;
+    background-color: #f4f4f4;
     display: flex;
+    min-height: 100vh;
+    font-family: 'Poppins', sans-serif;
 }
+
 
 .container {
     display: flex;
@@ -98,11 +101,10 @@ body {
 }
 
 /* Estilo para el contenido principal */
-.main-content {
-    margin-top: 70px; /* Deja espacio para la barra de navegación */
-    padding: 20px;
-}
 
+<main class="main-content" >
+
+</main >
 /* Responsividad */
 @media (max-width: 768px) {
     .navbar-container {

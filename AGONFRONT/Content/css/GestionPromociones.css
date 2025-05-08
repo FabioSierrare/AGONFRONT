@@ -1,210 +1,74 @@
-/* Estilos generales */
-* {
+/* === Ajustes de Espaciado === */
+
+/* Reset del cuerpo */
+body {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--gray-light);
 }
 
-body {
-    background-color: #f7f7f7;
-    display: flex;
-}
-
-.container {
-    display: flex;
-    width: 100%;
-}
-
-/* Estilos generales para la barra de navegación */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
-}
-
-body {
-    background-color: #f4f4f4;
-}
-
-/* Navbar principal */
+/* Navbar ajustado */
 .navbar {
-    background-color: #2c3e50;
-    color: white;
-    padding: 10px 20px;
-    position: fixed;
-    width: 100%;
+    position: sticky;
     top: 0;
-    left: 0;
-    z-index: 1000;
+    z-index: 1030;
+    width: 100%;
+    margin: 0;
+    padding: 0.75rem 1rem; /* Reducido padding lateral */
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: var(--shadow-sm);
+    border-bottom: 1px solid var(--border-color);
 }
 
-.navbar-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo h1 {
-    font-size: 24px;
-    font-weight: bold;
-}
-
-.nav-links {
-    list-style: none;
-    display: flex;
-    gap: 20px;
-}
-
-.nav-links li {
-    display: inline;
-}
-
-.nav-links li a {
-    color: white;
-    text-decoration: none;
-    font-size: 16px;
-    padding: 8px 15px;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-}
-
-.nav-links li a:hover {
-    background-color: #34495e;
-}
-
-.notifications {
-    position: relative;
-}
-
-.notification-icon {
-    font-size: 24px;
-    cursor: pointer;
-}
-
-.notification-count {
-    position: absolute;
-    top: -5px;
-    right: -10px;
-    background-color: red;
-    color: white;
-    font-size: 12px;
-    border-radius: 50%;
-    padding: 5px;
-    min-width: 18px;
-    text-align: center;
-}
-
-/* Estilo para el contenido principal */
+/* Contenido principal pegado al navbar */
 .main-content {
+    margin-top: 0; /* Elimina margen superior */
+    padding: 1rem; /* Reducido padding */
     width: 100%;
-    margin-top: 70px; /* Deja espacio para la barra de navegación */
-    padding: 20px;
+    box-sizing: border-box;
 }
 
-/* Responsividad */
-@media (max-width: 768px) {
-    .navbar-container {
-        flex-direction: column;
-        align-items: flex-start;
+/* Sidebar ajustado */
+.sidebar {
+    width: 260px;
+    position: fixed;
+    top: 0;
+    left: -260px;
+    bottom: 0;
+    height: 100vh;
+    z-index: 1040;
+    transition: var(--transition);
+    background: white;
+    box-shadow: var(--shadow-md);
+}
+
+    .sidebar.active {
+        left: 0;
     }
 
-    .nav-links {
-        flex-direction: column;
-        width: 100%;
-        padding: 10px 0;
+/* Ajustes para desktop */
+@media (min-width: 992px) {
+    .sidebar {
+        left: 0;
     }
 
-    .nav-links li {
-        width: 100%;
-        text-align: left;
-    }
-
-    .nav-links li a {
-        padding: 10px 20px;
-        width: 100%;
+    .main-content {
+        margin-left: 260px;
+        width: calc(100% - 260px);
+        padding: 1rem 1.5rem; /* Padding consistente */
     }
 }
 
-
-/* Crear nueva promoción */
-.create-promotion {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 40px;
+/* Asegurar que el contenido no quede detrás del navbar */
+.main-content {
+    position: relative;
+    z-index: 1;
+    margin-top: 60px; /* Altura del navbar */
 }
 
-.create-promotion h3 {
-    margin-bottom: 20px;
-}
-
-.create-promotion .form-group {
-    margin-bottom: 15px;
-}
-
-.create-promotion label {
-    display: block;
-    font-size: 14px;
-    margin-bottom: 5px;
-}
-
-.create-promotion input,
-.create-promotion select {
-    width: 100%;
-    padding: 10px;
-    font-size: 14px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.create-promotion button {
-    background-color: #3498db;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    margin-top: 15px;
-}
-
-.create-promotion button:hover {
-    background-color: #2980b9;
-}
-
-/* Lista de promociones activas */
-.active-promotions table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 40px;
-}
-
-.active-promotions th,
-.active-promotions td {
-    padding: 10px;
-    text-align: center;
-    border-bottom: 1px solid #ddd;
-}
-
-.active-promotions th {
-    background-color: #f1f1f1;
-}
-
-.active-promotions tr:hover {
-    background-color: #f9f9f9;
-}
-
-.edit-btn {
-    background-color: #f39c12;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    cursor: pointer;
-    border-radius: 4px;
-}
-
-.edit-btn:hover {
-    background-color: #e67e22;
+/* Ajustar altura del navbar */
+.navbar {
+    height: 60px;
+    box-sizing: border-box;
 }

@@ -4,96 +4,171 @@
     ViewBag.Title = "Gestión de Promociones";
     Layout = "~/Views/Shared/_LayoutGestionVendedor.cshtml";
     <link rel="stylesheet" href="~/Content/css/GestionPromociones.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
 }
 
-<h2>Gestión de Promociones</h2>
-
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["Error"]
+<div class="main-content animate__animated animate__fadeIn">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Promociones y Descuentos</h1>
+            <p class="page-subtitle">Crea, gestiona y aplica promociones a tus productos.</p>
+        </div>
     </div>
-}
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["Success"]
-    </div>
-}
-
-<!-- Lista de descuentos -->
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Tipo</th>
-            <th>Nombre</th>
-            <th>Código</th>
-            <th>Descuento</th>
-            <th>Fecha Inicio</th>
-            <th>Fecha Fin</th>
-            <th>Vendedor ID</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var descuento in Model)
-        {
-            <tr>
-                <td>@descuento.Tipo</td>
-                <td>@descuento.Nombre</td>
-                <td>@descuento.Codigo</td>
-                <td>@descuento.Descuento %</td>
-                <td>@descuento.FechaInicio.ToShortDateString()</td>
-                <td>@descuento.FechaFin.ToShortDateString()</td>
-                <td>@descuento.VendedorId</td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<hr />
-
-<div class="container mt-4">
-    <h3>Agregar Descuento</h3>
-
-    @using (Html.BeginForm("AgregarDescuento", "Usuarios", FormMethod.Post, new { @class = "form-horizontal" }))
+    @if (TempData["Error"] != null)
     {
-        <!-- Mostramos el ID por depuración -->
-        <p><strong>ID Usuario :</strong> @ViewBag.VendedorId</p>
-
-        <!-- Campo oculto para enviar el ID del vendedor -->
-        <input type="hidden" name="VendedorId" value="@ViewBag.VendedorId" />
-
-        <div class="mb-3">
-            @Html.Label("Nombre", "Nombre del Descuento", new { @class = "form-label" })
-            @Html.TextBox("Nombre", null, new { @class = "form-control", required = "required" })
+        <div class="alert alert-danger">
+            @TempData["Error"]
         </div>
-
-        <div class="mb-3">
-            @Html.Label("Tipo", "Tipo de Descuento", new { @class = "form-label" })
-            @Html.TextBox("Tipo", null, new { @class = "form-control", required = "required" })
-        </div>
-
-        <div class="mb-3">
-            @Html.Label("Codigo", "Código de Descuento", new { @class = "form-label" })
-            @Html.TextBox("Codigo", null, new { @class = "form-control", required = "required" })
-        </div>
-
-        <div class="mb-3">
-            @Html.Label("Descuento", "Descuento (%)", new { @class = "form-label" })
-            @Html.TextBox("Descuento", null, new { @class = "form-control", type = "number", step = "0.01", required = "required" })
-        </div>
-
-        <div class="mb-3">
-            @Html.Label("FechaInicio", "Fecha de Inicio", new { @class = "form-label" })
-            @Html.TextBox("FechaInicio", null, new { @class = "form-control", type = "date", required = "required" })
-        </div>
-
-        <div class="mb-3">
-            @Html.Label("FechaFin", "Fecha de Finalización", new { @class = "form-label" })
-            @Html.TextBox("FechaFin", null, new { @class = "form-control", type = "date", required = "required" })
-        </div>
-
-        <button type="submit" class="btn btn-primary">Agregar Descuento</button>
     }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="bi bi-plus-circle me-2"></i>Crear Nueva Promoción</h3>
+        </div>
+        <div class="card-body">
+            @using (Html.BeginForm("AgregarDescuento", "Usuarios", FormMethod.Post, new { @class = "form-horizontal" }))
+            {
+                <input type="hidden" name="VendedorId" value="@ViewBag.VendedorId" />
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="Nombre" class="form-label">Nombre de la Promoción *</label>
+                        @Html.TextBox("Nombre", null, new { @class = "form-control", required = "required", placeholder = "Ej: Venta Flash de Verano" })
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="Codigo" class="form-label">Código de Descuento *</label>
+                        @Html.TextBox("Codigo", null, new { @class = "form-control", required = "required", placeholder = "Ej: VERANO20" })
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="Tipo" class="form-label">Tipo de Descuento *</label>
+                        @Html.TextBox("Tipo", null, new { @class = "form-control", required = "required", placeholder = "Ej: Porcentaje" })
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="Descuento" class="form-label">Valor del Descuento *</label>
+                        <div class="input-group">
+                            <span class="input-group-text">%</span>
+                            @Html.TextBox("Descuento", null, new { @class = "form-control", type = "number", step = "0.01", required = "required", placeholder = "Ej: 15" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="FechaInicio" class="form-label">Fecha de Inicio *</label>
+                        @Html.TextBox("FechaInicio", null, new { @class = "form-control", type = "date", required = "required" })
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="FechaFin" class="form-label">Fecha de Fin *</label>
+                        @Html.TextBox("FechaFin", null, new { @class = "form-control", type = "date", required = "required" })
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle me-1"></i> Crear Promoción
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="bi bi-tags me-2"></i>Promociones Activas</h3>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Tipo</th>
+                            <th>Código</th>
+                            <th>Descuento</th>
+                            <th>Fecha Inicio</th>
+                            <th>Fecha Fin</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var descuento in Model)
+                        {
+                            <tr>
+                                <td>@descuento.Nombre</td>
+                                <td>@descuento.Tipo</td>
+                                <td>@descuento.Codigo</td>
+                                <td>@descuento.Descuento %</td>
+                                <td>@descuento.FechaInicio.ToShortDateString()</td>
+                                <td>@descuento.FechaFin.ToShortDateString()</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="btn btn-sm btn-outline-primary" title="Editar">
+                                            <i class="bi bi-pencil-fill"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary" title="Desactivar">
+                                            <i class="bi bi-power"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" title="Eliminar">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sidebar Toggle Logic
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebar = document.querySelector('.sidebar');
+            if (!sidebar) return;
+
+            const sidebarToggle = document.createElement('button');
+            sidebarToggle.className = 'btn sidebar-toggler-btn d-lg-none';
+            sidebarToggle.innerHTML = '<i class="bi bi-list"></i>';
+            sidebarToggle.setAttribute('aria-label', 'Toggle sidebar');
+            sidebarToggle.setAttribute('aria-expanded', 'false');
+
+            sidebarToggle.onclick = function () {
+                const isActive = sidebar.classList.toggle('active');
+                document.body.classList.toggle('sidebar-active', isActive);
+                sidebarToggle.setAttribute('aria-expanded', isActive);
+            };
+            document.body.appendChild(sidebarToggle);
+
+            document.addEventListener('click', function (event) {
+                if (window.innerWidth < 992 && sidebar.classList.contains('active')) {
+                    const isClickInsideSidebar = sidebar.contains(event.target);
+                    const isClickOnToggler = sidebarToggle.contains(event.target);
+                    if (!isClickInsideSidebar && !isClickOnToggler) {
+                        sidebar.classList.remove('active');
+                        document.body.classList.remove('sidebar-active');
+                        sidebarToggle.setAttribute('aria-expanded', 'false');
+                    }
+                }
+            });
+        });
+    </script>
+}

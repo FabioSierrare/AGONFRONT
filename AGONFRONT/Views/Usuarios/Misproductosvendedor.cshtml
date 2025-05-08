@@ -2,11 +2,18 @@
 
 @{
     Layout = "~/Views/Shared/_LayoutGestionVendedor.cshtml";
-    <link rel="stylesheet" href="~/Content/css/MisProductos.css">
     ViewBag.Title = "Mis Productos";
 }
 
-<h2>Mis Productos</h2>
+@section Styles {
+    <link rel="stylesheet" href="~/Content/css/MisProductos.css" />
+}
+
+<!-- No pongas un nuevo contenedor main-content -->
+<header class="page-header">
+    <h1 class="page-title">Mis Productos</h1>
+    <p class="page-description">Gestiona tu inventario de productos fácilmente</p>
+</header>
 
 @if (TempData["Error"] != null)
 {
@@ -19,62 +26,66 @@
 
 @if (Model != null && Model.Any())
 {
-    foreach (var producto in Model)
-    {
-        <div class="card p-3 mb-3">
-            @using (Html.BeginForm("EditarMiProducto", "Usuarios", FormMethod.Post))
-            {
-                <!-- Campos obligatorios requeridos por el backend -->
-                @Html.Hidden("Id", producto.Id)
-                @Html.Hidden("Nombre", producto.Nombre)
-                @Html.Hidden("Descripcion", producto.Descripcion)
-                @Html.Hidden("UrlImagen", producto.UrlImagen)
-                @Html.Hidden("FechaCreacion", producto.FechaCreacion.ToString("yyyy-MM-ddTHH:mm:ss"))
-                @Html.Hidden("CategoriaId", producto.CategoriaId)
-                @Html.Hidden("VendedorId", producto.VendedorId)
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Guardar</th>
+                    <th>Eliminar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var producto in Model)
+                {
+                    <tr>
+                        @using (Html.BeginForm("EditarMiProducto", "Usuarios", FormMethod.Post, new { @class = "d-flex align-items-center" }))
+                        {
+                            @Html.Hidden("Id", producto.Id)
+                            @Html.Hidden("Nombre", producto.Nombre)
+                            @Html.Hidden("Descripcion", producto.Descripcion)
+                            @Html.Hidden("UrlImagen", producto.UrlImagen)
+                            @Html.Hidden("FechaCreacion", producto.FechaCreacion.ToString("yyyy-MM-ddTHH:mm:ss"))
+                            @Html.Hidden("CategoriaId", producto.CategoriaId)
+                            @Html.Hidden("VendedorId", producto.VendedorId)
 
+                            <td>@producto.Id</td>
+                            <td>@producto.Nombre</td>
+                            <td>@producto.Descripcion</td>
+                            <td>
+                                <input type="text" name="Precio" value="@producto.Precio.ToString(System.Globalization.CultureInfo.InvariantCulture)" class="form-control" required />
+                            </td>
+                            <td>
+                                <input type="number" name="Stock" value="@producto.Stock" class="form-control" required />
+                            </td>
+                            <td>
+                                <button type="submit" class="btn btn-warning btn-sm">
+                                    <i class="bi bi-save"></i> Guardar
+                                </button>
+                            </td>
+                        }
 
-
-                <div class="row">
-                    <div class="col-md-2"><strong>ID:</strong> @producto.Id</div>
-                    <div class="col-md-2"><strong>Nombre:</strong> @producto.Nombre</div>
-                    <div class="col-md-3"><strong>Descripción:</strong> @producto.Descripcion</div>
-                    @Html.Hidden("FechaCreacion", producto.FechaCreacion.ToString("yyyy-MM-ddTHH:mm:ss"))
-                    @Html.Hidden("CategoriaId", producto.CategoriaId)
-                    @Html.Hidden("VendedorId", producto.VendedorId)
-
-
-                    <div class="col-md-2">
-                        <label>Precio</label>
-                        <input type="text" name="Precio"
-                               value="@producto.Precio.ToString(System.Globalization.CultureInfo.InvariantCulture)"
-                               class="form-control" required />
-                    </div>
-
-                    <div class="col-md-2">
-                        <label>Stock</label>
-                        <input type="number" name="Stock" value="@producto.Stock"
-                               class="form-control" required />
-                    </div>
-
-                    <div class="col-md-1 d-flex align-items-end">
-                        <button type="submit" class="btn btn-warning">Guardar</button>
-                    </div>
-                </div>
-            }
-
-            <!-- Eliminar -->
-            @using (Html.BeginForm("EliminarMiProducto", "Usuarios", FormMethod.Post, new { onsubmit = "return confirm('¿Estás seguro de que deseas eliminar este producto?');" }))
-            {
-                <input type="hidden" name="id" value="@producto.Id" />
-                <button type="submit" class="btn btn-danger mt-2">Eliminar</button>
-            }
-
-
-        </div>
-    }
+                        <td>
+                            @using (Html.BeginForm("EliminarMiProducto", "Usuarios", FormMethod.Post, new { onsubmit = "return confirm('¿Estás seguro de que deseas eliminar este producto?');" }))
+                            {
+                                <input type="hidden" name="id" value="@producto.Id" />
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 else
 {
-    <p>No tienes productos registrados.</p>
+    <p class="text-muted mt-4">No tienes productos registrados.</p>
 }
+</div>

@@ -8,89 +8,87 @@
     var productos = ViewBag.Productos as List<Productos> ?? new List<Productos>();
 }
 
-<head>
-    <link href="~/Content/css/Dasborad.css" rel="stylesheet">
-    <script src="~/Content/JS/Dasborad.js"></script>
-</head>
+@section Styles {
+    <link href="~/Content/css/Dasborad.css" rel="stylesheet" />
+}
 
-<main class="main-content">
-    <header>
-        <div class="header-left">
-            <h1>Dashboard</h1>
-            <p>Bienvenido al panel de control de Ecommerce</p>
-        </div>
-    </header>
+<!-- NO MÁS <main class="main-content"> AQUÍ -->
 
-    <section class="metrics">
-        <div class="metric-card">
-            <h3>Ingresos Totales</h3>
-            <p class="value">$@(ViewBag.TotalIngresos != null ? ((decimal)ViewBag.TotalIngresos).ToString("N2") : "0.00")</p>
-        </div>
-        <div class="metric-card">
-            <h3>Total de Ventas Completadas</h3>
-            <p class="value">@ViewBag.TotalPedidos</p>
-        </div>
-    </section>
+<header>
+    <div class="header-left">
+        <h1>Dashboard</h1>
+        <p>Bienvenido al panel de control de Ecommerce</p>
+    </div>
+</header>
 
-    <section class="charts">
-        <div class="chart">
-            <h3>Ingresos por Día</h3>
-            <canvas id="ingresosChart" data-ingresos='@Html.Raw(ViewBag.IngresosDiarios)'></canvas>
-        </div>
-        <div class="chart">
-            <h3>Productos Más Vendidos</h3>
-            <canvas id="productsChart" data-productos='@Html.Raw(ViewBag.ProductosMasVendidos)'></canvas>
-        </div>
-    </section>
+<section class="metrics">
+    <div class="metric-card">
+        <h3>Ingresos Totales</h3>
+        <p class="value">$@(ViewBag.TotalIngresos != null ? ((decimal)ViewBag.TotalIngresos).ToString("N2") : "0.00")</p>
+    </div>
+    <div class="metric-card">
+        <h3>Total de Ventas Completadas</h3>
+        <p class="value">@ViewBag.TotalPedidos</p>
+    </div>
+</section>
 
-    <!-- Tabla de últimos pedidos -->
-    <section class="latest-orders">
-        <h3>Últimos Pedidos</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID Pedido</th>
-                    <th>Cliente</th>
-                    <th>Producto</th>
-                    <th>Estado</th>
-                    <th>Fecha</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model != null && Model.Any())
+<section class="charts">
+    <div class="chart">
+        <h3>Ingresos por Día</h3>
+        <canvas id="ingresosChart" data-ingresos='@Html.Raw(ViewBag.IngresosDiarios)'></canvas>
+    </div>
+    <div class="chart">
+        <h3>Productos Más Vendidos</h3>
+        <canvas id="productsChart" data-productos='@Html.Raw(ViewBag.ProductosMasVendidos)'></canvas>
+    </div>
+</section>
+
+<section class="latest-orders">
+    <h3>Últimos Pedidos</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID Pedido</th>
+                <th>Cliente</th>
+                <th>Producto</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var pedido in Model)
                 {
-                    foreach (var pedido in Model)
-                    {
-                        var clienteNombre = clientes.FirstOrDefault(c => c.Id == pedido.ClienteId)?.Nombre ?? "Desconocido";
-                        var productoNombre = productos.FirstOrDefault(p => p.Id == pedido.ProductoId)?.Nombre ?? "Desconocido";
+                    var clienteNombre = clientes.FirstOrDefault(c => c.Id == pedido.ClienteId)?.Nombre ?? "Desconocido";
+                    var productoNombre = productos.FirstOrDefault(p => p.Id == pedido.ProductoId)?.Nombre ?? "Desconocido";
 
-
-                        <tr>
-                            <td>@pedido.Id</td>
-                            <td>@clienteNombre</td>
-                            <td>@productoNombre</td>
-                            <td>
-                                <span class="status @(pedido.Estado == "En Proceso" ? "pending" : pedido.Estado == "Completado" ? "completed" : "canceled")">
-                                    @pedido.Estado
-                                </span>
-                            </td>
-                            <td>@pedido.FechaPedido.ToString("yyyy-MM-dd")</td>
-                            <td>$@pedido.Total.ToString("N2")</td>
-                        </tr>
-                    }
-                }
-                else
-                {
                     <tr>
-                        <td colspan="6" class="text-center text-muted">No hay pedidos disponibles.</td>
+                        <td>@pedido.Id</td>
+                        <td>@clienteNombre</td>
+                        <td>@productoNombre</td>
+                        <td>
+                            <span class="status @(pedido.Estado == "En Proceso" ? "pending" : pedido.Estado == "Completado" ? "completed" : "canceled")">
+                                @pedido.Estado
+                            </span>
+                        </td>
+                        <td>@pedido.FechaPedido.ToString("yyyy-MM-dd")</td>
+                        <td>$@pedido.Total.ToString("N2")</td>
                     </tr>
                 }
-            </tbody>
-        </table>
-    </section>
-</main>
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-center text-muted">No hay pedidos disponibles.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</section>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="@Url.Content("~/Content/JS/Dashboard.js")"></script>
-
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="@Url.Content("~/Content/JS/Dasborad.js")"></script>
+}

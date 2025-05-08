@@ -2507,3 +2507,8 @@ C:\Users\Sebastian\Downloads\Front AGOFRONT\AGONFRONT\obj\Debug\AGONFRONT.csproj
 C:\Users\Sebastian\Downloads\Front AGOFRONT\AGONFRONT\obj\Debug\AGONFRONT.csproj.Up2Date
 C:\Users\Sebastian\Downloads\Front AGOFRONT\AGONFRONT\obj\Debug\AGONFRONT.dll
 C:\Users\Sebastian\Downloads\Front AGOFRONT\AGONFRONT\obj\Debug\AGONFRONT.pdb
+C:\Users\Daniel20\Desktop\Front\AGONFRONT\bin\Microsoft.Azure.KeyVault.Core.dll
+C:\Users\Daniel20\Desktop\Front\AGONFRONT\bin\Microsoft.WindowsAzure.Storage.dll
+C:\Users\Daniel20\Desktop\Front\AGONFRONT\bin\Microsoft.Azure.KeyVault.Core.xml
+C:\Users\Daniel20\Desktop\Front\AGONFRONT\bin\Microsoft.WindowsAzure.Storage.pdb
+C:\Users\Daniel20\Desktop\Front\AGONFRONT\bin\Microsoft.WindowsAzure.Storage.xml
