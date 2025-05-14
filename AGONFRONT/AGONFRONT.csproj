@@ -276,6 +276,7 @@
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\css\Dasborad.css" />
+    <Content Include="Content\css\NavVendedor.css" />
     <Content Include="Content\css\Envios.css" />
     <Content Include="Content\css\FAQ.css" />
     <Content Include="Content\css\Productos.css" />

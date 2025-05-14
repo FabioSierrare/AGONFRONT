@@ -62,23 +62,23 @@
                     foreach (var envio in Model)
                     {
                         <tr>
-                            <td>@envio.Id</td>
-                            <td>@envio.PedidoId</td>
-                            <td>@envio.EmpresaEnvio</td>
-                            <td>@envio.NumeroGuia</td>
+                            <td>@envio?.Id</td>
+                            <td>@envio?.PedidoId</td>
+                            <td>@envio?.EmpresaEnvio</td>
+                            <td>@envio?.NumeroGuia</td>
                             <td>
-                                <span class="badge bg-primary">@envio.EstadoEnvio</span>
+                                <span class="badge bg-primary">@((envio?.EstadoEnvio) ?? "Sin estado")</span>
                             </td>
-                            <td>@envio.FechaEnvio.ToString("dd/MM/yyyy HH:mm")</td>
-                            <td>@(envio.FechaEntrega?.ToString("dd/MM/yyyy HH:mm") ?? "Pendiente")</td>
+                            <td>@(envio?.FechaEnvio != null ? envio.FechaEnvio.ToString("dd/MM/yyyy HH:mm") : "Pendiente")</td>
+                            <td>@(envio?.FechaEntrega != null ? envio.FechaEntrega.ToString("dd/MM/yyyy HH:mm") : "Pendiente")</td>
                             <td>
-                                <a href="@Url.Action("Details", "Envios", new { id = envio.Id })" class="btn btn-sm btn-info me-1" title="Ver">
+                                <a href="@Url.Action("Details", "Envios", new { id = envio?.Id })" class="btn btn-sm btn-info me-1" title="Ver">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="@Url.Action("Edit", "Envios", new { id = envio.Id })" class="btn btn-sm btn-warning me-1" title="Editar">
+                                <a href="@Url.Action("Edit", "Envios", new { id = envio?.Id })" class="btn btn-sm btn-warning me-1" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <a href="@Url.Action("Delete", "Envios", new { id = envio.Id })" class="btn btn-sm btn-danger" title="Eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este envío?');">
+                                <a href="@Url.Action("Delete", "Envios", new { id = envio?.Id })" class="btn btn-sm btn-danger" title="Eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este envío?');">
                                     <i class="fas fa-trash-alt"></i>
                                 </a>
                             </td>

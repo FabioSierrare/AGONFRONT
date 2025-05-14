@@ -1,5 +1,4 @@
-﻿@* ====== _LayoutGestionVendedor.cshtml (CORREGIDO) ====== *@
-@{
+﻿@{
     ViewBag.Title = ViewBag.Title ?? "AGON | Panel de Vendedor";
 }
 
@@ -20,17 +19,37 @@
     <link rel="stylesheet" href="~/Content/css/whatsapp.css" />
 
     <!-- Estilo general moderno -->
-    <link rel="stylesheet" href="~/Content/css/PerfilVendedor.css" />
+    <link rel="stylesheet" href="~/Content/css/NavVendedor.css" />
 
     @RenderSection("Styles", required: false)
+
+    <style>
+        @Html.Raw(@"
+            @media (max-width: 992px) {
+                .main-content {
+                    margin-left: 0;
+                    width: 100%;
+                }
+
+                .sidebar {
+                    left: -250px;
+                }
+
+                .sidebar.active {
+                    left: 0;
+                }
+            }
+        ")
+    </style>
 </head>
-<body style="display: flex;">
+
+<body style="display: flex; overflow-x: hidden;">
     <!-- Botón WhatsApp flotante -->
     <a href="https://api.whatsapp.com/send?phone=5195508107" class="float" target="_blank">
         <i class="fa fa-whatsapp my-float"></i>
     </a>
 
-    <!-- Sidebar moderno -->
+    <!-- Sidebar Navigation -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <a href="#" class="sidebar-brand">
@@ -38,14 +57,58 @@
                 AGON
             </a>
         </div>
+
         <nav class="sidebar-nav">
             <ul class="nav flex-column">
-                <li class="nav-item">@Html.ActionLink("Dashboard", "Dashboard", "Usuarios", null, new { @class = "nav-link" })</li>
-                <li class="nav-item">@Html.ActionLink("Gestión de Productos", "GestionarProductos", "Usuarios", null, new { @class = "nav-link" })</li>
-                <li class="nav-item">@Html.ActionLink("Mis Productos", "Misproductosvendedor", "Usuarios", null, new { @class = "nav-link" })</li>
-                <li class="nav-item">@Html.ActionLink("Gestion de Descuentos", "GestionDescuentos", "Usuarios", null, new { @class = "nav-link" })</li>
-                <li class="nav-item">@Html.ActionLink("Envíos", "GestionEnvios", "Envios", null, new { @class = "nav-link" })</li>
-                <li class="nav-item">@Html.ActionLink("Mi Perfil", "UpdatePerfilVendedor", "Usuarios", null, new { @class = "nav-link active" })</li>
+                <li class="nav-item">
+                    <a href="@Url.Action("Dashboard", "Usuarios")" class="nav-link">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="@Url.Action("GestionarProductos", "Usuarios")" class="nav-link">
+                        <i class="bi bi-box-seam"></i>
+                        <span>Gestión de Productos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="@Url.Action("Misproductosvendedor", "Usuarios")" class="nav-link">
+                        <i class="bi bi-basket"></i>
+                        <span>Mis Productos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="@Url.Action("EstadisticasVentas", "EstadisticasVentas")" class="nav-link">
+                        <i class="bi bi-graph-up"></i>
+                        <span>Estadísticas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="@Url.Action("GestionPedidos", "Usuarios")" class="nav-link">
+                        <i class="bi bi-receipt"></i>
+                        <span>Pedidos</span>
+                        <span class="notification-badge">3</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="@Url.Action("GestionDescuentos", "Usuarios")" class="nav-link">
+                        <i class="bi bi-percent"></i>
+                        <span>Promociones</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="@Url.Action("GestionEnvios", "Envios")" class="nav-link">
+                        <i class="bi bi-truck"></i>
+                        <span>Envíos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="@Url.Action("UpdatePerfilVendedor", "Usuarios")" class="nav-link active">
+                        <i class="bi bi-person-circle"></i>
+                        <span>Mi Perfil</span>
+                    </a>
+                </li>
             </ul>
         </nav>
     </aside>

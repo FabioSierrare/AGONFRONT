@@ -1,74 +1,150 @@
-/* === Ajustes de Espaciado === */
+:root {
+    --primary: #27AE60;
+    --primary-dark: #219653;
+    --gray-light: #f5f7fa;
+    --gray: #E0E0E0;
+    --danger: #EB5757;
+    --sidebar-width: 250px;
+    --transition: all 0.3s ease;
+    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
 
-/* Reset del cuerpo */
-body {
+/* Evitar scroll horizontal */
+html, body {
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
     font-family: 'Poppins', sans-serif;
     background-color: var(--gray-light);
+    color: #2C3E50;
 }
 
-/* Navbar ajustado */
-.navbar {
-    position: sticky;
-    top: 0;
-    z-index: 1030;
-    width: 100%;
-    margin: 0;
-    padding: 0.75rem 1rem; /* Reducido padding lateral */
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: var(--shadow-sm);
-    border-bottom: 1px solid var(--border-color);
-}
-
-/* Contenido principal pegado al navbar */
+/* Contenedor principal alineado al sidebar */
 .main-content {
-    margin-top: 0; /* Elimina margen superior */
-    padding: 1rem; /* Reducido padding */
-    width: 100%;
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+    padding: 2rem;
     box-sizing: border-box;
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
-/* Sidebar ajustado */
-.sidebar {
-    width: 260px;
-    position: fixed;
-    top: 0;
-    left: -260px;
-    bottom: 0;
-    height: 100vh;
-    z-index: 1040;
-    transition: var(--transition);
-    background: white;
+    /* Centrado de contenido opcional */
+    .main-content > .card {
+        max-width: 100%;
+        margin: 0 auto;
+    }
+
+/* Encabezados */
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+}
+
+.page-subtitle {
+    font-size: 1rem;
+    color: #555;
+}
+
+/* Tarjetas */
+.card {
+    border-radius: 12px;
     box-shadow: var(--shadow-md);
+    border: none;
+    background-color: white;
+    margin-bottom: 2rem;
 }
 
-    .sidebar.active {
-        left: 0;
-    }
-
-/* Ajustes para desktop */
-@media (min-width: 992px) {
-    .sidebar {
-        left: 0;
-    }
-
-    .main-content {
-        margin-left: 260px;
-        width: calc(100% - 260px);
-        padding: 1rem 1.5rem; /* Padding consistente */
-    }
+.card-header {
+    padding: 1.25rem 1.5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    background-color: white;
+    border-bottom: 1px solid #eee;
 }
 
-/* Asegurar que el contenido no quede detrás del navbar */
-.main-content {
-    position: relative;
-    z-index: 1;
-    margin-top: 60px; /* Altura del navbar */
+.card-body {
+    padding: 1.5rem;
 }
 
-/* Ajustar altura del navbar */
-.navbar {
-    height: 60px;
+/* Formulario */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select {
+    border-radius: 8px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    width: 100%;
     box-sizing: border-box;
+}
+
+/* Tabla */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+    .table thead {
+        background-color: var(--primary);
+        color: white;
+        text-transform: uppercase;
+    }
+
+    .table th, .table td {
+        padding: 1rem;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+.table-actions button {
+    margin-right: 0.3rem;
+}
+
+/* Botones */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    border: none;
+    color: white;
+}
+
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+    }
+
+.btn-danger {
+    background-color: var(--danger);
+    border: none;
+    color: white;
+}
+
+    .btn-danger:hover {
+        background-color: #c0392b;
+    }
+
+/* Responsive */
+@media (max-width: 992px) {
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .table th, .table td {
+        font-size: 0.9rem;
+        padding: 0.75rem;
+    }
 }
