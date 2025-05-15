@@ -208,6 +208,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\BusquedasController.cs" />
+    <Compile Include="Controllers\CarritoController.cs" />
     <Compile Include="Controllers\ClienteController.cs" />
     <Compile Include="Controllers\EnviosController.cs" />
     <Compile Include="Controllers\EstadisticasVentasController.cs" />
@@ -221,8 +222,11 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Busquedas.cs" />
+    <Compile Include="Models\CarritoYComentariosViewModel.cs" />
+    <Compile Include="Models\DetalleProductoViewModel.cs" />
     <Compile Include="Models\Filtros.cs" />
     <Compile Include="Models\IngresosDiarios.cs" />
+    <Compile Include="Models\ProductoEnCarritocs.cs" />
     <Compile Include="Models\ProductosDescuentosDTO.cs" />
     <Compile Include="Models\ProductosMasVendidos.cs" />
     <Compile Include="Models\RecuperarContraseñaDTO.cs" />
@@ -429,6 +433,7 @@
     <Content Include="Views\Productos\Granja.cshtml" />
     <Content Include="Views\Ofertas\Ofertas.cshtml" />
     <Content Include="Views\TerminosyCondiciones\TerminosyPoliticas.cshtml" />
+    <Content Include="Views\Carrito\Carrito.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

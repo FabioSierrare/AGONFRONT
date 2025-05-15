@@ -1,9 +1,20 @@
-﻿@model AGONFRONT.Models.Productos
+﻿@model AGONFRONT.Models.DetalleProductoViewModel
 
 @{
-    Layout = "~/Views/Shared/_LayoutLoged.cshtml";
     ViewBag.Title = "Detalles del Producto";
+    Layout = "~/Views/Shared/_LayoutLoged.cshtml";
 }
+
+<style>
+    .btn-icon {
+        display: flex;
+        align-items: center;
+    }
+
+        .btn-icon i {
+            margin-right: 5px;
+        }
+</style>
 
 <div class="container my-5">
     <!-- Mensaje de error si existe -->
@@ -17,24 +28,31 @@
     <div class="row">
         <!-- Columna de la Imagen del Producto -->
         <div class="col-md-6">
-            <img src="@Model.UrlImagen" class="img-fluid rounded shadow-sm" alt="@Model.Nombre" style="width: 100%; height: auto;">
+            <img src="@Model.Producto.UrlImagen" class="img-fluid rounded shadow-sm" alt="@Model.Producto.Nombre" style="width: 100%; height: auto;">
         </div>
 
         <!-- Columna de la Información del Producto -->
         <div class="col-md-6">
-            <h2 class="fw-bold">@Model.Nombre</h2>
-            <p class="text-muted">@Model.Descripcion</p>
+            <h2 class="fw-bold">@Model.Producto.Nombre</h2>
+            <p class="text-muted">@Model.Producto.Descripcion</p>
             <hr>
-            <h3 class="text-primary">@Model.Precio.ToString("C")</h3>
-            <p><strong>Categoría:</strong> @Model.CategoriaId</p>
-            <p><strong>Stock:</strong> @Model.Stock</p>
+            <h3 class="text-primary">@Model.Producto.Precio.ToString("C")</h3>
+            <p><strong>Categoría:</strong> @Model.Producto.CategoriaId</p>
+            <p><strong>Stock:</strong> @Model.Producto.Stock</p>
 
             <!-- Botones de acción -->
             <div class="d-flex justify-content-between">
-                <button class="btn btn-success">
-                    <i class="bi bi-cart-plus"></i> Agregar al Carrito
-                </button>
-                
+
+                <input type="hidden" id="CProductoId" name="CProductoId" value="@Model.ProductoCarrito.ProductoId" />
+                <input type="hidden" id="CProductoNombre" name="CProductoNombre" value="@Model.ProductoCarrito.Nombre" />
+                <input type="hidden" id="CProductoPrecio" name="CProductoPrecio" value="@Model.ProductoCarrito.Precio" />
+                <input type="hidden" id="CProductoCantidad" name="CProductoCantidad" value="@Model.ProductoCarrito.Cantidad" />
+
+                <input type="button" id="btnadd" name="btnadd" class="btn btn-success" value=" Agregar al Carrito" />
+
+                <a href="#" class="btn btn-primary">
+                    <i class="bi bi-star"></i> Ver Reseñas
+                </a>
             </div>
 
             <hr>
@@ -46,6 +64,9 @@
                 <li><strong>Tiempo de entrega:</strong> 2-5 días hábiles</li>
             </ul>
 
+            <a href="@Url.Action("Productos", "Productos")" class="btn btn-secondary mt-3">
+                <i class="bi bi-arrow-left"></i> Volver a productos
+            </a>
         </div>
     </div>
 
@@ -67,6 +88,33 @@
                     <p class="card-text"><small class="text-muted">Publicado hace 2 semanas</small></p>
                 </div>
             </div>
+            <a href="#" class="btn btn-outline-primary">Ver más reseñas</a>
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function () {
+        $('#btnadd').click(function () {
+            var productoCarrito = {
+                ProductoId: parseInt($('#CProductoId').val()),
+                Nombre: $('#CProductoNombre').val(),
+                Precio: parseFloat($('#CProductoPrecio').val()),
+                Cantidad: parseInt($('#CProductoCantidad').val()),
+                UrlImagen: null
+            };
+
+            $.ajax({
+                url: '@Url.Action("Agregar", "Carrito")',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(productoCarrito),
+                success: function (response) {
+                    alert('Producto añadido al carrito');
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
+</script>

@@ -197,6 +197,7 @@ namespace AGONFRONT.Controllers
         public async Task<ActionResult> Detalles(int id)
         {
             Productos producto = null;
+            DetalleProductoViewModel viewModel = new DetalleProductoViewModel();
 
             try
             {
@@ -211,6 +212,16 @@ namespace AGONFRONT.Controllers
                     {
                         var res = await response.Content.ReadAsStringAsync();
                         producto = JsonConvert.DeserializeObject<Productos>(res);
+
+                        viewModel.ProductoCarrito = new ProductoEnCarrito()
+                        {
+                            ProductoId = producto.Id,
+                            Nombre = producto.Nombre,
+                            Precio = producto.Precio,
+                            Cantidad = 1
+                        };
+
+                        viewModel.Producto = producto;
                     }
                     else
                     {
@@ -230,7 +241,7 @@ namespace AGONFRONT.Controllers
                 return RedirectToAction("Productos");
             }
 
-            return View(producto);
+            return View(viewModel);
         }
 
         public async Task<ActionResult> Cereales()
