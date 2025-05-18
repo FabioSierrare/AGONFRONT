@@ -20,7 +20,7 @@ namespace AGONFRONT.Models
 
         [Display(Name = " Empresa del Envio")]
         [Required(ErrorMessage = "El campo {0} es requerido")]
-        public string EmpresaEnvio { get; set; }
+        public string Empresa { get; set; }
 
         [Display(Name = " Numero Guia")]
         [Required(ErrorMessage = "El campo {0} es requerido")]
@@ -28,14 +28,15 @@ namespace AGONFRONT.Models
 
         [Display(Name = " Estado del Envio")]
         [Required(ErrorMessage = "El campo {0} es requerido")]
-        public string EstadoEnvio { get; set; }
+        public string EstadoEnvio { get; set; } = "En transito";
 
         [Display(Name = " Fecha del Envio")]
         [DataType(DataType.DateTime)]
-        public DateTime FechaEnvio { get; set; }
+        public DateTime FechaEnvio { get; set; } = DateTime.Now;
 
         [Display(Name = " Fecha de la Entrega")]
         [DataType(DataType.DateTime)]
         public DateTime? FechaEntrega { get; set; }
+        public string Ubicacion { get; set; }
     }
 }

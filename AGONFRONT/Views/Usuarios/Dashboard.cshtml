@@ -1,4 +1,6 @@
 ﻿@using AGONFRONT.Models
+@using Newtonsoft.Json
+
 @model List<Pedidos>
 
 @{
@@ -8,49 +10,308 @@
     var productos = ViewBag.Productos as List<Productos> ?? new List<Productos>();
 }
 
-@section Styles {
-    <link href="~/Content/css/Dasborad.css" rel="stylesheet" />
-}
-
-<!-- NO MÁS <main class="main-content"> AQUÍ -->
 
 <header>
-    <div class="header-left">
-        <h1>Dashboard</h1>
-        <p>Bienvenido al panel de control de Ecommerce</p>
-    </div>
+    <script src="~/Content/JS/Dasborad.js"></script>
+
+    <style>
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .page-title h1 {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .page-title p {
+            color: var(--gray);
+            margin: 0;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+        }
+
+        .notifications {
+            position: relative;
+            margin-right: 1.5rem;
+            cursor: pointer;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+
+            .user-profile img {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                margin-right: 0.75rem;
+                object-fit: cover;
+            }
+
+        .user-info small {
+            display: block;
+            color: var(--gray);
+            font-size: 0.8rem;
+        }
+
+        /* Metrics Cards */
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border-left: 4px solid var(--primary);
+        }
+
+            .metric-card:hover {
+                transform: translateY(-5px);
+                box-shadow: var(--shadow-md);
+            }
+
+            .metric-card h3 {
+                font-size: 1rem;
+                color: var(--gray);
+                margin-bottom: 0.5rem;
+                font-weight: 500;
+            }
+
+            .metric-card .value {
+                font-size: 1.75rem;
+                font-weight: 700;
+                color: var(--dark);
+                margin: 0;
+            }
+
+        /* Charts Section */
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            height: 400px; /* Altura fija recomendada para evitar estiramiento infinito */
+            overflow: hidden;
+            position: relative;
+        }
+
+            .chart-container canvas {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100% !important;
+                height: 100% !important;
+            }
+
+
+            .chart-container h3 {
+                font-size: 1.1rem;
+                margin-bottom: 1.5rem;
+                color: var(--dark);
+                font-weight: 600;
+            }
+
+        /* Orders Table */
+        .orders-table {
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+            .orders-table h3 {
+                padding: 1.25rem 1.5rem;
+                margin: 0;
+                font-size: 1.1rem;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--gray);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+            .status.completed {
+                background: rgba(39, 174, 96, 0.1);
+                color: var(--primary-dark);
+            }
+
+            .status.pending {
+                background: rgba(241, 196, 15, 0.1);
+                color: #F39C12;
+            }
+
+            .status.canceled {
+                background: rgba(231, 76, 60, 0.1);
+                color: #E74C3C;
+            }
+
+        /* Responsive */
+        @@media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+                .sidebar.active {
+                    transform: translateX(0);
+                }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .charts {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .metrics {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .top-nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .user-menu {
+                margin-top: 1rem;
+            }
+        }
+    </style>
 </header>
 
-<section class="metrics">
+
+<!-- Top Navigation -->
+<div class="top-nav">
+    <div class="page-title">
+        <h1>Panel de Control</h1>
+        <p>Bienvenido al dashboard de E-Agricultura</p>
+    </div>
+    <div class="user-menu">
+        <div class="notifications">
+            <i class="bi bi-bell" style="font-size: 1.25rem;"></i>
+            <span class="notification-badge">3</span>
+        </div>
+        <div class="user-profile">
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Usuario">
+            <div class="user-info">
+                <strong>Admin</strong>
+                <small>Agricultor</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Metrics Cards -->
+<div class="metrics">
     <div class="metric-card">
         <h3>Ingresos Totales</h3>
         <p class="value">$@(ViewBag.TotalIngresos != null ? ((decimal)ViewBag.TotalIngresos).ToString("N2") : "0.00")</p>
     </div>
     <div class="metric-card">
-        <h3>Total de Ventas Completadas</h3>
+        <h3>Ventas Totales</h3>
         <p class="value">@ViewBag.TotalPedidos</p>
     </div>
-</section>
 
-<section class="charts">
-    <div class="chart">
+</div>
+
+<!-- Charts Section -->
+<div class="charts">
+    <div class="chart-container">
         <h3>Ingresos por Día</h3>
-        <canvas id="ingresosChart" data-ingresos='@Html.Raw(ViewBag.IngresosDiarios)'></canvas>
+        <!-- Gráfica de ingresos -->
+        <canvas id="ingresosChart"
+                data-ingresos='@Html.Raw(ViewBag.IngresosDiarios)'
+                class="chart-canvas">
+        </canvas>
     </div>
-    <div class="chart">
+    <div class="chart-container">
         <h3>Productos Más Vendidos</h3>
-        <canvas id="productsChart" data-productos='@Html.Raw(ViewBag.ProductosMasVendidos)'></canvas>
+        <canvas id="productsChart"
+                data-productos='@Html.Raw(ViewBag.ProductosMasVendidos)'
+                class="chart-canvas">
+        </canvas>
     </div>
-</section>
+</div>
 
-<section class="latest-orders">
+<!-- Latest Orders -->
+<div class="orders-table">
     <h3>Últimos Pedidos</h3>
     <table>
         <thead>
             <tr>
                 <th>ID Pedido</th>
                 <th>Cliente</th>
-                <th>Producto</th>
                 <th>Estado</th>
                 <th>Fecha</th>
                 <th>Total</th>
@@ -63,30 +324,89 @@
                 {
                     var clienteNombre = clientes.FirstOrDefault(c => c.Id == pedido.ClienteId)?.Nombre ?? "Desconocido";
                     var productoNombre = productos.FirstOrDefault(p => p.Id == pedido.ProductoId)?.Nombre ?? "Desconocido";
-
                     <tr>
                         <td>@pedido.Id</td>
                         <td>@clienteNombre</td>
-                        <td>@productoNombre</td>
                         <td>
                             <span class="status @(pedido.Estado == "En Proceso" ? "pending" : pedido.Estado == "Completado" ? "completed" : "canceled")">
                                 @pedido.Estado
                             </span>
                         </td>
-                        <td>@pedido.FechaPedido.ToString("yyyy-MM-dd")</td>
-                        <td>$@pedido.Total.ToString("N2")</td>
+                        <td>2024-11-26</td>
+                        <td>$125.00</td>
                     </tr>
                 }
             }
-            else
-            {
-                <tr>
-                    <td colspan="6" class="text-center text-muted">No hay pedidos disponibles.</td>
-                </tr>
-            }
         </tbody>
     </table>
-</section>
+</div>
+<!-- NO MÁS <main class="main-content"> AQUÍ -->
+@*@<section class="metrics">
+        <div class="metric-card">
+            <h3>Ingresos Totales</h3>
+            <p class="value">$@(ViewBag.TotalIngresos != null ? ((decimal)ViewBag.TotalIngresos).ToString("N2") : "0.00")</p>
+        </div>
+        <div class="metric-card">
+            <h3>Total de Ventas Completadas</h3>
+            <p class="value">@ViewBag.TotalPedidos</p>
+        </div>
+    </section>
+
+    <section class="charts">
+        <div class="chart">
+            <h3>Ingresos por Día</h3>
+            <canvas id="ingresosChart" data-ingresos='@Html.Raw(ViewBag.IngresosDiarios)'></canvas>
+        </div>
+        <div class="chart">
+            <h3>Productos Más Vendidos</h3>
+            <canvas id="productsChart" data-productos='@Html.Raw(ViewBag.ProductosMasVendidos)'></canvas>
+        </div>
+    </section>
+
+    <section class="latest-orders">
+        <h3>Últimos Pedidos</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID Pedido</th>
+                    <th>Cliente</th>
+                    <th>Producto</th>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var pedido in Model)
+                    {
+                        var clienteNombre = clientes.FirstOrDefault(c => c.Id == pedido.ClienteId)?.Nombre ?? "Desconocido";
+                        var productoNombre = productos.FirstOrDefault(p => p.Id == pedido.ProductoId)?.Nombre ?? "Desconocido";
+
+                        <tr>
+                            <td>@pedido.Id</td>
+                            <td>@clienteNombre</td>
+                            <td>@productoNombre</td>
+                            <td>
+                                <span class="status @(pedido.Estado == "En Proceso" ? "pending" : pedido.Estado == "Completado" ? "completed" : "canceled")">
+                                    @pedido.Estado
+                                </span>
+                            </td>
+                            <td>@pedido.FechaPedido.ToString("yyyy-MM-dd")</td>
+                            <td>$@pedido.Total.ToString("N2")</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">No hay pedidos disponibles.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>*@
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

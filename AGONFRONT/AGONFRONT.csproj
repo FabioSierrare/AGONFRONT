@@ -222,6 +222,8 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Busquedas.cs" />
+    <Compile Include="Models\Envio.cs" />
+    <Compile Include="Models\EnviosViewModel.cs" />
     <Compile Include="Models\CarritoYComentariosViewModel.cs" />
     <Compile Include="Models\DetalleProductoViewModel.cs" />
     <Compile Include="Models\Filtros.cs" />

@@ -1,105 +1,316 @@
-﻿@model List<dynamic>
+﻿@model AGONFRONT.Models.EnviosViewModel
 
 @{
     ViewBag.Title = "Gestión de Envíos";
     Layout = "~/Views/Shared/_LayoutGestionVendedor.cshtml";
 }
 
-@section Styles {
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/Content/css/Envios.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-}
+<head>
+    <style>
+        .main-content {
+            margin-left: 120px;
+            padding: 2rem;
+            transition: var(--transition);
+            width: auto;
+        }
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">Logística</a>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <span class="navbar-text text-white">Bienvenido, Usuario</span>
-                </li>
-            </ul>
-        </div>
+        .page-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .page-title {
+            font-family: 'Merriweather', serif;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--dark);
+            opacity: 0.8;
+            font-size: 1.1rem;
+        }
+
+        /* Cards */
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+            .dashboard-card:hover {
+                transform: translateY(-5px);
+                box-shadow: var(--shadow-md);
+            }
+
+        .card-title {
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+            .card-title i {
+                margin-right: 10px;
+            }
+
+        /* Tables */
+        .table-responsive {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+            .table thead th {
+                background-color: var(--primary);
+                color: white;
+                font-weight: 500;
+                border: none;
+            }
+
+            .table tbody tr {
+                transition: var(--transition);
+            }
+
+                .table tbody tr:hover {
+                    background-color: rgba(39, 174, 96, 0.05);
+                    transform: translateX(2px);
+                }
+
+        .status-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background-color: #FFF3CD;
+            color: #856404;
+        }
+
+        .status-in-transit {
+            background-color: #CCE5FF;
+            color: #004085;
+        }
+
+        .status-delivered {
+            background-color: #D4EDDA;
+            color: #155724;
+        }
+
+        .status-cancelled {
+            background-color: #F8D7DA;
+            color: #721C24;
+        }
+
+        /* Buttons */
+        .btn-action {
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+        }
+
+            .btn-action i {
+                margin-right: 5px;
+            }
+
+        .btn-view {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+            .btn-view:hover {
+                background-color: #2484c1;
+                color: white;
+                transform: translateY(-2px);
+            }
+
+        .btn-edit {
+            background-color: var(--accent);
+            color: var(--dark);
+        }
+
+            .btn-edit:hover {
+                background-color: #e6b921;
+                color: var(--dark);
+                transform: translateY(-2px);
+            }
+
+        .btn-save {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 20px rgba(39, 174, 96, 0.3);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+            .btn-save:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 12px 25px rgba(39, 174, 96, 0.4);
+                color: white;
+            }
+
+            .btn-save::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+                transition: 0.6s;
+                z-index: -1;
+            }
+
+            .btn-save:hover::before {
+                left: 100%;
+            }
+
+        /* Forms */
+        .form-label {
+            font-weight: 500;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control, .form-select {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            transition: var(--transition);
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: var(--primary-light);
+                box-shadow: 0 0 0 0.25rem rgba(39, 174, 96, 0.25);
+                outline: none;
+            }
+
+        /* Notification badge */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            background-color: #EB5757;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<main class="main-content animate__animated animate__fadeIn">
+    <div class="page-header">
+        <h1 class="page-title"><i class="bi bi-truck me-2"></i>Gestión de Envíos</h1>
+        <p class="page-subtitle">Visualiza el estado de los envíos y configura las políticas de envío para tus productos.</p>
     </div>
-</nav>
 
-<div class="sidebar">
-    <a href="#">Inicio</a>
-    <a class="active" href="#">Envíos</a>
-    <a href="#">Configuración</a>
-</div>
-
-<div class="main-content">
-    <div class="container mt-4">
-        <h2 class="mb-4">Gestión de Envíos</h2>
-
-        @if (TempData["Success"] != null)
-        {
-            <div class="alert alert-success">@TempData["Success"]</div>
-        }
-        @if (TempData["Error"] != null)
-        {
-            <div class="alert alert-danger">@TempData["Error"]</div>
-        }
-
-        <table class="table table-striped table-bordered">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Pedido</th>
-                    <th>Empresa de Envío</th>
-                    <th>Número de Guía</th>
-                    <th>Estado</th>
-                    <th>Fecha de Envío</th>
-                    <th>Fecha de Entrega</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model != null && Model.Any())
-                {
-                    foreach (var envio in Model)
+    <!-- Estado de los envíos -->
+    <div class="dashboard-card">
+        <h3 class="card-title"><i class="bi bi-list-check me-2"></i>Estado de los Envíos</h3>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID Pedido</th>
+                        <th>Cliente</th>
+                        <th>Transportista</th>
+                        <th>Numero Guia</th>
+                        <th>Estado</th>
+                        <th>Fecha de Envío</th>
+                        <th>Fecha de Entrega</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var envio in Model.Envio)
                     {
                         <tr>
-                            <td>@envio?.Id</td>
-                            <td>@envio?.PedidoId</td>
-                            <td>@envio?.EmpresaEnvio</td>
-                            <td>@envio?.NumeroGuia</td>
-                            <td>
-                                <span class="badge bg-primary">@((envio?.EstadoEnvio) ?? "Sin estado")</span>
-                            </td>
-                            <td>@(envio?.FechaEnvio != null ? envio.FechaEnvio.ToString("dd/MM/yyyy HH:mm") : "Pendiente")</td>
-                            <td>@(envio?.FechaEntrega != null ? envio.FechaEntrega.ToString("dd/MM/yyyy HH:mm") : "Pendiente")</td>
-                            <td>
-                                <a href="@Url.Action("Details", "Envios", new { id = envio?.Id })" class="btn btn-sm btn-info me-1" title="Ver">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="@Url.Action("Edit", "Envios", new { id = envio?.Id })" class="btn btn-sm btn-warning me-1" title="Editar">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="@Url.Action("Delete", "Envios", new { id = envio?.Id })" class="btn btn-sm btn-danger" title="Eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este envío?');">
-                                    <i class="fas fa-trash-alt"></i>
-                                </a>
-                            </td>
+                            <td>@envio.ID_Pedido</td>
+                            <td>@envio.Cliente</td>
+                            <td>@envio.Empresa_Transporte</td>
+                            <td><a href="#">@envio.Tracking</a></td>
+                            <td><span class="badge bg-info">@envio.EstadoEnvio</span></td>
+                            <td>@(envio.FechaEnvio != null ? Convert.ToDateTime(envio.FechaEnvio).ToString("yyyy-MM-dd HH:mm:ss") : "Sin fecha")</td>
+                            <td>@(envio.FechaEntrega != null ? Convert.ToDateTime(envio.FechaEntrega).ToString("yyyy-MM-dd HH:mm:ss") : "Sin fecha")</td>
                         </tr>
                     }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="8" class="text-center">No hay envíos registrados.</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-
-        <a href="@Url.Action("Create", "Envios")" class="btn btn-success mt-3">
-            <i class="fas fa-plus"></i> Nuevo Envío
-        </a>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
 
-<footer class="bg-dark text-white text-center py-3 mt-5">
-    <p>&copy; @DateTime.Now.Year - Sistema de Envíos</p>
-</footer>
+    <div class="row">
+
+        <!-- Asignar empresa de transporte -->
+        <div class="col-lg-12">
+            <div class="dashboard-card">
+                <h3 class="card-title"><i class="bi bi-truck me-2"></i>Asignar Envío</h3>
+                @using (Html.BeginForm("EnviosPost", "Envios", FormMethod.Post))
+
+                {
+
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.Envios.PedidoId, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.Envios.PedidoId, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Envios.PedidoId, "", new { @class = "text-danger" })
+
+                    </div>
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.Envios.Empresa, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.Envios.Empresa, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Envios.Empresa, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.Envios.NumeroGuia, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.Envios.NumeroGuia, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Envios.NumeroGuia, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.Envios.FechaEntrega, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.Envios.FechaEntrega, new { @class = "form-control", @type = "date" })
+                        @Html.ValidationMessageFor(m => m.Envios.FechaEntrega, "", new { @class = "text-danger" })
+                    </div>
+                    <button type="submit" class="btn-save">
+                        <i class="bi bi-check-circle me-2"></i> Asignar Envío
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</main>
+
+

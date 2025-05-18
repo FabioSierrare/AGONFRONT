@@ -12,6 +12,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
+using AGONFRONT.Utils;
+using System.Reflection;
 
 
 namespace AGONFRONT.Controllers
@@ -24,7 +26,7 @@ namespace AGONFRONT.Controllers
         // GET: Envios/Details/5
         public async Task<ActionResult> GestionEnvios()
         {
-            List<object> envios = new List<object>();
+            var envios = new EnviosViewModel();
 
             // Verificar si el token está en las cookies
             var tokenCookie = Request.Cookies["BearerToken"];
@@ -77,7 +79,7 @@ namespace AGONFRONT.Controllers
 
                     var res = await response.Content.ReadAsStringAsync();
                     Console.WriteLine(res); // Esto imprimirá la respuesta JSON en la consola
-                    envios = JsonConvert.DeserializeObject<List<object>>(res) ?? new List<object>();
+                    envios.Envio = JsonConvert.DeserializeObject<List<Envio>>(res) ?? new List<Envio>();
 
                 }
             }
@@ -92,11 +94,14 @@ namespace AGONFRONT.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> EmpresasEnvios(Models.EmpresasEnvio model)
+        public async Task<ActionResult> EnviosPost(Models.EnviosViewModel model)
         {
+            List<Pedidos> pedido = new List<Pedidos>();
+            List<Usuarios> usuario = new List<Usuarios>();
+            List<Envios> envi = new List<Envios>();
+
             if (!ModelState.IsValid)
             {
-                // Manejo de errores en el ModelState
                 foreach (var key in ModelState.Keys)
                 {
                     foreach (var error in ModelState[key].Errors)
@@ -107,28 +112,91 @@ namespace AGONFRONT.Controllers
                 return RedirectToAction("Iniciar", "Home");
             }
 
+            var tokenCookie = Request.Cookies["BearerToken"];
+            var tokenExpirationCookie = Request.Cookies["TokenExpirationTime"];
+            var tokenSession = Session["BearerToken"] as string;
+            string token = tokenCookie?.Value ?? tokenSession;
+
+            // Verificar la fecha de expiración de la cookie
+            DateTime? expirationTime = null;
+            if (tokenExpirationCookie != null)
+            {
+                expirationTime = DateTime.TryParse(tokenExpirationCookie.Value, out var expiryDate) ? expiryDate : (DateTime?)null;
+            }
 
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(apiUrl);
                 client.DefaultRequestHeaders.Clear();
+                var userId = GetLoggedInUserId(token);
 
-                string json = JsonConvert.SerializeObject(model);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage resp = await client.GetAsync("api/Pedidos/GetPedidos");
+                HttpResponseMessage respu = await client.GetAsync("api/Usuarios/GetUsuarios");
+                HttpResponseMessage re = await client.GetAsync($"api/Envios/GetEnvios");
 
-                HttpResponseMessage response = await client.PostAsync("api/Empresas/PostEmpresasEnvio", content);
-
-                if (response.IsSuccessStatusCode)
+                if (!resp.IsSuccessStatusCode || !respu.IsSuccessStatusCode)
                 {
-                    var res = await response.Content.ReadAsStringAsync();
-                    TempData["Success"] = "Empresa de envío registrada correctamente.";
+                    TempData["Error"] = $"Error al obtener datos (Pedidos: {resp.StatusCode}, Usuarios: {respu.StatusCode}).";
+                    return RedirectToAction("Iniciar", "Home");
+                }
+
+                var rest = await resp.Content.ReadAsStringAsync();
+                pedido = JsonConvert.DeserializeObject<List<Pedidos>>(rest) ?? new List<Pedidos>();
+
+                var respue = await respu.Content.ReadAsStringAsync();
+                usuario = JsonConvert.DeserializeObject<List<Usuarios>>(respue) ?? new List<Usuarios>(); // ✅ aquí corregido
+
+                var resc = await re.Content.ReadAsStringAsync();
+                envi = JsonConvert.DeserializeObject<List<Envios>>(resc) ?? new List<Envios>();
+
+                var pedidoSeleccionado = pedido.FirstOrDefault(p => p.Id == model.Envios.PedidoId);
+
+                if (pedidoSeleccionado == null)
+                {
+                    TempData["Error"] = "No se encontró el pedido.";
+                    return RedirectToAction("GestionEnvios", "Envios");
+                }
+
+                var cliente = usuario.FirstOrDefault(u => u.Id == pedidoSeleccionado.ClienteId);
+
+                if (cliente == null)
+                {
+                    TempData["Error"] = "No se encontró el cliente asociado al pedido.";
+                    return RedirectToAction("GestionEnvios", "Envios");
+                }
+
+                bool yaExiste = envi.Any(e => e.PedidoId.ToString() == model.Envios.PedidoId.ToString());
+
+                if (yaExiste)
+                {
+                    // Mostrar mensaje al usuario
+                    TempData["Error"] = "Error al enviar los datos, Verifique que no este agregando un pedido ya existente.";
                     return RedirectToAction("GestionEnvios", "Envios");
                 }
                 else
                 {
-                    TempData["Error"] = "Credenciales incorrectas o problema con la API.";
-                    return RedirectToAction("GestionEnvios", "Envios");
+                    // Continuar con la creación del envío
                 }
+
+                model.Envios.Ubicacion = cliente.Direccion;
+
+                client.DefaultRequestHeaders.Clear();
+
+                string json = JsonConvert.SerializeObject(model.Envios);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await client.PostAsync("api/Envios/PostEnvios", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Envío registrado correctamente.";
+                }
+                else
+                {
+                    TempData["Error"] = "Error al enviar los datos.";
+                }
+
+                return RedirectToAction("GestionEnvios", "Envios");
             }
         }
 

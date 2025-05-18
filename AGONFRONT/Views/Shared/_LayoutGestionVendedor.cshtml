@@ -91,7 +91,6 @@
                     <a href="@Url.Action("GestionPedidos", "Usuarios")" class="nav-link">
                         <i class="bi bi-receipt"></i>
                         <span>Pedidos</span>
-                        <span class="notification-badge">3</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -131,11 +130,19 @@
                 });
             }
         });
+
+        function closeModal() {
+            const modal = document.getElementById('orderDetailsModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             const sidebarToggle = document.createElement('button');
-            sidebarToggle.className = 'btn btn-primary d-lg-none position-fixed';
-            sidebarToggle.style.bottom = '20px';
-            sidebarToggle.style.right = '20px';
+            sidebarToggle.className = 'btn btn-primary d-lg-none';
+            sidebarToggle.style.position = 'fixed';
+            sidebarToggle.style.top = '20px';
+            sidebarToggle.style.right = '20px';  // Posición derecha
             sidebarToggle.style.zIndex = '1000';
             sidebarToggle.innerHTML = '<i class="bi bi-list"></i>';
             sidebarToggle.onclick = function () {
@@ -143,6 +150,18 @@
             };
             document.body.appendChild(sidebarToggle);
         });
+
+        function printOrder() {
+            alert('Función de impresión activada para el pedido #' + document.getElementById('order-id').textContent);
+        }
+
+        // Cerrar modal al hacer clic fuera de él
+        window.onclick = function (event) {
+            const modal = document.getElementById('orderDetailsModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
     </script>
 
     @RenderSection("Scripts", required: false)
