@@ -13,7 +13,6 @@
 <div class="container mt-5 pt-5">
     <h2 class="text-center mb-4">Carrito de Compras</h2>
 
-    <!-- Verificar si el modelo está vacío o nulo -->
     @if (Model == null || !Model.Any())
     {
         <div class="alert alert-warning text-center" role="alert">
@@ -22,7 +21,6 @@
     }
     else
     {
-        <!-- Tabla de productos en el carrito -->
         <div class="table-responsive">
             <table class="table table-bordered">
                 <thead>
@@ -30,27 +28,27 @@
                         <th>Producto</th>
                         <th>Precio</th>
                         <th>Cantidad</th>
-                        <th>Total</th>
+                        <th>Subtotal</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var producto in Model)
                     {
-                        <tr>
+                        <tr data-nombre="@producto.Nombre">
                             <td>
                                 <div class="d-flex align-items-center">
                                     <img src="@producto.UrlImagen" class="img-fluid me-3" alt="Producto" />
                                     <span>@producto.Nombre</span>
                                 </div>
                             </td>
-                            <td>@producto.Precio.ToString("C")</td>
+                            <td class="precio">@producto.Precio.ToString("F2")</td>
                             <td>
-                                <input type="number" class="form-control" value="@producto.Cantidad" min="1" />
+                                <input type="number" class="form-control cantidad" value="@producto.Cantidad" min="1" />
                             </td>
-                            <td>@(producto.Precio * producto.Cantidad).ToString("C")</td>
+                            <td class="subtotal">@((producto.Precio * producto.Cantidad).ToString("F2"))</td>
                             <td>
-                                <button class="btn btn-danger">
+                                <button class="btn btn-danger btnEliminar">
                                     <i class="bi bi-trash"></i> Eliminar
                                 </button>
                             </td>
@@ -60,12 +58,11 @@
             </table>
         </div>
 
-        <!-- Resumen de la compra -->
         <div class="d-flex justify-content-between mt-4">
-            <h4>Total: @Model.Sum(p => p.Precio * p.Cantidad).ToString("C")</h4>
+            <h4>Total: <span class="totalGeneral">@Model.Sum(p => p.Precio * p.Cantidad).ToString("F2")</span></h4>
             <div>
-                <a href="#" class="btn btn-warning me-2">Seguir Comprando</a>
-                <a href="#" class="btn btn-success">Finalizar Compra</a>
+                <a href="@Url.Action("Productos", "Productos")" class="btn btn-warning me-2">Seguir Comprando</a>
+                @Html.ActionLink("Finalizar Compra", "PasarelaPago", "Carrito", null, new { @class = "btn btn-success", id = "btnFinalizarCompra" })
             </div>
         </div>
     }
@@ -93,3 +90,73 @@
     </div>
 </footer>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tbody = document.querySelector('table tbody');
+        const totalGeneralEl = document.querySelector('.totalGeneral');
+
+        // Función para recalcular subtotales y total general
+        function actualizarTotales() {
+            let totalCarrito = 0;
+
+            tbody.querySelectorAll('tr').forEach(fila => {
+                const precio = parseFloat(fila.querySelector('.precio').innerText) || 0;
+                const inputCantidad = fila.querySelector('input.cantidad');
+                const cantidad = parseInt(inputCantidad.value) || 0;
+
+                const subtotal = precio * cantidad;
+                fila.querySelector('.subtotal').innerText = subtotal.toFixed(2);
+
+                totalCarrito += subtotal;
+            });
+
+            totalGeneralEl.innerText = totalCarrito.toFixed(2);
+        }
+
+        // Al cambiar cantidad, actualizar totales y guardar carrito
+        tbody.querySelectorAll('input.cantidad').forEach(input => {
+            input.addEventListener('change', function () {
+                if (this.value < 1) this.value = 1; // mínimo 1
+                actualizarTotales();
+                guardarCarrito();
+            });
+        });
+
+        // Función para guardar carrito actualizado en localStorage
+        function guardarCarrito() {
+            const carrito = [];
+            tbody.querySelectorAll('tr').forEach(fila => {
+                const nombre = fila.getAttribute('data-nombre');
+                const precio = parseFloat(fila.querySelector('.precio').innerText) || 0;
+                const cantidad = parseInt(fila.querySelector('input.cantidad').value) || 0;
+
+                carrito.push({ nombre, precio, cantidad });
+            });
+            localStorage.setItem('carritoParaPago', JSON.stringify(carrito));
+        }
+
+        // Evento para eliminar producto
+        tbody.addEventListener('click', function (e) {
+            if (e.target.closest('.btnEliminar')) {
+                const fila = e.target.closest('tr');
+                const nombreProducto = fila.getAttribute('data-nombre');
+
+                // Eliminar fila del DOM
+                fila.remove();
+
+                // Actualizar totales y carrito en localStorage
+                actualizarTotales();
+                guardarCarrito();
+            }
+        });
+
+        // Al cargar la página, actualizar totales y carrito (por si acaso)
+        actualizarTotales();
+        guardarCarrito();
+
+        // Botón finalizar compra: solo guarda carrito y deja seguir navegando
+        document.getElementById('btnFinalizarCompra').addEventListener('click', function () {
+            guardarCarrito();
+        });
+    });
+</script>

@@ -436,6 +436,7 @@
     <Content Include="Views\Ofertas\Ofertas.cshtml" />
     <Content Include="Views\TerminosyCondiciones\TerminosyPoliticas.cshtml" />
     <Content Include="Views\Carrito\Carrito.cshtml" />
+    <Content Include="Views\Carrito\Pasarela.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
