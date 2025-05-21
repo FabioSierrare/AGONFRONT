@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = "Detalles del Producto";
     Layout = "~/Views/Shared/_LayoutLoged.cshtml";
+    var comentarios = ViewBag.Comentarios as List<AGONFRONT.Models.Comentarios>;
 }
 
 <style>
@@ -17,7 +18,6 @@
 </style>
 
 <div class="container my-5">
-    <!-- Mensaje de error si existe -->
     @if (TempData["Error"] != null)
     {
         <div class="alert alert-danger">
@@ -25,13 +25,24 @@
         </div>
     }
 
+    @if (ViewBag.UserId != null)
+    {
+        <div class="alert alert-success">
+            Estás logueado como usuario #@ViewBag.UserId
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            No estás logueado. Inicia sesión para comentar.
+        </div>
+    }
+
     <div class="row">
-        <!-- Columna de la Imagen del Producto -->
         <div class="col-md-6">
             <img src="@Model.Producto.UrlImagen" class="img-fluid rounded shadow-sm" alt="@Model.Producto.Nombre" style="width: 100%; height: auto;">
         </div>
 
-        <!-- Columna de la Información del Producto -->
         <div class="col-md-6">
             <h2 class="fw-bold">@Model.Producto.Nombre</h2>
             <p class="text-muted">@Model.Producto.Descripcion</p>
@@ -40,17 +51,15 @@
             <p><strong>Categoría:</strong> @Model.Producto.CategoriaId</p>
             <p><strong>Stock:</strong> @Model.Producto.Stock</p>
 
-            <!-- Botones de acción -->
             <div class="d-flex justify-content-between">
+                <input type="hidden" id="CProductoId" value="@Model.ProductoCarrito.ProductoId" />
+                <input type="hidden" id="CProductoNombre" value="@Model.ProductoCarrito.Nombre" />
+                <input type="hidden" id="CProductoPrecio" value="@Model.ProductoCarrito.Precio" />
+                <input type="hidden" id="CProductoCantidad" value="@Model.ProductoCarrito.Cantidad" />
 
-                <input type="hidden" id="CProductoId" name="CProductoId" value="@Model.ProductoCarrito.ProductoId" />
-                <input type="hidden" id="CProductoNombre" name="CProductoNombre" value="@Model.ProductoCarrito.Nombre" />
-                <input type="hidden" id="CProductoPrecio" name="CProductoPrecio" value="@Model.ProductoCarrito.Precio" />
-                <input type="hidden" id="CProductoCantidad" name="CProductoCantidad" value="@Model.ProductoCarrito.Cantidad" />
+                <input type="button" id="btnadd" class="btn btn-success" value=" Agregar al Carrito" />
 
-                <input type="button" id="btnadd" name="btnadd" class="btn btn-success" value=" Agregar al Carrito" />
-
-                <a href="#" class="btn btn-primary">
+                <a href="#seccionComentarios" class="btn btn-primary">
                     <i class="bi bi-star"></i> Ver Reseñas
                 </a>
             </div>
@@ -64,34 +73,51 @@
                 <li><strong>Tiempo de entrega:</strong> 2-5 días hábiles</li>
             </ul>
 
+            @{ if (ViewBag.UserId != null)
+                {
+                    <hr>
+                    <h5>Escribe tu comentario:</h5>
+                    using (Html.BeginForm("Comentar", "Productos", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("productoId", Model.Producto.Id)
+
+                        <div class="form-group">
+                            <textarea class="form-control" name="comentarioTexto" id="comentarioTexto" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-2">Enviar Comentario</button>
+                    }
+                }
+            }
+
+
             <a href="@Url.Action("Productos", "Productos")" class="btn btn-secondary mt-3">
                 <i class="bi bi-arrow-left"></i> Volver a productos
             </a>
         </div>
     </div>
 
-    <!-- Reseñas del Producto -->
-    <div class="row mt-5">
-        <div class="col-md-12">
-            <h4>Reseñas de los Usuarios</h4>
-            <div class="card mb-3 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Carlos Hernández</h5>
-                    <p class="card-text">Excelente calidad, muy recomendado.</p>
-                    <p class="card-text"><small class="text-muted">Publicado hace 3 días</small></p>
+    <!-- Sección de comentarios -->
+    <div class="mt-5" id="seccionComentarios">
+        <h4>Comentarios del producto</h4>
+        <hr />
+        @if (comentarios != null && comentarios.Any())
+        {
+            foreach (var c in comentarios)
+            {
+                <div class="border p-3 mb-2 rounded">
+                    <p class="mb-1"><strong>Usuario #@c.UsuarioId</strong> comentó el @c.FechaComentario.ToString("dd/MM/yyyy HH:mm"):</p>
+                    <p>@c.ComentarioTexto</p>
                 </div>
-            </div>
-            <div class="card mb-3 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Marta Rodríguez</h5>
-                    <p class="card-text">Entrega rápida y en excelente estado.</p>
-                    <p class="card-text"><small class="text-muted">Publicado hace 2 semanas</small></p>
-                </div>
-            </div>
-            <a href="#" class="btn btn-outline-primary">Ver más reseñas</a>
-        </div>
+            }
+        }
+        else
+        {
+            <p class="text-muted">Este producto aún no tiene comentarios.</p>
+        }
     </div>
 </div>
+
 <script>
     $(document).ready(function () {
         $('#btnadd').click(function () {
@@ -108,7 +134,7 @@
                 type: 'POST',
                 contentType: 'application/json; charset=utf-8',
                 data: JSON.stringify(productoCarrito),
-                success: function (response) {
+                success: function () {
                     alert('Producto añadido al carrito');
                 },
                 error: function (xhr, status, error) {

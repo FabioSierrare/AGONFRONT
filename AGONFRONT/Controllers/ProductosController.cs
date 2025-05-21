@@ -5,11 +5,9 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net.Http;
-using System.Runtime.Remoting.Messaging;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.UI.WebControls;
 
 namespace AGONFRONT.Controllers
 {
@@ -21,26 +19,18 @@ namespace AGONFRONT.Controllers
         {
             List<Productos> productos = new List<Productos>();
 
-            // Verificar si el token está en las cookies
             var tokenCookie = Request.Cookies["BearerToken"];
             var tokenExpirationCookie = Request.Cookies["TokenExpirationTime"];
             var tokenSession = Session["BearerToken"] as string;
 
-            // Depuración para ver si las cookies están presentes
-            Console.WriteLine("BearerToken Cookie en Request: " + tokenCookie?.Value);
-            Console.WriteLine("TokenExpirationTime Cookie en Request: " + tokenExpirationCookie?.Value);
-
-            // Si el token está presente en las cookies, continuar
             string token = tokenCookie?.Value ?? tokenSession;
 
-            // Verificar la fecha de expiración de la cookie
             DateTime? expirationTime = null;
             if (tokenExpirationCookie != null)
             {
                 expirationTime = DateTime.TryParse(tokenExpirationCookie.Value, out var expiryDate) ? expiryDate : (DateTime?)null;
             }
 
-            // Si la fecha de expiración ha pasado, eliminar la cookie y redirigir
             if (expirationTime.HasValue && DateTime.Now > expirationTime.Value)
             {
                 HttpContext.Response.Cookies.Remove("BearerToken");
@@ -50,7 +40,6 @@ namespace AGONFRONT.Controllers
                 return RedirectToAction("Iniciar", "Home");
             }
 
-            // Código para obtener productos de la API
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(apiUrl);
@@ -66,213 +55,158 @@ namespace AGONFRONT.Controllers
                     TempData["Error"] = "No se pudieron obtener los productos de la API.";
                 }
             }
-            // Crear una cookie con las IDs de los productos
-            var productosIds = productos.Select(p => p.Id).ToList(); // Obtener las IDs de los productos
-            var productosIdsString = string.Join(",", productosIds); // Convertir las IDs a una cadena separada por comas
 
-            // Crear la cookie para almacenar las IDs de los productos
+            var productosIds = productos.Select(p => p.Id).ToList();
+            var productosIdsString = string.Join(",", productosIds);
+
             HttpCookie productosCookie = new HttpCookie("productosIds", productosIdsString)
             {
-                Expires = DateTime.Now.AddHours(1),  // Establece la expiración de la cookie (1 hora)
-                HttpOnly = true  // Asegura que la cookie solo sea accesible desde el servidor
+                Expires = DateTime.Now.AddHours(1),
+                HttpOnly = true
             };
-
-            // Guardar la cookie en la respuesta HTTP
             Response.Cookies.Add(productosCookie);
 
             return View(productos);
-
         }
 
-
-
-        public async Task<ActionResult> Frutas()
-        {
-            List<Productos> frutas = new List<Productos>();
-
-            using (var client = new HttpClient())
-            {
-                // Asignamos la URL base al cliente HttpClient
-                client.BaseAddress = new Uri(apiUrl);
-
-                // Usamos la ruta relativa ahora
-                HttpResponseMessage response = await client.GetAsync("api/Productos/GetProductos");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var res = await response.Content.ReadAsStringAsync();
-                    frutas = JsonConvert.DeserializeObject<List<Productos>>(res);
-                }
-                else
-                {
-                    TempData["Error"] = "No se pudieron obtener los productos de la API.";
-                }
-            }
-
-            return View(frutas);
-
-        }
-        public async Task<ActionResult> Verduras()
-        {
-            List<Productos> verduras = new List<Productos>();
-
-            using (var client = new HttpClient())
-            {
-                // Asignamos la URL base al cliente HttpClient
-                client.BaseAddress = new Uri(apiUrl);
-
-                // Usamos la ruta relativa ahora
-                HttpResponseMessage response = await client.GetAsync("api/Productos/GetProductos");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var res = await response.Content.ReadAsStringAsync();
-                    verduras = JsonConvert.DeserializeObject<List<Productos>>(res);
-                }
-                else
-                {
-                    TempData["Error"] = "No se pudieron obtener los productos de la API.";
-                }
-            }
-
-            return View(verduras);
-
-        }
-
-        public async Task<ActionResult> Granja()
-        {
-            List<Productos> granja = new List<Productos>();
-
-            using (var client = new HttpClient())
-            {
-                // Asignamos la URL base al cliente HttpClient
-                client.BaseAddress = new Uri(apiUrl);
-
-                // Usamos la ruta relativa ahora
-                HttpResponseMessage response = await client.GetAsync("api/Productos/GetProductos");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var res = await response.Content.ReadAsStringAsync();
-                    granja = JsonConvert.DeserializeObject<List<Productos>>(res);
-                }
-                else
-                {
-                    TempData["Error"] = "No se pudieron obtener los productos de la API.";
-                }
-            }
-
-            return View(granja);
-
-        }
-
-        public async Task<ActionResult> Tuberculos()
-        {
-            List<Productos> tuberculos = new List<Productos>();
-
-            using (var client = new HttpClient())
-            {
-                // Asignamos la URL base al cliente HttpClient
-                client.BaseAddress = new Uri(apiUrl);
-
-                // Usamos la ruta relativa ahora
-                HttpResponseMessage response = await client.GetAsync("api/Productos/GetProductos");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var res = await response.Content.ReadAsStringAsync();
-                    tuberculos = JsonConvert.DeserializeObject<List<Productos>>(res);
-                }
-                else
-                {
-                    TempData["Error"] = "No se pudieron obtener los productos de la API.";
-                }
-            }
-
-            return View(tuberculos);
-
-        }
-
-        // Acción para ver el listado de productos (por ejemplo)
         public async Task<ActionResult> Detalles(int id)
         {
             Productos producto = null;
             DetalleProductoViewModel viewModel = new DetalleProductoViewModel();
+            ViewBag.Comentarios = new List<Comentarios>();
+            ViewBag.UserId = null;
 
             try
             {
                 using (var client = new HttpClient())
                 {
-                    client.BaseAddress = new Uri(apiUrl); // Asegúrate de que apiUrl esté bien configurado
+                    client.BaseAddress = new Uri(apiUrl);
 
-                    // Hacemos la llamada a la API usando el endpoint correcto
+                    // Obtener producto
                     HttpResponseMessage response = await client.GetAsync($"api/Productos/GetProducto/{id}");
-
                     if (response.IsSuccessStatusCode)
                     {
                         var res = await response.Content.ReadAsStringAsync();
                         producto = JsonConvert.DeserializeObject<Productos>(res);
 
-                        viewModel.ProductoCarrito = new ProductoEnCarrito()
+                        viewModel.Producto = producto;
+                        viewModel.ProductoCarrito = new ProductoEnCarrito
                         {
                             ProductoId = producto.Id,
                             Nombre = producto.Nombre,
                             Precio = producto.Precio,
                             Cantidad = 1
                         };
-
-                        viewModel.Producto = producto;
                     }
                     else
                     {
-                        TempData["Error"] = "No se pudo obtener el producto de la API. Código de estado: " + response.StatusCode;
+                        TempData["Error"] = "No se pudo obtener el producto.";
+                        return RedirectToAction("Productos");
+                    }
+
+                    // Obtener comentarios
+                    HttpResponseMessage comentariosResponse = await client.GetAsync("api/Comentarios/GetComentarios");
+                    if (comentariosResponse.IsSuccessStatusCode)
+                    {
+                        var comentariosJson = await comentariosResponse.Content.ReadAsStringAsync();
+                        var comentarios = JsonConvert.DeserializeObject<List<Comentarios>>(comentariosJson);
+                        ViewBag.Comentarios = comentarios.Where(c => c.ProductoId == id).ToList();
+                    }
+
+                    // Obtener ID desde cookie UserEmail
+                    string emailUsuario = Request.Cookies["UserEmail"]?.Value;
+                    if (!string.IsNullOrEmpty(emailUsuario))
+                    {
+                        HttpResponseMessage usuariosResponse = await client.GetAsync("api/Usuarios/GetUsuarios");
+                        if (usuariosResponse.IsSuccessStatusCode)
+                        {
+                            var usuariosJson = await usuariosResponse.Content.ReadAsStringAsync();
+                            var usuarios = JsonConvert.DeserializeObject<List<Usuarios>>(usuariosJson);
+                            var usuario = usuarios.FirstOrDefault(u => u.Correo == emailUsuario);
+
+                            if (usuario != null)
+                            {
+                                ViewBag.UserId = usuario.Id;
+
+                                Response.Cookies.Add(new HttpCookie("UserId", usuario.Id.ToString())
+                                {
+                                    HttpOnly = true,
+                                    Expires = DateTime.Now.AddHours(1)
+                                });
+                            }
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "Error al hacer la solicitud a la API: " + ex.Message;
+                TempData["Error"] = "Error al cargar los detalles: " + ex.Message;
+                return RedirectToAction("Productos");
             }
 
-            // Si el producto no se encuentra o hubo un error, redirigir con un mensaje de error
             if (producto == null)
             {
-                TempData["Error"] = "El producto no fue encontrado o hubo un problema con la conexión a la API.";
+                TempData["Error"] = "El producto no fue encontrado.";
                 return RedirectToAction("Productos");
             }
 
             return View(viewModel);
         }
 
-        public async Task<ActionResult> Cereales()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Comentar(int productoId, string comentarioTexto)
         {
-            List<Productos> cereal = new List<Productos>();
+            string emailUsuario = Request.Cookies["UserEmail"]?.Value;
+            if (string.IsNullOrEmpty(emailUsuario))
+            {
+                TempData["Error"] = "Debes iniciar sesión para comentar.";
+                return RedirectToAction("Iniciar", "Home");
+            }
+
+            int? userId = null;
 
             using (var client = new HttpClient())
             {
-                // Asignamos la URL base al cliente HttpClient
                 client.BaseAddress = new Uri(apiUrl);
+                HttpResponseMessage usuariosResponse = await client.GetAsync("api/Usuarios/GetUsuarios");
 
-                // Usamos la ruta relativa ahora
-                HttpResponseMessage response = await client.GetAsync("api/Productos/GetProductos");
-
-                if (response.IsSuccessStatusCode)
+                if (usuariosResponse.IsSuccessStatusCode)
                 {
-                    var res = await response.Content.ReadAsStringAsync();
-                    cereal = JsonConvert.DeserializeObject<List<Productos>>(res);
+                    var usuariosJson = await usuariosResponse.Content.ReadAsStringAsync();
+                    var usuarios = JsonConvert.DeserializeObject<List<Usuarios>>(usuariosJson);
+                    var usuario = usuarios.FirstOrDefault(u => u.Correo == emailUsuario);
+                    if (usuario != null)
+                        userId = usuario.Id;
                 }
-                else
+
+                if (userId == null)
                 {
-                    TempData["Error"] = "No se pudieron obtener los productos de la API.";
+                    TempData["Error"] = "No se pudo validar tu identidad.";
+                    return RedirectToAction("Iniciar", "Home");
+                }
+
+                var nuevoComentario = new Comentarios
+                {
+                    UsuarioId = userId.Value,
+                    ProductoId = productoId,
+                    ComentarioTexto = comentarioTexto,
+                    FechaComentario = DateTime.Now
+                };
+
+                var json = JsonConvert.SerializeObject(nuevoComentario);
+                var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync("api/Comentarios/PostComentarios", content);
+                if (!response.IsSuccessStatusCode)
+                {
+                    TempData["Error"] = "No se pudo registrar el comentario.";
                 }
             }
 
-            return View(cereal);
-
+            return RedirectToAction("Detalles", new { id = productoId });
         }
+
+        // Puedes mantener los demás métodos: Frutas, Verduras, etc. igual que estaban antes
     }
-
 }
-
-
-
