@@ -208,5 +208,138 @@ namespace AGONFRONT.Controllers
         }
 
         // Puedes mantener los demás métodos: Frutas, Verduras, etc. igual que estaban antes
+        public async Task<ActionResult> Cereales()
+
+        {
+            List<Productos> cereal = new List<Productos>();
+
+            using (var client = new HttpClient())
+            {
+                // Asignamos la URL base al cliente HttpClient
+                client.BaseAddress = new Uri(apiUrl);
+
+                // Usamos la ruta relativa ahora
+                HttpResponseMessage response = await client.GetAsync("api/Productos/GetProductos");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    cereal = JsonConvert.DeserializeObject<List<Productos>>(res);
+                }
+                else
+                {
+                    TempData["Error"] = "No se pudieron obtener los productos de la API.";
+                }
+            }
+
+            return View(cereal);
+
+        }
+        public async Task<ActionResult> Frutas()
+        {
+            List<Productos> frutas = new List<Productos>();
+
+            using (var client = new HttpClient())
+            {
+                // Asignamos la URL base al cliente HttpClient
+                client.BaseAddress = new Uri(apiUrl);
+
+                // Usamos la ruta relativa ahora
+                HttpResponseMessage response = await client.GetAsync("api/Productos/GetProductos");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    frutas = JsonConvert.DeserializeObject<List<Productos>>(res);
+                }
+                else
+                {
+                    TempData["Error"] = "No se pudieron obtener los productos de la API.";
+                }
+            }
+
+            return View(frutas);
+
+        }
+        public async Task<ActionResult> Verduras()
+        {
+            List<Productos> verduras = new List<Productos>();
+
+            using (var client = new HttpClient())
+            {
+                // Asignamos la URL base al cliente HttpClient
+                client.BaseAddress = new Uri(apiUrl);
+
+                // Usamos la ruta relativa ahora
+                HttpResponseMessage response = await client.GetAsync("api/Productos/GetProductos");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    verduras = JsonConvert.DeserializeObject<List<Productos>>(res);
+                }
+                else
+                {
+                    TempData["Error"] = "No se pudieron obtener los productos de la API.";
+                }
+            }
+
+            return View(verduras);
+
+        }
+
+        public async Task<ActionResult> Granja()
+        {
+            List<Productos> granja = new List<Productos>();
+
+            using (var client = new HttpClient())
+            {
+                // Asignamos la URL base al cliente HttpClient
+                client.BaseAddress = new Uri(apiUrl);
+
+                // Usamos la ruta relativa ahora
+                HttpResponseMessage response = await client.GetAsync("api/Productos/GetProductos");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    granja = JsonConvert.DeserializeObject<List<Productos>>(res);
+                }
+                else
+                {
+                    TempData["Error"] = "No se pudieron obtener los productos de la API.";
+                }
+            }
+
+            return View(granja);
+
+        }
+
+        public async Task<ActionResult> Tuberculos()
+        {
+            List<Productos> tuberculos = new List<Productos>();
+
+            using (var client = new HttpClient())
+            {
+                // Asignamos la URL base al cliente HttpClient
+                client.BaseAddress = new Uri(apiUrl);
+
+                // Usamos la ruta relativa ahora
+                HttpResponseMessage response = await client.GetAsync("api/Productos/GetProductos");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    tuberculos = JsonConvert.DeserializeObject<List<Productos>>(res);
+                }
+                else
+                {
+                    TempData["Error"] = "No se pudieron obtener los productos de la API.";
+                }
+            }
+
+            return View(tuberculos);
+
+        }
     }
 }
