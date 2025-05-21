@@ -441,7 +441,7 @@ namespace AGONFRONT.Controllers
         private async Task<string> SubirImagenAzure(HttpPostedFileBase imagen)
         {
             string storageConnectionString = ConfigurationManager.ConnectionStrings["AzureStorageConnectionString"].ConnectionString;
-            string containerName = "imagenes-productos"; // tu contenedor
+            string containerName = "imagenesproductos"; // tu contenedor
 
             var storageAccount = CloudStorageAccount.Parse(storageConnectionString);
             var blobClient = storageAccount.CreateCloudBlobClient();
