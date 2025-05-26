@@ -64,7 +64,7 @@ namespace AGONFRONT.Controllers
 
                 productos = JsonConvert.DeserializeObject<List<Productos>>(await productosResp.Content.ReadAsStringAsync()) ?? new List<Productos>();
                 usuario = JsonConvert.DeserializeObject<List<Usuarios>>(await usuariosResp.Content.ReadAsStringAsync()) ?? new List<Usuarios>();
-                
+
 
                 // Preparar el pedido
                 pedido.ClienteId = int.Parse(userId);
@@ -101,10 +101,7 @@ namespace AGONFRONT.Controllers
                 }
 
                 // Redirigir a pasarela de pago
-                string publicKey = "103d7a98a4a19e5b6a2c11471b8569cd";
                 string factura = $"{userId}AGON{DateTime.Now.Ticks}";
-                string descripcion = "Compra en AgroApp";
-                string moneda = "COP";
                 string nombre = usuario.FirstOrDefault(u => u.Id == pedido.ClienteId)?.Nombre ?? "Cliente";
                 string email = usuario.FirstOrDefault(u => u.Id == pedido.ClienteId)?.Correo ?? "cliente@email.com";
 
@@ -138,23 +135,9 @@ namespace AGONFRONT.Controllers
 
                 string urlRespuesta = Url.Action("Iniciar", "Home");
                 string urlConfirmacion = Url.Action("Iniciar", "Home");
+                TempData["SuccessMessage"] = "¡Compra exitosamente!";
 
-                string url = "https://checkout.epayco.co/payment.php?" +
-                             $"public_key={publicKey}" +
-                             $"&amount={pedido.Total}" +
-                             $"&name={descripcion}" +
-                             $"&description={descripcion}" +
-                             $"&currency={moneda}" +
-                             $"&invoice={factura}" +
-                             $"&tax=0" +
-                             $"&tax_base=0" +
-                             $"&lang=es" +
-                             $"&response={urlRespuesta}" +
-                             $"&confirmation={urlConfirmacion}" +
-                             $"&extra1={nombre}" +
-                             $"&email_billing={email}";
-
-                return Redirect(url);
+                return RedirectToAction("Productos", "Productos");
             }
         }
 

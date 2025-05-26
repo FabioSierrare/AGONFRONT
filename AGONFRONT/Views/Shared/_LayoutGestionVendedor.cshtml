@@ -106,11 +106,21 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="@Url.Action("UpdatePerfilVendedor", "Usuarios")" class="nav-link active">
+                    <a href="@Url.Action("UpdatePerfilVendedor", "Usuarios")" class="nav-link">
                         <i class="bi bi-person-circle"></i>
                         <span>Mi Perfil</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <form action="@Url.Action("LogOff", "Home")" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="nav-link btn btn-link text-danger" style="text-decoration: none;">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Cerrar sesión</span>
+                        </button>
+                    </form>
+                </li>
+
             </ul>
         </nav>
     </aside>

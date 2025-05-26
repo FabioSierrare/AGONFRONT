@@ -185,16 +185,51 @@
                         }
                     }
 
+
                     [HttpPost]
                     [ValidateAntiForgeryToken]
                     public ActionResult LogOff()
                     {
-                        // Eliminar las cookies de autenticación JWT
-                        HttpContext.Response.Cookies["BearerToken"].Expires = DateTime.Now.AddDays(-1);
+                        // Limpiar la sesión completamente
+                        Session.Clear();
+                        Session.Abandon();
 
-                        // Redirigir al usuario a la página de inicio de sesión
+                        // Eliminar cookies manualmente
+                        if (Request.Cookies["BearerToken"] != null)
+                        {
+                            var tokenCookie = new HttpCookie("BearerToken")
+                            {
+                                Expires = DateTime.Now.AddDays(-1),
+                                HttpOnly = true,
+                                Secure = true
+                            };
+                            Response.Cookies.Add(tokenCookie);
+                        }
+
+                        if (Request.Cookies["UserEmail"] != null)
+                        {
+                            var emailCookie = new HttpCookie("UserEmail")
+                            {
+                                Expires = DateTime.Now.AddDays(-1),
+                                Secure = true
+                            };
+                            Response.Cookies.Add(emailCookie);
+                        }
+
+                        if (Request.Cookies["UserId"] != null)
+                        {
+                            var idCookie = new HttpCookie("UserId")
+                            {
+                                Expires = DateTime.Now.AddDays(-1),
+                                Secure = true
+                            };
+                            Response.Cookies.Add(idCookie);
+                        }
+
+                        // Redirigir al login
                         return RedirectToAction("Iniciar", "Home");
                     }
+
 
                     public string GetUserTypeFromToken(string token)
                     {
