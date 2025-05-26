@@ -26,7 +26,7 @@ namespace AGONFRONT.Models
         public decimal Total { get; set; }
 
         [DataType(DataType.Date)]
-        public DateTime FechaPedido { get; set; }
+        public DateTime FechaPedido { get; set; } = DateTime.Now;
 
         [Display(Name = " Id del producto ")]
         public int ProductoId { get; set; }

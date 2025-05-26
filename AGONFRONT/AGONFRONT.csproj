@@ -214,6 +214,7 @@
     <Compile Include="Controllers\EstadisticasVentasController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OfertasController.cs" />
+    <Compile Include="Controllers\PagosController.cs" />
     <Compile Include="Controllers\ProductosController.cs" />
     <Compile Include="Controllers\RecuperacionController.cs" />
     <Compile Include="Controllers\TerminosyCondicionesController.cs" />
@@ -228,6 +229,7 @@
     <Compile Include="Models\DetalleProductoViewModel.cs" />
     <Compile Include="Models\Filtros.cs" />
     <Compile Include="Models\IngresosDiarios.cs" />
+    <Compile Include="Models\Pagos.cs" />
     <Compile Include="Models\ProductoEnCarritocs.cs" />
     <Compile Include="Models\ProductosDescuentosDTO.cs" />
     <Compile Include="Models\ProductosMasVendidos.cs" />
@@ -441,6 +443,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Pagos\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
