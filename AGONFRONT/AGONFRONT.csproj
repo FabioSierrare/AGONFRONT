@@ -363,6 +363,7 @@
     <Content Include="Content\img\Tuberculos.jpg" />
     <Content Include="Content\img\vector-two-bags-of-rice.jpg" />
     <Content Include="Content\JS\Dasborad.js" />
+    <Content Include="Content\JS\Validaciones.js" />
     <Content Include="Content\JS\Envios.js" />
     <Content Include="Content\JS\EstadisticaVenta.js" />
     <Content Include="Content\JS\GestionPedidos.js" />
