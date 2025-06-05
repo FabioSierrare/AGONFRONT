@@ -2,92 +2,392 @@
 
 @{
     Layout = "~/Views/Shared/_LayoutLoged.cshtml";
-    <link rel="stylesheet" href="~/Content/css/FAQ.css">
 }
+<head>
+    <style>
+        /* Contenedor principal de ayuda */
+        .help-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            padding: 3rem;
+            margin-bottom: 3rem;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            transition: var(--transition);
+        }
+
+            .help-container:hover {
+                box-shadow: var(--shadow-md);
+            }
+
+        /* Encabezado de la página de ayuda */
+        .help-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .help-title {
+            font-family: 'Merriweather', serif;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+            .help-title::after {
+                content: '';
+                position: absolute;
+                bottom: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 80px;
+                height: 3px;
+                background: var(--primary);
+            }
+
+        .help-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Secciones internas de ayuda */
+        .help-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+            .section-title i {
+                margin-right: 10px;
+                font-size: 1.3rem;
+            }
+
+        /* Tarjetas de preguntas y respuestas */
+        .help-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+
+            .help-card:hover {
+                box-shadow: var(--shadow-md);
+                transform: translateY(-5px);
+            }
+
+        .help-card-header {
+            background-color: #f8f9fa;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .help-card-body {
+            padding: 1.5rem;
+            border-top: 1px solid #eee;
+            background-color: #fff;
+        }
+
+            .help-card-body p {
+                margin-bottom: 1rem;
+                color: #444;
+                line-height: 1.6;
+            }
+
+        /* Botón dentro de las respuestas */
+        .btn-help {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+            .btn-help i {
+                margin-right: 8px;
+            }
+
+            .btn-help:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 20px rgba(39, 174, 96, 0.3);
+                color: white;
+            }
+
+        /* Ícono chevron para expandir/collapse */
+        .icon-chevron {
+            font-size: 18px;
+            transition: transform 0.3s;
+        }
+
+        .collapsed .icon-chevron {
+            transform: rotate(0deg);
+        }
+
+        .help-card-header:not(.collapsed) .icon-chevron {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
 
 
 <body>
-    <!-- FAQ Section -->
-    <div class="section container mt-4">
-        <h2>Nuevo en Mi Tienda</h2>
 
-        @* Aquí puedes agregar un listado de preguntas frecuentes (esto no cambia) *@
-        @{
-            var faqs = new[] {
-                new { Question = "¿Qué es Mi Tienda?", Answer = "Mi Tienda es una plataforma de compras en línea donde puedes encontrar productos exclusivos." },
-                new { Question = "¿Cómo hago una compra?", Answer = "Selecciona el producto, añádelo al carrito y completa el proceso de pago." },
-                new { Question = "¿Qué beneficios tengo como nuevo usuario?", Answer = "Los nuevos usuarios acceden a cupones de descuento, envío gratis en su primer pedido y ofertas exclusivas." },
-                new { Question = "¿Cómo buscar productos?", Answer = "Usá la barra de búsqueda en la parte superior para encontrar lo que necesitás, o navegá por las categorías." },
-                new { Question = "¿Puedo marcar productos como favoritos?", Answer = "Sí, haciendo clic en el ícono del corazón. Podés verlos luego en tu perfil, en la sección de favoritos." },
-                new { Question = "¿Cómo compartir productos?", Answer = "Desde la página del producto podés usar los botones de compartir por WhatsApp, Facebook o copiar el enlace directamente." }
-            };
-        }
 
-        @foreach (var item in faqs)
-        {
-            <div class="faq-item">
-                <div class="faq-question">
-                    <span>@item.Question</span>
-                    <button class="toggle-btn">+</button>
-                </div>
-                <div class="faq-answer">
-                    <p>@item.Answer</p>
-                </div>
-            </div>
-        }
-    </div>
-
-    <div class="container mt-4">
-        <h3>Agregar nueva pregunta frecuente</h3>
-
-        @using (Html.BeginForm("AgregarRespuestasFAQ", "Cliente", FormMethod.Post))
-        {
-            @Html.AntiForgeryToken()
-
-            <input type="hidden" name="Id" value="@(Model != null ? Model.Id : 0)" />
-            <input type="hidden" name="Respuesta" value="@(Model != null ? Model.Respuesta : 0)" />
-
-            <div class="mb-3">
-                @Html.LabelFor(m => m.Pregunta, new { @class = "form-label" })
-                @Html.TextBoxFor(m => m.Pregunta, new { @class = "form-control", placeholder = "Escribe la pregunta" })
-                @Html.ValidationMessageFor(m => m.Pregunta, "", new { @class = "text-danger" })
+    <div class="container my-5 animate__animated animate__fadeIn">
+        <div class="help-container">
+            <div class="help-header">
+                <h1 class="help-title">Centro de Ayuda</h1>
+                <p class="help-subtitle">Encuentra respuestas a tus preguntas o ponte en contacto con nuestro equipo de soporte.</p>
             </div>
 
-            <button type="submit" class="btn btn-primary">Guardar</button>
-        }
+            <div class="help-section" id="accordionCompras">
+                <h3 class="section-title"><i class="bi bi-cart-check"></i> Compras</h3>
+
+                <div class="help-card">
+                    <div class="help-card-header" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" role="button">
+                        <h5>¿Cómo realizar un pedido?</h5>
+                        <i class="bi bi-chevron-down icon-chevron"></i>
+                    </div>
+                    <div id="collapseOne" class="collapse show" data-bs-parent="#accordionCompras">
+                        <div class="help-card-body">
+                            <p>Para realizar un pedido en AGON, sigue estos pasos:</p>
+                            <ol>
+                                <li>Navega por nuestras categorías o usa la barra de búsqueda</li>
+                                <li>Selecciona el producto que deseas comprar</li>
+                                <li>Haz clic en "Añadir al carrito"</li>
+                                <li>Ve a tu carrito de compras</li>
+                                <li>Selecciona "Finalizar compra" y completa tus datos</li>
+                            </ol>
+                            <a href="@Url.Action("Carrito", "Carrito")" class="btn-help">
+                                <i class="bi bi-cart4"></i> Ir al Carrito
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="help-card">
+                    <div class="help-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" role="button">
+                        <h5>Devoluciones y reembolsos</h5>
+                        <i class="bi bi-chevron-down icon-chevron"></i>
+                    </div>
+                    <div id="collapseTwo" class="collapse" data-bs-parent="#accordionCompras">
+                        <div class="help-card-body">
+                            <p>Nuestra política de devoluciones permite solicitar un reembolso dentro de los 14 días posteriores a la recepción del producto...</p>
+                            <ol>
+                                <li>Ve a "Mis pedidos" en tu perfil</li>
+                                <li>Selecciona el pedido que deseas devolver</li>
+                                <li>Haz clic en "Solicitar devolución"</li>
+                                <li>Sigue las instrucciones proporcionadas</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="help-card">
+                    <div class="help-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree" role="button">
+                        <h5>Métodos de pago aceptados</h5>
+                        <i class="bi bi-chevron-down icon-chevron"></i>
+                    </div>
+                    <div id="collapseThree" class="collapse" data-bs-parent="#accordionCompras">
+                        <div class="help-card-body">
+                            <p>Aceptamos los siguientes métodos de pago:</p>
+                            <ul>
+                                <li>Tarjetas de crédito/débito</li>
+                                <li>PayPal</li>
+                                <li>Transferencia bancaria</li>
+                                <li>Pago contra entrega (solo en algunas zonas)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VENTAS -->
+            <div class="help-section" id="accordionVentas">
+                <h3 class="section-title"><i class="bi bi-shop"></i> Ventas</h3>
+
+                <div class="help-card">
+                    <div class="help-card-header" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour" role="button">
+                        <h5>¿Cómo vender mis productos en AGON?</h5>
+                        <i class="bi bi-chevron-down icon-chevron"></i>
+                    </div>
+                    <div id="collapseFour" class="collapse show" data-bs-parent="#accordionVentas">
+                        <div class="help-card-body">
+                            <p>Para convertirte en vendedor en AGON:</p>
+                            <ol>
+                                <li>Regístrate como vendedor en nuestra plataforma</li>
+                                <li>Completa la información de tu negocio</li>
+                                <li>Sube los productos con sus detalles (nombre, precio, descripción, fotos)</li>
+                                <li>Publica y comienza a recibir pedidos</li>
+                            </ol>
+                            <a href="@Url.Action("RegistroCliente", "Usuarios")" class="btn-help">
+                                <i class="bi bi-person-plus"></i> Registrarse
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="help-card">
+                    <div class="help-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive" role="button">
+                        <h5>Comisiones y tarifas</h5>
+                        <i class="bi bi-chevron-down icon-chevron"></i>
+                    </div>
+                    <div id="collapseFive" class="collapse" data-bs-parent="#accordionVentas">
+                        <div class="help-card-body">
+                            <p>AGON aplica las siguientes tarifas a las ventas:</p>
+                            <ul>
+                                <li>Tarifa por venta: 10%</li>
+                                <li>Procesamiento de pago: 2.9% + $0.30</li>
+                                <li>Almacenamiento (opcional): según uso</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CUENTA Y SEGURIDAD -->
+            <div class="help-section" id="accordionCuentaSeguridad">
+                <h3 class="section-title"><i class="bi bi-person-circle"></i> Cuenta y Seguridad</h3>
+
+                <div class="help-card">
+                    <div class="help-card-header" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="true" aria-controls="collapseSix" role="button">
+                        <h5>¿Cómo cambiar mi contraseña?</h5>
+                        <i class="bi bi-chevron-down icon-chevron"></i>
+                    </div>
+                    <div id="collapseSix" class="collapse show" data-bs-parent="#accordionCuentaSeguridad">
+                        <div class="help-card-body">
+                            <p>Para cambiar tu contraseña:</p>
+                            <ol>
+                                <li>Inicia sesión en tu cuenta</li>
+                                <li>Ve a "Configuración de cuenta"</li>
+                                <li>Selecciona "Cambiar contraseña"</li>
+                            </ol>
+                            <a href="@Url.Action("EditarPerfilCliente", "Cliente")" class="btn-help">
+                                <i class="bi bi-person-circle"></i> Editar Perfil
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="help-card">
+                    <div class="help-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven" role="button">
+                        <h5>Protección de datos personales</h5>
+                        <i class="bi bi-chevron-down icon-chevron"></i>
+                    </div>
+                    <div id="collapseSeven" class="collapse" data-bs-parent="#accordionCuentaSeguridad">
+                        <div class="help-card-body">
+                            <p>En AGON protegemos tus datos con:</p>
+                            <ul>
+                                <li>Encriptación de datos sensibles</li>
+                                <li>Verificación en dos pasos</li>
+                                <li>Políticas estrictas de privacidad</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <h4>¿No encontraste lo que buscabas?</h4>
+                <p>Contáctanos directamente y nuestro equipo de soporte te ayudará.</p>
+                <div class="container mt-4">
+
+                    @using (Html.BeginForm("AgregarRespuestasFAQ", "Cliente", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden" name="Id" value="@(Model != null ? Model.Id : 0)" />
+                        <input type="hidden" name="Respuesta" value="@(Model != null ? Model.Respuesta : 0)" />
+
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.Pregunta, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Pregunta, new { @class = "form-control", placeholder = "Escribe la pregunta" })
+                            @Html.ValidationMessageFor(m => m.Pregunta, "", new { @class = "text-danger" })
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-headset me-2"></i>
+                            Contactar Soporte
+                        </button>
+
+                    }
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const toggleButtons = document.querySelectorAll('.toggle-btn');
+            // Selecciona todos los headers que controlan el colapso
+            document.querySelectorAll('.help-card-header').forEach(header => {
+                header.addEventListener('click', function () {
+                    const targetSelector = this.getAttribute('data-bs-target');
+                    if (!targetSelector) return;
+                    const content = document.querySelector(targetSelector);
+                    if (!content) return;
 
-            toggleButtons.forEach(button => {
-                const answer = button.closest('.faq-item').querySelector('.faq-answer');
-                answer.style.display = 'none';
+                    // Usar Bootstrap Collapse JS API
+                    const bsCollapse = bootstrap.Collapse.getInstance(content) || new bootstrap.Collapse(content, { toggle: false });
+                    bsCollapse.toggle();
 
-                button.addEventListener('click', function () {
-                    const faqItem = this.closest('.faq-item');
-                    const answer = faqItem.querySelector('.faq-answer');
-
-                    if (answer.style.display === 'none' || answer.style.display === '') {
-                        answer.style.display = 'block';
-                        this.textContent = '−';
+                    // Toggle icon rotation
+                    const icon = this.querySelector('.icon-chevron');
+                    if (content.classList.contains('show')) {
+                        icon.classList.add('rotated');
                     } else {
-                        answer.style.display = 'none';
-                        this.textContent = '+';
+                        icon.classList.remove('rotated');
                     }
                 });
             });
 
-            document.querySelectorAll('.faq-question').forEach(question => {
-                question.addEventListener('click', function (e) {
-                    if (!e.target.classList.contains('toggle-btn')) {
-                        const btn = this.querySelector('.toggle-btn');
-                        btn.click();
+            // Al cargar, ajustar íconos según estado inicial
+            document.querySelectorAll('.collapse').forEach(collapseEl => {
+                const header = document.querySelector(`[data-bs-target="#${collapseEl.id}"]`);
+                if (header) {
+                    const icon = header.querySelector('.icon-chevron');
+                    if (collapseEl.classList.contains('show')) {
+                        icon.classList.add('rotated');
+                    } else {
+                        icon.classList.remove('rotated');
                     }
+                }
+            });
+
+            // Opcional: girar íconos chevron manualmente si no usas Bootstrap Collapse directamente
+            document.querySelectorAll('.help-card-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const icon = header.querySelector('.icon-chevron');
+                    icon.classList.toggle('rotate');
                 });
             });
         });
     </script>
 </body>
-</html>

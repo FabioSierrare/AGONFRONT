@@ -34,10 +34,11 @@
                             </span>
                         </div>
                         <div class="card-footer bg-transparent border-top-0 d-flex gap-2">
-                            <a href="@Url.Action("Detalles", "Productos", new { id = item.ProductoId })" class="btn btn-warning flex-fill">Ver Detalles</a>
-                            <a href="@Url.Action("AgregarAlCarrito", "Carrito", new { id = item.ProductoId })" class="btn btn-outline-primary flex-fill">
-                                Añadir al carrito
+                            <a href="@Url.Action("Detalles", "Productos", new { id = item.ProductoId })"
+                               class="btn btn-primary text-white flex-fill rounded-pill">
+                                <i class="bi bi-eye-fill me-1"></i> Ver Detalles
                             </a>
+
                         </div>
                     </div>
                 </div>

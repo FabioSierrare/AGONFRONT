@@ -18,11 +18,62 @@
 
     var pedidos = ViewBag.Pedidos as List<AGONFRONT.Models.Pedidos>;
 }
+<style>
+    /* Tarjeta de perfil */
+    .profile-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-radius: 16px;
+        padding: 3rem;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        margin-bottom: 2rem;
+    }
+
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+    .profile-title {
+        font-family: 'Merriweather', serif;
+        font-weight: 700;
+        color: var(--primary-dark, #2c3e50);
+        margin-bottom: 1.5rem;
+        text-align: center;
+        font-size: 2rem;
+    }
+
+    .profile-section-title {
+        font-weight: 600;
+        color: var(--primary-dark, #2c3e50);
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--primary-light, #3498db);
+        padding-bottom: 0.5rem;
+    }
+
+    /* Foto de perfil */
+    .profile-pic-container {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .profile-pic {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid var(--primary-light, #3498db);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+</style>
+
 
 @if (usuario != null)
 {
     <div class="container my-5">
-        <div class="card p-4">
+        <div class="card p-4 shadow animate__animated animate__fadeIn">
             <h3 class="text-center mb-4">Mi Perfil</h3>
 
             <div class="row align-items-center">
@@ -34,9 +85,9 @@
                         <button type="submit" class="btn btn-success">Cambiar Foto</button>
                     }
                 </div>
+                <div class="col-md-8">
+                    <h5 class="profile-section-title">Información Personal</h5>
 
-                <div class="col-md-9">
-                    <h5>Información Personal</h5>
                     <p><strong>Nombre:</strong> @usuario.Nombre</p>
                     <p><strong>Tipo de Documento:</strong> @usuario.TipoDocumento</p>
                     <p><strong>Documento:</strong> @usuario.Documento</p>
@@ -44,7 +95,7 @@
                     <p><strong>Teléfono:</strong> @usuario.Telefono</p>
                     <p><strong>Dirección:</strong> @usuario.Direccion</p>
 
-                    <div class="mt-3 d-flex flex-wrap gap-2">
+                    <div class="mt-4 d-flex flex-wrap gap-2">
                         <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#editarPerfilModal">Editar Perfil</button>
                         <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#cambiarContraseñaModal">Cambiar Contraseña</button>
                         <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#historialVentasModal">Ver Historial de Compras</button>
@@ -58,6 +109,7 @@ else
 {
     <p class="text-danger text-center">No se encontró información del usuario.</p>
 }
+
 
 <!-- Modal Editar Perfil -->
 <div class="modal fade" id="editarPerfilModal" tabindex="-1" aria-labelledby="editarPerfilModalLabel" aria-hidden="true">
@@ -79,7 +131,7 @@ else
 
                     <div class="mb-3">
                         <label>Nombre</label>
-                        <input type="text" name="Nombre" class="form-control sl" value="@usuario.Nombre" required />
+                        <input type="text" name="Nombre" class="form-control" value="@usuario.Nombre" required />
                     </div>
                     <div class="mb-3">
                         <label>Correo</label>
@@ -87,7 +139,7 @@ else
                     </div>
                     <div class="mb-3">
                         <label>Teléfono</label>
-                        <input type="tel" name="Telefono" class="form-control sn" value="@usuario.Telefono" required />
+                        <input type="tel" name="Telefono" class="form-control" value="@usuario.Telefono" required />
                     </div>
                     <div class="mb-3">
                         <label>Dirección</label>
@@ -176,7 +228,7 @@ else
                                     <td>@pedido.ProductoId</td>
                                     <td>@pedido.Cantidad</td>
                                     <td>@pedido.PrecioUnitario.ToString("C")</td>
-                                    <td>@(pedido.Cantidad * pedido.PrecioUnitario).ToString("C")</td>
+                                    <td>@(pedido.Cantidad * pedido.PrecioUnitario)</td>
                                     <td>@pedido.Estado</td>
                                 </tr>
                             }

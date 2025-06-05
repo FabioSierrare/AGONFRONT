@@ -1,40 +1,37 @@
 ﻿<aside class="col-3 p-0 mb-4" id="sidebar-container">
-    <div class="bg-dark text-white p-3">
-        <form id="formFiltros" method="get" action="/Busquedas/Filtrar">
+    <div class="bg-dark text-white p-3 rounded">
+        <form id="formFiltros" method="get">
             <h5>Categorías</h5>
             <hr class="mt-1">
 
-            @* Categorías *@
             <div class="form-check">
-                <input class="form-check-input" name="categorias" type="checkbox" value="Frutas" id="frutas">
+                <input class="form-check-input" name="categorias" type="checkbox" value="1" id="frutas">
                 <label class="form-check-label" for="frutas">Frutas</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" name="categorias" type="checkbox" value="Verduras" id="verduras">
+                <input class="form-check-input" name="categorias" type="checkbox" value="2" id="verduras">
                 <label class="form-check-label" for="verduras">Verduras</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" name="categorias" type="checkbox" value="Cereales" id="GranosCereales">
-                <label class="form-check-label" for="GranosCereales">Granos y cereales</label>
+                <input class="form-check-input" name="categorias" type="checkbox" value="3" id="granos">
+                <label class="form-check-label" for="granos">Granos y cereales</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" name="categorias" type="checkbox" value="Granja" id="Granja">
-                <label class="form-check-label" for="herramientas">Granja</label>
+                <input class="form-check-input" name="categorias" type="checkbox" value="4" id="granja">
+                <label class="form-check-label" for="granja">Granja</label>
             </div>
 
-            @* Precio *@
-            <br>
+            <br />
             <h5>Precio</h5>
-            <hr class="mt-1">
+            <hr class="mt-1" />
             <div class="row gx-2">
                 <div class="col">
-                    <input type="number" class="form-control sn" placeholder="Mínimo" name="precioMin">
+                    <input type="number" class="form-control" placeholder="Mínimo" name="precioMin" min="0">
                 </div>
                 <div class="col">
-                    <input type="number" class="form-control sn" placeholder="Máximo" name="precioMax">
+                    <input type="number" class="form-control" placeholder="Máximo" name="precioMax" min="0">
                 </div>
             </div>
-
         </form>
     </div>
 </aside>
