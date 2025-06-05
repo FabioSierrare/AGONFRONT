@@ -11,6 +11,10 @@ namespace AGONFRONT.Controllers
     public class CarritoController : Controller
     {
         // Mostrar el carrito
+        /// <summary>
+        /// Muestra la vista del carrito con la lista de productos almacenada en la sesión.
+        /// </summary>
+        /// <returns>Vista con la lista de <see cref="ProductoEnCarrito"/>.</returns>
         public async Task<ActionResult> Carrito()
         {
             List<ProductoEnCarrito> listCarrito = new List<ProductoEnCarrito>();
@@ -21,60 +25,41 @@ namespace AGONFRONT.Controllers
             return View(listCarrito);
         }
 
-        // Agregar un producto al carrito
+        /// <summary>
+        /// Agrega un producto al carrito. Si ya existe, incrementa su cantidad.
+        /// </summary>
+        /// <param name="producto">Objeto <see cref="ProductoEnCarrito"/> con la información del producto a agregar.</param>
+        /// <returns>Redirige a la acción <c>Carrito</c>.</returns>
         [HttpPost]
         public async Task<ActionResult> Agregar(ProductoEnCarrito producto)
         {
             List<ProductoEnCarrito> listCarrito = Session["Carrito"] as List<ProductoEnCarrito>;
 
-            // Si no existe, crea un nuevo carrito
             if (listCarrito == null)
             {
                 listCarrito = new List<ProductoEnCarrito>();
             }
 
-            // Aquí puedes comprobar si el producto ya existe en el carrito. Si existe, aumenta la cantidad.
             var productoExistente = listCarrito.FirstOrDefault(p => p.ProductoId == producto.ProductoId);
             if (productoExistente != null)
             {
-                productoExistente.Cantidad++;  // Si el producto ya está en el carrito, incrementa la cantidad
+                productoExistente.Cantidad++;
             }
             else
             {
-                // Si el producto no está en el carrito, lo agregamos
                 listCarrito.Add(producto);
             }
 
-            // Guarda el carrito actualizado en la sesión
             Session["Carrito"] = listCarrito;
 
-            // Redirige al carrito
             return RedirectToAction("Carrito");
-
-
-            //var carrito = await ObtenerCarritoAsync();
-
-            //var producto = carrito.FirstOrDefault(p => p.ProductoId == id);
-            //if (producto != null)
-            //{
-            //    producto.Cantidad++;
-            //}
-            //else
-            //{
-            //    carrito.Add(new ProductoEnCarrito
-            //    {
-            //        ProductoId = id,
-            //        Nombre = nombre,
-            //        Cantidad = 1,
-            //        UrlImagen = imagenUrl
-            //    });
-            //}
-
-            //GuardarCarrito(carrito);
-            //return RedirectToAction("Carrito");
         }
 
-        // Eliminar un producto del carrito
+        /// <summary>
+        /// Elimina un producto del carrito según su ID.
+        /// </summary>
+        /// <param name="id">ID del producto a eliminar.</param>
+        /// <returns>Redirige a la acción <c>Carrito</c>.</returns>
         [HttpPost]
         public async Task<ActionResult> Eliminar(int id)
         {
@@ -90,7 +75,12 @@ namespace AGONFRONT.Controllers
             return RedirectToAction("Carrito");
         }
 
-        // Actualizar la cantidad de un producto
+        /// <summary>
+        /// Actualiza la cantidad de un producto en el carrito.
+        /// </summary>
+        /// <param name="id">ID del producto a actualizar.</param>
+        /// <param name="cantidad">Nueva cantidad del producto.</param>
+        /// <returns>Redirige a la acción <c>Carrito</c>.</returns>
         [HttpPost]
         public async Task<ActionResult> ActualizarCantidad(int id, int cantidad)
         {
@@ -106,17 +96,24 @@ namespace AGONFRONT.Controllers
             return RedirectToAction("Carrito");
         }
 
-        // Obtener carrito desde Session (asincrónicamente)
+        /// <summary>
+        /// Obtiene la lista del carrito desde la sesión de forma asincrónica.
+        /// </summary>
+        /// <returns>Una tarea que representa la operación y contiene una lista de <see cref="ProductoEnCarrito"/>.</returns>
         private Task<List<ProductoEnCarrito>> ObtenerCarritoAsync()
         {
             var carrito = Session["Carrito"] as List<ProductoEnCarrito>;
             return Task.FromResult(carrito ?? new List<ProductoEnCarrito>());
         }
 
-        // Guardar carrito en Session
+        /// <summary>
+        /// Guarda la lista del carrito en la sesión.
+        /// </summary>
+        /// <param name="carrito">Lista de <see cref="ProductoEnCarrito"/> a guardar en la sesión.</param>
         private void GuardarCarrito(List<ProductoEnCarrito> carrito)
         {
             Session["Carrito"] = carrito;
         }
+
     }
 }

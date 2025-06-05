@@ -9,8 +9,7 @@
         foreach (var producto in Model)
         {
             <div class="d-flex align-items-center bg-white p-3 rounded shadow-sm producto"
-                 data-categoria="@producto.Categoria"
-                 data-precio="@producto.PrecioConDescuento">
+                 data-categoria="@producto.Categoria">
                 <!-- Asegúrate de que 'Ubicacion' esté en tu modelo -->
                 <div class="col-3 flex-shrink-0">
                     <img src="@producto.UrlImagen" class="img-fluid rounded" alt="@producto.NombreProducto" style="max-height: 100px; object-fit: cover;">
@@ -32,6 +31,7 @@
                         }
                     </h4>
                 </div>
+                
             </div>
         }
     }

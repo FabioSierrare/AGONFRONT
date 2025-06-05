@@ -24,6 +24,15 @@ namespace AGONFRONT.Controllers
         // GET: Envios
 
         // GET: Envios/Details/5
+        /// <summary>
+        /// Acción asincrónica que obtiene y muestra la lista de envíos filtrados para el usuario autenticado.
+        /// Verifica la existencia y validez del token JWT almacenado en cookies o sesión antes de hacer la petición a la API.
+        /// En caso de error, redirige al usuario a la página de inicio de sesión mostrando un mensaje de error.
+        /// </summary>
+        /// <returns>
+        /// Retorna la vista con el modelo <see cref="EnviosViewModel"/> que contiene la lista de envíos.
+        /// En caso de error o sesión inválida, redirige a la acción "Iniciar" del controlador "Home".
+        /// </returns>
         public async Task<ActionResult> GestionEnvios()
         {
             var envios = new EnviosViewModel();
@@ -93,13 +102,17 @@ namespace AGONFRONT.Controllers
             return View(envios);
         }
 
+
         [HttpPost]
+        /// <summary>
+        /// Procesa el registro de un nuevo envío verificando la validez del modelo, 
+        /// la existencia del pedido, y que no se haya registrado previamente.
+        /// </summary>
+        /// <param name="model">Modelo que contiene los datos del envío a registrar.</param>
+        /// <returns>Una acción de redirección hacia la vista correspondiente según el resultado.</returns>
         public async Task<ActionResult> EnviosPost(Models.EnviosViewModel model)
         {
-            List<Pedidos> pedido = new List<Pedidos>();
-            List<Usuarios> usuario = new List<Usuarios>();
-            List<Envios> envi = new List<Envios>();
-
+            // Validación del modelo recibido
             if (!ModelState.IsValid)
             {
                 foreach (var key in ModelState.Keys)
@@ -112,12 +125,13 @@ namespace AGONFRONT.Controllers
                 return RedirectToAction("Iniciar", "Home");
             }
 
+            // Obtención del token de autenticación desde cookies o sesión
             var tokenCookie = Request.Cookies["BearerToken"];
             var tokenExpirationCookie = Request.Cookies["TokenExpirationTime"];
             var tokenSession = Session["BearerToken"] as string;
             string token = tokenCookie?.Value ?? tokenSession;
 
-            // Verificar la fecha de expiración de la cookie
+            // Validación opcional de la fecha de expiración del token
             DateTime? expirationTime = null;
             if (tokenExpirationCookie != null)
             {
@@ -128,65 +142,58 @@ namespace AGONFRONT.Controllers
             {
                 client.BaseAddress = new Uri(apiUrl);
                 client.DefaultRequestHeaders.Clear();
-                var userId = GetLoggedInUserId(token);
 
-                HttpResponseMessage resp = await client.GetAsync("api/Pedidos/GetPedidos");
-                HttpResponseMessage respu = await client.GetAsync("api/Usuarios/GetUsuarios");
-                HttpResponseMessage re = await client.GetAsync($"api/Envios/GetEnvios");
+                // Llamadas a las API para obtener listas de pedidos, usuarios y envíos
+                var respPedidos = await client.GetAsync("api/Pedidos/GetPedidos");
+                var respUsuarios = await client.GetAsync("api/Usuarios/GetUsuarios");
+                var respEnvios = await client.GetAsync("api/Envios/GetEnvios");
 
-                if (!resp.IsSuccessStatusCode || !respu.IsSuccessStatusCode)
+                // Verificar que todas las respuestas hayan sido exitosas
+                if (!respPedidos.IsSuccessStatusCode || !respUsuarios.IsSuccessStatusCode || !respEnvios.IsSuccessStatusCode)
                 {
-                    TempData["Error"] = $"Error al obtener datos (Pedidos: {resp.StatusCode}, Usuarios: {respu.StatusCode}).";
+                    TempData["Error"] = $"Error al obtener datos (Pedidos: {respPedidos.StatusCode}, Usuarios: {respUsuarios.StatusCode}, Envios: {respEnvios.StatusCode}).";
                     return RedirectToAction("Iniciar", "Home");
                 }
 
-                var rest = await resp.Content.ReadAsStringAsync();
-                pedido = JsonConvert.DeserializeObject<List<Pedidos>>(rest) ?? new List<Pedidos>();
+                // Deserialización de las respuestas en listas
+                var pedidos = JsonConvert.DeserializeObject<List<Pedidos>>(await respPedidos.Content.ReadAsStringAsync()) ?? new List<Pedidos>();
+                var usuarios = JsonConvert.DeserializeObject<List<Usuarios>>(await respUsuarios.Content.ReadAsStringAsync()) ?? new List<Usuarios>();
+                var envios = JsonConvert.DeserializeObject<List<Envios>>(await respEnvios.Content.ReadAsStringAsync()) ?? new List<Envios>();
 
-                var respue = await respu.Content.ReadAsStringAsync();
-                usuario = JsonConvert.DeserializeObject<List<Usuarios>>(respue) ?? new List<Usuarios>(); // ✅ aquí corregido
-
-                var resc = await re.Content.ReadAsStringAsync();
-                envi = JsonConvert.DeserializeObject<List<Envios>>(resc) ?? new List<Envios>();
-
-                var pedidoSeleccionado = pedido.FirstOrDefault(p => p.Id == model.Envios.PedidoId);
-
+                // Buscar el pedido correspondiente al ID ingresado
+                var pedidoSeleccionado = pedidos.FirstOrDefault(p => p.Id == model.Envios.PedidoId);
                 if (pedidoSeleccionado == null)
                 {
                     TempData["Error"] = "No se encontró el pedido.";
                     return RedirectToAction("GestionEnvios", "Envios");
                 }
 
-                var cliente = usuario.FirstOrDefault(u => u.Id == pedidoSeleccionado.ClienteId);
-
+                // Obtener el cliente asociado al pedido
+                var cliente = usuarios.FirstOrDefault(u => u.Id == pedidoSeleccionado.ClienteId);
                 if (cliente == null)
                 {
                     TempData["Error"] = "No se encontró el cliente asociado al pedido.";
                     return RedirectToAction("GestionEnvios", "Envios");
                 }
 
-                bool yaExiste = envi.Any(e => e.PedidoId.ToString() == model.Envios.PedidoId.ToString());
-
+                // Verificar si ya existe un envío registrado para este pedido
+                bool yaExiste = envios.Any(e => e.PedidoId == model.Envios.PedidoId);
                 if (yaExiste)
                 {
-                    // Mostrar mensaje al usuario
-                    TempData["Error"] = "Error al enviar los datos, Verifique que no este agregando un pedido ya existente.";
+                    TempData["Error"] = "Error al enviar los datos, verifique que no esté agregando un pedido ya existente.";
                     return RedirectToAction("GestionEnvios", "Envios");
                 }
-                else
-                {
-                    // Continuar con la creación del envío
-                }
 
+                // Asignar dirección del cliente como ubicación del envío
                 model.Envios.Ubicacion = cliente.Direccion;
 
-                client.DefaultRequestHeaders.Clear();
-
+                // Enviar los datos del nuevo envío a la API
                 string json = JsonConvert.SerializeObject(model.Envios);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await client.PostAsync("api/Envios/PostEnvios", content);
+                var response = await client.PostAsync("api/Envios/PostEnvios", content);
 
+                // Verificar si la operación fue exitosa
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["Success"] = "Envío registrado correctamente.";
@@ -201,13 +208,26 @@ namespace AGONFRONT.Controllers
         }
 
 
+
         // Método para obtener el ID del usuario desde el token JWT
+        // Método para obtener el ID del usuario desde el token JWT
+        /// <summary>
+        /// Extrae el ID del usuario autenticado desde el token JWT.
+        /// </summary>
+        /// <param name="token">Token JWT del cual se extraerá el ID del usuario.</param>
+        /// <returns>El ID del usuario si se encuentra en el token, o null si no existe.</returns>
         public string GetLoggedInUserId(string token)
         {
+            // 🛡️ Crear una instancia para manejar el token JWT
             var handler = new JwtSecurityTokenHandler();
+
+            // 📦 Leer y deserializar el token JWT
             var jwtToken = handler.ReadJwtToken(token);
+
+            // 🔍 Buscar el claim que contiene el ID del usuario (por convención es NameIdentifier)
             var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
 
+            // 📤 Devolver el valor del claim (ID del usuario) o null si no se encontró
             return userIdClaim?.Value;
         }
     }

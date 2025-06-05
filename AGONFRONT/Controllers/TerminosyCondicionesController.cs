@@ -9,6 +9,7 @@ namespace AGONFRONT.Controllers
     public class TerminosyCondicionesController : Controller
     {
         // GET: TerminosyCondiciones
+        //Returna los terminos y condiciones de nuestro proyecto
         public ActionResult TerminosyPoliticas()
         {
             return View();
