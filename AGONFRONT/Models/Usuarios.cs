@@ -59,7 +59,7 @@ namespace AGONFRONT.Models
         [Required(ErrorMessage = " El campo {0} es requerido")]
 
 
-        public string TipoUsuario { get; set; }
+        public int TipoUsuarioId { get; set; }
 
         [Display(Name =  "Fehca de creacion")]
         [DataType(DataType.DateTime)]

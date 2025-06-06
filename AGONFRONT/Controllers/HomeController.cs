@@ -1,19 +1,16 @@
-﻿            using System;
-            using System.Configuration;
-            using System.IdentityModel.Tokens.Jwt;
-            using System.Linq;
-            using System.Net.Http;
-            using System.Text;
-            using System.Threading.Tasks;
-            using System.Web;
-            using System.Web.Mvc;
-            using System.Web.Security;
-            using System.Web.UI.WebControls;
-            using AGONFRONT.Models;
-            using Microsoft.Ajax.Utilities;
-            using Newtonsoft.Json;
-            using AGONFRONT.Utils;
-            
+﻿using System;
+using System.Configuration;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+using AGONFRONT.Models;
+using AGONFRONT.Utils;
+using Newtonsoft.Json;
+// NO necesitamos using de OWIN ni de Security.Cookies ni de Claims
 
 namespace AGONFRONT.Controllers
 {
@@ -39,22 +36,19 @@ namespace AGONFRONT.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         /// <summary>
-        /// Realiza el proceso de inicio de sesión validando el modelo, 
-        /// enviando las credenciales a la API de autenticación y gestionando el token JWT.
+        /// Realiza el proceso de inicio de sesión:
+        ///   1) Valida modelo
+        ///   2) Envía credenciales a la API
+        ///   3) Obtiene token JWT y extrae tipo de usuario
+        ///   4) Guarda tipo de usuario en Session["RolUsuario"]
+        ///   5) Redirige según rol
         /// </summary>
-        /// <param name="model">Modelo que contiene el correo y contraseña del usuario.</param>
-        /// <returns>Redirecciona a la vista correspondiente según el tipo de usuario o muestra errores.</returns>
-        public async Task<ActionResult> Login(Models.Login model)
+        public async Task<ActionResult> Login(Login model)
         {
             if (!ModelState.IsValid)
             {
-                foreach (var key in ModelState.Keys)
-                {
-                    foreach (var error in ModelState[key].Errors)
-                    {
-                        TempData["Error"] = $"Campo: {key} - Error: {error.ErrorMessage}";
-                    }
-                }
+                // Si hay errores de validación, redirigimos a Iniciar
+                TempData["Error"] = "Complete todos los campos correctamente.";
                 return RedirectToAction("Iniciar", "Home");
             }
 
@@ -67,72 +61,79 @@ namespace AGONFRONT.Controllers
 
                     // Encripta la contraseña antes de enviarla
                     string hash = Encriptador.Encriptar(model.Contraseña);
-                    System.Diagnostics.Debug.WriteLine("🔒 HASH GENERADO DESDE FRONT: " + hash);
                     model.Contraseña = hash;
 
-                    // Serializa el modelo a JSON para enviarlo en la solicitud POST
+                    // Serializa el modelo a JSON
                     string json = JsonConvert.SerializeObject(model);
-                    System.Diagnostics.Debug.WriteLine("📤 JSON ENVIADO: " + json);
-
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    // Enviar la solicitud POST a la API para autenticar
+                    // Llamada a la API de autenticación
                     HttpResponseMessage response = await client.PostAsync("api/Auth/Login", content);
 
-                    if (response.IsSuccessStatusCode)
+                    if (!response.IsSuccessStatusCode)
                     {
-                        var res = await response.Content.ReadAsStringAsync();
-                        Token token = JsonConvert.DeserializeObject<Token>(res);
-
-                        // Extrae el tipo de usuario del token JWT recibido
-                        var tipousuario = GetUserTypeFromToken(token.token);
-
-                        if (token != null && !string.IsNullOrEmpty(token.token))
-                        {
-                            // Guarda el token y email en cookies
-                            SetTokenCookie(token.token);
-                            SetUserEmailCookie(model.Correo);
-
-                            // Guarda tipo de usuario y token en sesión
-                            Session["RolUsuario"] = tipousuario;
-                            Session["BearerToken"] = token.token;
-
-                            // Redirige según el tipo de usuario
-                            if (tipousuario == "Vendedor")
-                                return RedirectToAction("Dashboard", "Usuarios");
-
-                            if (tipousuario == "Cliente")
-                                return RedirectToAction("Productos", "Productos");
-
-                            return RedirectToAction("Productos", "Productos");
-                        }
-                        else
-                        {
-                            TempData["Error"] = "El token recibido es inválido.";
-                            return RedirectToAction("Iniciar", "Home");
-                        }
-                    }
-                    else
-                    {
-                        var errResponse = await response.Content.ReadAsStringAsync();
-                        System.Diagnostics.Debug.WriteLine("❌ Error de API: " + errResponse);
                         TempData["Error"] = "Credenciales incorrectas. Verifica tu correo o contraseña.";
                         return RedirectToAction("Iniciar", "Home");
+                    }
+
+                    // Si la API devolvió un token JWT válido:
+                    var res = await response.Content.ReadAsStringAsync();
+                    Token token = JsonConvert.DeserializeObject<Token>(res);
+
+                    // Extrae el TipoUsuarioId del JWT (ej: "1", "2" o "3")
+                    string tipoId = GetUserTypeFromToken(token.token);
+
+                    if (string.IsNullOrEmpty(token.token) || string.IsNullOrEmpty(tipoId))
+                    {
+                        TempData["Error"] = "El token recibido es inválido.";
+                        return RedirectToAction("Iniciar", "Home");
+                    }
+
+                    // Guarda el token, el correo y el rol en sesión
+
+                    Session["BearerToken"] = token.token;
+                    Session["UserEmail"]   = model.Correo;
+                    Session["RolUsuario"]  = tipoId;        // ej: "3" para administrador
+
+                    // Guarda también el JWT en cookie si lo deseas (opcional)
+                    SetTokenCookie(token.token);
+
+                    // Redirige según el tipo de usuario:
+                    // 1 → Cliente, 2 → Vendedor, 3 → Administrador
+
+
+                    switch (tipoId)
+                    {
+                        case "1":
+                            // Cliente → redirige a lista de productos
+                            return RedirectToAction("Productos", "Productos");
+                        case "2":
+                            // Vendedor → va a su perfil
+                            return RedirectToAction("UpdatePerfilVendedor", "Usuarios");
+                        case "3":
+                            // Administrador → va al dashboard de administración
+                            return RedirectToAction("Dashboard", "Admin");
+                        default:
+                            // Si por alguna razón no coincide, lo mandamos a login otra vez
+                            TempData["Error"] = "Rol de usuario no reconocido.";
+                            return RedirectToAction("Iniciar", "Home");
                     }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("🔥 Excepción al conectar con la API: " + ex.Message);
+                // Conexión fallida u otro error
                 TempData["Error"] = "No se pudo conectar con el servidor. Intenta más tarde.";
                 return RedirectToAction("Iniciar", "Home");
             }
         }
 
         /// <summary>
-        /// Guarda el token JWT en una cookie HTTP segura con configuración HttpOnly.
+        /// Guarda el token JWT en una cookie HTTP segura con HttpOnly.
+        /// Esto es opcional: sirve si quieres leer el JWT desde JavaScript o reenviarlo
+        /// en otras peticiones. Si no te hace falta cookie, puedes omitir este método
+        /// y eliminar la llamada en Login().
         /// </summary>
-        /// <param name="token">Token JWT que será guardado en la cookie.</param>
         private void SetTokenCookie(string token)
         {
             var cookieOptions = new HttpCookie("BearerToken", token)
@@ -140,96 +141,50 @@ namespace AGONFRONT.Controllers
                 HttpOnly = true,      // Impide acceso desde JavaScript
                 Secure = true,        // Solo enviar sobre HTTPS
                 SameSite = SameSiteMode.Lax,
-                Expires = DateTime.Now.AddMinutes(20)  // Expiración en 20 minutos
+                Expires = DateTime.Now.AddMinutes(20)
             };
-
-            HttpContext.Response.Cookies.Add(cookieOptions);
+            Response.Cookies.Add(cookieOptions);
         }
 
         /// <summary>
-        /// Guarda el correo electrónico del usuario en una cookie con acceso desde JavaScript permitido.
+        /// Extrae el tipo de usuario (claim "TipoUsuarioId") del JWT.
         /// </summary>
-        /// <param name="Correo">Correo electrónico del usuario.</param>
-        private void SetUserEmailCookie(string Correo)
+        public string GetUserTypeFromToken(string token)
         {
-            var emailCookie = new HttpCookie("UserEmail", Correo)
-            {
-                HttpOnly = false,  // Permite acceso desde JavaScript
-                Secure = true,     // Solo enviar sobre HTTPS
-                SameSite = SameSiteMode.Lax,
-                Expires = DateTime.Now.AddHours(1)  // Expiración en 1 hora
-            };
+            if (string.IsNullOrEmpty(token))
+                return null;
 
-            HttpContext.Response.Cookies.Add(emailCookie);
-        }
-
-        public static class TokenHelper
-                    {
-                        public static int? GetUserIdFromToken(HttpContextBase httpContext)
-                        {
-                            var tokenCookie = httpContext.Request.Cookies["BearerToken"];
-                            var tokenSession = httpContext.Session["BearerToken"] as string;
-
-                            string token = tokenCookie?.Value ?? tokenSession;
-
-                            if (string.IsNullOrEmpty(token))
-                                return null;
-
-                            var handler = new JwtSecurityTokenHandler();
-                            var jwtToken = handler.ReadJwtToken(token);
-                            var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "UserId");
-
-                            return userIdClaim != null ? int.Parse(userIdClaim.Value) : (int?)null;
-                        }
-                    }
-
-        /// <summary>
-        /// Extrae el ID del usuario del token JWT almacenado en la solicitud HTTP
-        /// y guarda este ID en una cookie segura para uso posterior.
-        /// </summary>
-        public void SaveUserIdFromToken()
-        {
-            int? userId = TokenHelper.GetUserIdFromToken(HttpContext);
-
-            if (userId.HasValue)
-            {
-                var idCookie = new HttpCookie("UserId", userId.Value.ToString())
-                {
-                    HttpOnly = true,  // Protege contra acceso desde JavaScript
-                    Secure = true,    // Solo se envía en conexiones HTTPS
-                    SameSite = SameSiteMode.Lax,
-                    Expires = DateTime.Now.AddHours(1)  // Expira en 1 hora
-                };
-
-                HttpContext.Response.Cookies.Add(idCookie);
-            }
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            // Busca el claim cuyo Type sea "TipoUsuarioId"
+            var userTypeClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "TipoUsuarioId");
+            return userTypeClaim?.Value;
         }
 
         /// <summary>
-        /// Acción que cierra la sesión del usuario limpiando la sesión y eliminando las cookies relacionadas con autenticación.
+        /// Acción para cerrar sesión: limpia sesión y cookies.
         /// </summary>
-        /// <returns>Redirecciona a la página de inicio de sesión.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
-            // Limpiar completamente la sesión
+            // Limpiar toda la sesión
             Session.Clear();
             Session.Abandon();
 
-            // Eliminar manualmente la cookie del token
+            // Eliminar la cookie del token si existe
             if (Request.Cookies["BearerToken"] != null)
             {
                 var tokenCookie = new HttpCookie("BearerToken")
                 {
-                    Expires = DateTime.Now.AddDays(-1),  // Expira inmediatamente
+                    Expires = DateTime.Now.AddDays(-1),
                     HttpOnly = true,
                     Secure = true
                 };
                 Response.Cookies.Add(tokenCookie);
             }
 
-            // Eliminar manualmente la cookie del correo de usuario
+            // Eliminar la cookie del correo de usuario
             if (Request.Cookies["UserEmail"] != null)
             {
                 var emailCookie = new HttpCookie("UserEmail")
@@ -240,44 +195,13 @@ namespace AGONFRONT.Controllers
                 Response.Cookies.Add(emailCookie);
             }
 
-            // Eliminar manualmente la cookie del ID de usuario
-            if (Request.Cookies["UserId"] != null)
-            {
-                var idCookie = new HttpCookie("UserId")
-                {
-                    Expires = DateTime.Now.AddDays(-1),
-                    Secure = true
-                };
-                Response.Cookies.Add(idCookie);
-            }
-
-            // Redireccionar a la página de inicio de sesión
+            // Redireccionar a la página de login
             return RedirectToAction("Iniciar", "Home");
         }
 
-
-
         /// <summary>
-        /// Extrae el tipo de usuario del token JWT proporcionado.
+        /// Muestra la vista de acceso denegado si el usuario no tiene el rol apropiado.
         /// </summary>
-        /// <param name="token">El token JWT del que se extraerá el tipo de usuario.</param>
-        /// <returns>El valor del tipo de usuario si existe, o null si no se encuentra o el token es nulo o vacío.</returns>
-        public string GetUserTypeFromToken(string token)
-        {
-            if (string.IsNullOrEmpty(token))
-                return null;
-
-            var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadJwtToken(token);
-            var userTypeClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "TipoUsuario");
-
-            return userTypeClaim?.Value;
-        }
-
-        /// <summary>
-        /// Muestra la vista de acceso denegado con un mensaje explicativo.
-        /// </summary>
-        /// <returns>La vista que indica que el usuario no tiene permisos para acceder.</returns>
         public ActionResult AccesoDenegado()
         {
             ViewBag.Mensaje = "No tienes permisos para acceder a esta sección.";
@@ -285,10 +209,8 @@ namespace AGONFRONT.Controllers
         }
 
         /// <summary>
-        /// Muestra la vista de los datos personales del usuario.
-        /// Si no hay sesión activa o el rol no está definido, redirige al login.
+        /// Muestra los datos personales. Solo si Session["RolUsuario"] existe.
         /// </summary>
-        /// <returns>La vista de datos personales o redirección al login.</returns>
         public ActionResult MisDatos()
         {
             if (Session["RolUsuario"] == null)
@@ -296,10 +218,7 @@ namespace AGONFRONT.Controllers
                 return RedirectToAction("Iniciar", "Home");
             }
 
-            // continuar con la lógica para mostrar datos del usuario
             return View();
         }
-
-
     }
 }

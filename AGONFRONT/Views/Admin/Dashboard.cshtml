@@ -1,0 +1,45 @@
+﻿@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Panel de Administración</h2>
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Usuarios</h5>
+                <p class="card-text">Gestión de usuarios (clientes, vendedores, administradores).</p>
+                <a href="@Url.Action("Usuarios", "Admin")" class="btn btn-primary btn-block">Ir a Usuarios</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Comentarios</h5>
+                <p class="card-text">Revisar y eliminar comentarios.</p>
+                <a href="@Url.Action("Comentarios", "Admin")" class="btn btn-primary btn-block">Ir a Comentarios</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Productos</h5>
+                <p class="card-text">Editar, eliminar o revisar productos.</p>
+                <a href="@Url.Action("Productos", "Admin")" class="btn btn-primary btn-block">Ir a Productos</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Categorías</h5>
+                <p class="card-text">Crear, editar o eliminar categorías.</p>
+                <a href="@Url.Action("Categorias", "Admin")" class="btn btn-primary btn-block">Ir a Categorías</a>
+            </div>
+        </div>
+    </div>
+</div>

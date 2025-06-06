@@ -1,0 +1,51 @@
+﻿@model IEnumerable<AGONFRONT.Models.Usuarios>
+@{
+    ViewBag.Title = "Usuarios";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Usuarios</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<table class="table table-bordered table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Rol</th>
+            <th>Fecha Creación</th>
+            <th style="width: 180px;">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Nombre</td>
+                <td>@item.Correo</td>
+                <td>@item.FechaCreacion.ToString("dd/MM/yyyy")</td>
+                <td>
+                    <a href="@Url.Action("EditarUsuario", "Admin", new { id = item.Id })" class="btn btn-sm btn-primary">Editar</a>
+                    @using (Html.BeginForm("EliminarUsuario", "Admin", FormMethod.Post, new { style = "display:inline" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("id", item.Id)
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este usuario?');">
+                            Eliminar
+                        </button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

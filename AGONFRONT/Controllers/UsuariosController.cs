@@ -104,7 +104,6 @@ namespace AGONFRONT.Controllers
 
         //Estos controladortes son de la vista de mi producto vendedor
         //------------------------------------------------------------- 
-        [AuthorizeByRole("Vendedor")]
         /// <summary>
         /// Obtiene los productos del vendedor autenticado desde la API y los muestra en la vista.
         /// </summary>
@@ -178,7 +177,6 @@ namespace AGONFRONT.Controllers
             return View(productos);
         }
 
-        [AuthorizeByRole("Vendedor")]
         [HttpPost]
         /// <summary>
         /// Envía una solicitud a la API para actualizar la información de un producto del vendedor.
@@ -243,7 +241,6 @@ namespace AGONFRONT.Controllers
         }
 
 
-        [AuthorizeByRole("Vendedor")]
         [HttpPost]
         /// <summary>
         /// Elimina un producto del vendedor a través de la API, usando su ID.
@@ -331,7 +328,6 @@ namespace AGONFRONT.Controllers
             return userIdClaim?.Value;
         }
 
-        [AuthorizeByRole("Vendedor")]
         /// <summary>
         /// Acción que permite obtener la lista de usuarios para actualizar el perfil del vendedor.
         /// Verifica el token JWT en cookies o sesión, así como su expiración.
@@ -471,7 +467,6 @@ namespace AGONFRONT.Controllers
 
         //Aca estan todos los controladores de gestionar productos
         //--------------------------------------------------------------------------------------
-        [AuthorizeByRole("Vendedor")]
         /// <summary>
         /// Acción para obtener y mostrar los productos del vendedor autenticado.
         /// Valida el token JWT y consulta los productos desde la API.
@@ -589,7 +584,6 @@ namespace AGONFRONT.Controllers
         }
 
 
-        [AuthorizeByRole("Vendedor")]
         [HttpPost]
         /// <summary>
         /// Agrega un nuevo producto con una imagen subida a Azure Storage.
@@ -650,7 +644,6 @@ namespace AGONFRONT.Controllers
         }
 
 
-        [AuthorizeByRole("Vendedor")]
         public async Task<ActionResult> EliminarProducto(int id)
         {
             using (var client = new HttpClient())
@@ -669,7 +662,6 @@ namespace AGONFRONT.Controllers
             return View("GestionarProductos");
         }
 
-        [AuthorizeByRole("Vendedor")]
         /// <summary>
         /// Obtiene la lista completa de productos desde la API.
         /// </summary>
@@ -699,7 +691,6 @@ namespace AGONFRONT.Controllers
         }
 
         //--------------------------------------------------------------------------------------
-        [AuthorizeByRole("Vendedor")]
         /// <summary>
         /// Obtiene la lista completa de categorías desde la API.
         /// </summary>
@@ -728,7 +719,6 @@ namespace AGONFRONT.Controllers
             return categorias;
         }
 
-        [AuthorizeByRole("Vendedor")]
         /// <summary>
         /// Obtiene un producto específico por su ID desde la API.
         /// </summary>
@@ -763,7 +753,6 @@ namespace AGONFRONT.Controllers
             return producto;
         }
 
-        [AuthorizeByRole("Vendedor")]
         /// <summary>
         /// Obtiene y muestra la lista de pedidos junto con sus clientes y productos relacionados.
         /// </summary>
@@ -841,7 +830,6 @@ namespace AGONFRONT.Controllers
 
         //Esta es de la vista de descuentos
         //----------------------------------------------------------------
-        [AuthorizeByRole("Vendedor")]
         /// <summary>
         /// Obtiene y muestra la lista de descuentos/promociones asociados al usuario vendedor autenticado.
         /// </summary>
@@ -919,7 +907,6 @@ namespace AGONFRONT.Controllers
 
 
         [HttpPost]
-        [AuthorizeByRole("Vendedor")]
         /// <summary>
         /// Agrega un nuevo descuento para un vendedor específico.
         /// </summary>
@@ -932,17 +919,6 @@ namespace AGONFRONT.Controllers
         {
             try
             {
-                // Si el Id del vendedor no está asignado, intentar obtenerlo desde el token en el contexto HTTP
-                if (model.VendedorId == 0)
-                {
-                    int? userId = HomeController.TokenHelper.GetUserIdFromToken(HttpContext);
-                    if (userId == null)
-                    {
-                        TempData["Error"] = "No se pudo obtener el ID del vendedor.";
-                        return RedirectToAction("GestionDescuentos");
-                    }
-                    model.VendedorId = userId.Value;
-                }
 
                 // Enviar solicitud POST a la API para agregar el descuento
                 using (var client = new HttpClient())
@@ -973,7 +949,6 @@ namespace AGONFRONT.Controllers
         }
 
 
-        [AuthorizeByRole("Vendedor")]
         /// <summary>
         /// Obtiene y prepara los datos necesarios para mostrar el panel de control (Dashboard) de la aplicación.
         /// </summary>

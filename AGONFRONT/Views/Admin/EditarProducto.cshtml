@@ -1,0 +1,39 @@
+﻿@model AGONFRONT.Models.Productos
+@{
+    ViewBag.Title = "Editar Producto";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var categorias = ViewBag.Categorias as IEnumerable<AGONFRONT.Models.Categoria>;
+    var vendedores = ViewBag.Vendedores as IEnumerable<AGONFRONT.Models.Usuarios>;
+}
+
+<h2>Editar Producto</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@using (Html.BeginForm("EditarProducto", "Admin", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.Id)
+
+    <!-- ... otros campos ... -->
+
+    <div class="form-group">
+        @Html.Label("Categoría", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.DropDownListFor(
+                m => m.CategoriaId,
+                new SelectList(categorias, "Id", "Nombre", Model.CategoriaId),
+                "-- Seleccione categoría --",
+                new { @class = "form-control" }
+            )
+            @Html.ValidationMessageFor(m => m.CategoriaId)
+        </div>
+
+        <!-- ... campo Vendedor ... -->
+    </div>
+
+    <!-- ... resto del formulario ... -->
+}

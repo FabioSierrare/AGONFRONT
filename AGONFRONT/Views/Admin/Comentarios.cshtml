@@ -1,0 +1,51 @@
+﻿@model IEnumerable<AGONFRONT.Models.Comentarios>
+@{
+    ViewBag.Title = "Comentarios";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Comentarios</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<table class="table table-bordered table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>#</th>
+            <th>Usuario</th>
+            <th>Producto</th>
+            <th>Comentario</th>
+            <th>Fecha</th>
+            <th style="width: 140px;">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.UsuarioId</td>
+                <td>@item.ProductoId</td>
+                <td>@item.ComentarioTexto</td>
+                <td>@item.FechaComentario.ToString("dd/MM/yyyy")</td>
+                <td>
+                    @using (Html.BeginForm("EliminarComentario", "Admin", FormMethod.Post, new { style = "display:inline" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("id", item.Id)
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este comentario?');">
+                            Eliminar
+                        </button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

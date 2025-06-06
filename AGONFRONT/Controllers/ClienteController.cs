@@ -20,7 +20,6 @@ using AGONFRONT.Utils;
 namespace AGONFRONT.Controllers
 {
     //Para toda la parte de cliente:
-    [AuthorizeByRole("Cliente")]
 
     public class ClienteController : Controller
     {
