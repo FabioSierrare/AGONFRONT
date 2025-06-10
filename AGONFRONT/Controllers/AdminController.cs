@@ -250,7 +250,7 @@ namespace AGONFRONT.Controllers
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
-                    var response = await client.GetAsync($"api/Productos/GetProductos/{id}");
+                    var response = await client.GetAsync($"api/Productos/GetProducto/{id}");
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();

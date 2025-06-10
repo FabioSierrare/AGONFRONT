@@ -2,7 +2,7 @@
 @{
     ViewBag.Title = "Editar Producto";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
-    var categorias = ViewBag.Categorias as IEnumerable<AGONFRONT.Models.Categoria>;
+    var categorias = ViewBag.Categoria as IEnumerable<AGONFRONT.Models.Categoria>;
     var vendedores = ViewBag.Vendedores as IEnumerable<AGONFRONT.Models.Usuarios>;
 }
 
@@ -13,27 +13,68 @@
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
 @using (Html.BeginForm("EditarProducto", "Admin", FormMethod.Post, new { @class = "form-horizontal" }))
 {
     @Html.AntiForgeryToken()
     @Html.HiddenFor(m => m.Id)
 
-    <!-- ... otros campos ... -->
+    <!-- Campos ocultos para evitar errores 400 -->
+    @Html.HiddenFor(m => m.FechaCreacion)
+    @Html.HiddenFor(m => m.UrlImagen, new { @Value = Model.UrlImagen ?? "/assets/default.png" })
+    @Html.HiddenFor(m => m.Descripcion, new { @Value = Model.Descripcion ?? "Sin descripción." })
 
     <div class="form-group">
-        @Html.Label("Categoría", htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-4">
-            @Html.DropDownListFor(
-                m => m.CategoriaId,
-                new SelectList(categorias, "Id", "Nombre", Model.CategoriaId),
-                "-- Seleccione categoría --",
-                new { @class = "form-control" }
-            )
-            @Html.ValidationMessageFor(m => m.CategoriaId)
+        @Html.LabelFor(m => m.Nombre, new { @class = "control-label col-md-2" })
+        <div class="col-md-8">
+            @Html.TextBoxFor(m => m.Nombre, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Nombre)
         </div>
-
-        <!-- ... campo Vendedor ... -->
     </div>
 
-    <!-- ... resto del formulario ... -->
+    <div class="form-group">
+        @Html.LabelFor(m => m.Precio, new { @class = "control-label col-md-2" })
+        <div class="col-md-8">
+            @Html.TextBoxFor(m => m.Precio, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Precio)
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Stock, new { @class = "control-label col-md-2" })
+        <div class="col-md-8">
+            @Html.TextBoxFor(m => m.Stock, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Stock)
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.Label("Categoría", new { @class = "control-label col-md-2" })
+        <div class="col-md-8">
+            @Html.DropDownListFor(m => m.CategoriaId,
+                new SelectList(categorias, "Id", "Nombre", Model.CategoriaId),
+                "-- Selecciona una categoría --",
+                new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.CategoriaId)
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.Label("Vendedor", new { @class = "control-label col-md-2" })
+        <div class="col-md-8">
+            @Html.DropDownListFor(m => m.VendedorId,
+                new SelectList(vendedores, "Id", "Nombre", Model.VendedorId),
+                "-- Selecciona un vendedor --",
+                new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.VendedorId)
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-8">
+            <button type="submit" class="btn btn-success">Guardar cambios</button>
+            @Html.ActionLink("Cancelar", "Productos", "Admin", null, new { @class = "btn btn-default ml-2" })
+        </div>
+    </div>
 }

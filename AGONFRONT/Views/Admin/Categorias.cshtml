@@ -24,8 +24,7 @@
         <tr>
             <th>#</th>
             <th>Nombre</th>
-            <th style="width: 160px;">Acciones</th>
-        </tr>
+         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
@@ -33,17 +32,6 @@
             <tr>
                 <td>@item.Id</td>
                 <td>@item.Nombre</td>
-                <td>
-                    <a href="@Url.Action("EditarCategoria", "Admin", new { id = item.Id })" class="btn btn-sm btn-primary">Editar</a>
-                    @using (Html.BeginForm("EliminarCategoria", "Admin", FormMethod.Post, new { style = "display:inline" }))
-                    {
-                        @Html.AntiForgeryToken()
-                        @Html.Hidden("id", item.Id)
-                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar esta categoría?');">
-                            Eliminar
-                        </button>
-                    }
-                </td>
             </tr>
         }
     </tbody>

@@ -12,6 +12,8 @@
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
 @using (Html.BeginForm("EditarUsuario", "Admin", FormMethod.Post, new { @class = "form-horizontal" }))
 {
     @Html.AntiForgeryToken()
@@ -40,8 +42,7 @@
                 m => m.TipoUsuarioId,
                 new SelectList(tipos, "Id", "Nombre", Model.TipoUsuarioId),
                 "-- Selecciona un rol --",
-                new { @class = "form-control" }
-            )
+                new { @class = "form-control" })
             @Html.ValidationMessageFor(m => m.TipoUsuarioId)
         </div>
     </div>
