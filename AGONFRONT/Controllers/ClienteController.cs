@@ -99,7 +99,29 @@ namespace AGONFRONT.Controllers
             return View(usuarios);
         }
 
+        private async Task<List<Categoria>> ObtenerCategorias()
+        {
+            List<Categoria> categorias = new List<Categoria>();
 
+            using (var client = new HttpClient())
+            {
+                // Establece la URL base del cliente HTTP
+                client.BaseAddress = new Uri(apiUrl);
+
+                // Envía una solicitud GET para obtener las categorías
+                HttpResponseMessage response = await client.GetAsync("api/Categorias/GetCategorias");
+
+                // Si la respuesta es exitosa, deserializa el contenido a la lista de categorías
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    categorias = JsonConvert.DeserializeObject<List<Categoria>>(res);
+                }
+            }
+
+            // Retorna la lista de categorías (vacía si hubo error)
+            return categorias;
+        }
 
         [HttpPost]
         /// <summary>
@@ -277,6 +299,12 @@ namespace AGONFRONT.Controllers
                 TempData["Error"] = $"Hubo un error al procesar la solicitud: {ex.Message}";
                 return RedirectToAction("RespuestasFAQ");
             }
+        }
+        [ChildActionOnly]
+        public async Task<ActionResult> CategoriasDropdown()
+        {
+            var categorias = await ObtenerCategorias();
+            return PartialView("_CategoriasMenu", categorias);
         }
 
     }

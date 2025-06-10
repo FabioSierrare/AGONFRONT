@@ -319,11 +319,7 @@
                                 <i class="bi bi-grid me-1"></i> Categorías
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="@Url.Action("Frutas", "Productos", new { id = "Frutas" })"><i class="bi bi-apple me-2"></i> Frutas</a></li>
-                                <li><a class="dropdown-item" href="@Url.Action("Verduras", "Productos", new { id = "Verduras" })"><i class="fas fa-carrot"></i> Verduras</a></li>
-                                <li><a class="dropdown-item" href="@Url.Action("Tuberculos", "Productos", new { id = "Tuberculos" })"><i class="bi bi-flower2 me-2"></i> Tubérculos</a></li>
-                                <li><a class="dropdown-item" href="@Url.Action("Cereales", "Productos", new { id = "Cereales" })"><i class="bi bi-egg me-2"></i> Cereales</a></li>
-                                <li><a class="dropdown-item" href="@Url.Action("Granja", "Productos", new { id = "Granja" })"><i class="fas fa-tractor"></i> Granja</a></li>
+                                @Html.Action("CategoriasDropdown", "Cliente")
                             </ul>
                         </li>
 
