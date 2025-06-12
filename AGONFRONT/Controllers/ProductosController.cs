@@ -261,73 +261,73 @@ namespace AGONFRONT.Controllers
         /// Obtiene la lista de productos de tipo cereal desde la API y los muestra en la vista.
         /// </summary>
         /// <returns>Vista con la lista de productos tipo cereal.</returns>
-        public async Task<ActionResult> Cereales()
+        public ActionResult Categorias()
         {
-            // Lista para almacenar los productos tipo cereal
-            List<Productos> cereal = new List<Productos>();
+            List<Categoria> categorias = new List<Categoria>();
 
             using (var client = new HttpClient())
             {
-                // Establece la URL base para las solicitudes HTTP
                 client.BaseAddress = new Uri(apiUrl);
+                var task = client.GetAsync("api/Categorias/GetCategoria");
+                task.Wait();
 
-                // Solicita la lista completa de productos desde la API
-                HttpResponseMessage response = await client.GetAsync("api/Productos/GetProductos");
-
-                if (response.IsSuccessStatusCode)
+                if (task.Result.IsSuccessStatusCode)
                 {
-                    // Lee el contenido JSON de la respuesta
-                    var res = await response.Content.ReadAsStringAsync();
+                    var readTask = task.Result.Content.ReadAsStringAsync();
+                    readTask.Wait();
 
-                    // Convierte el JSON en una lista de objetos Productos
-                    cereal = JsonConvert.DeserializeObject<List<Productos>>(res);
-                }
-                else
-                {
-                    // Guarda un mensaje de error para mostrar en la vista
-                    TempData["Error"] = "No se pudieron obtener los productos de la API.";
+                    categorias = JsonConvert.DeserializeObject<List<Categoria>>(readTask.Result);
                 }
             }
 
-            // Retorna la vista pasando la lista de productos cereales
-            return View(cereal);
+            return PartialView("_CategoriasDropdown", categorias);
         }
+
+
 
         /// <summary>
-        /// Obtiene la lista de productos de tipo fruta desde la API y los muestra en la vista.
+        /// Obtiene productos por categoría o todos los productos tipo fruta si no se especifica categoría.
         /// </summary>
-        /// <returns>Vista con la lista de productos tipo fruta.</returns>
-        public async Task<ActionResult> Frutas()
+        /// <param name="idCategoria">ID de la categoría opcional.</param>
+        /// <returns>Vista con productos filtrados o todos si no hay filtro.</returns>
+        public async Task<ActionResult> ProductosCategoria(int? idCategoria)
         {
-            // Lista para almacenar los productos tipo fruta
-            List<Productos> frutas = new List<Productos>();
+            List<Productos> productos = new List<Productos>();
 
             using (var client = new HttpClient())
             {
-                // Establece la URL base para las solicitudes HTTP
                 client.BaseAddress = new Uri(apiUrl);
 
-                // Solicita la lista completa de productos desde la API
-                HttpResponseMessage response = await client.GetAsync("api/Productos/GetProductos");
+                HttpResponseMessage response;
 
-                if (response.IsSuccessStatusCode)
+                if (idCategoria.HasValue)
                 {
-                    // Lee el contenido JSON de la respuesta
-                    var res = await response.Content.ReadAsStringAsync();
-
-                    // Convierte el JSON en una lista de objetos Productos
-                    frutas = JsonConvert.DeserializeObject<List<Productos>>(res);
+                    response = await client.GetAsync($"api/Categorias/GetPorCategoria/{idCategoria.Value}");
                 }
                 else
                 {
-                    // Guarda un mensaje de error para mostrar en la vista
+                    response = await client.GetAsync("api/Productos/GetProductos");
+                }
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    productos = JsonConvert.DeserializeObject<List<Productos>>(json);
+                }
+                else
+                {
                     TempData["Error"] = "No se pudieron obtener los productos de la API.";
                 }
             }
 
-            // Retorna la vista pasando la lista de productos frutas
-            return View(frutas);
+            ViewBag.NombreCategoria = idCategoria.HasValue
+                ? productos.FirstOrDefault()?.Categoria?.Nombre ?? "Productos"
+                : "Frutas"; // o el nombre que desees mostrar por defecto
+
+            return View(productos);
         }
+
+
 
         /// <summary>
         /// Obtiene la lista de productos de tipo verdura desde la API y los muestra en la vista.

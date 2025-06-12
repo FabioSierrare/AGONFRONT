@@ -1,0 +1,10 @@
+﻿@model List<AGONFRONT.Models.Categoria>
+
+@foreach (var categoria in Model)
+{
+    <li>
+        <a class="dropdown-item" href="@Url.Action("ProductosCategoria", "Productos", new { idCategoria = categoria.Id })">
+            @categoria.Nombre
+        </a>
+    </li>
+}

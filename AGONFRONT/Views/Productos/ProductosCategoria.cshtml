@@ -1,0 +1,34 @@
+﻿@model List<AGONFRONT.Models.Productos>
+@{
+    ViewBag.Title = ViewBag.NombreCategoria ?? "Productos";
+    Layout = "~/Views/Shared/_LayoutLoged.cshtml";
+}
+<h2>@ViewBag.NombreCategoria</h2>
+
+<div class="container my-5">
+    <h2 class="text-center mb-4">@ViewBag.NombreCategoria</h2>
+
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var producto in Model)
+            {
+                <div class="col-md-3 mb-4 productoRow" data-categoria="@producto.CategoriaId">
+                    <div class="product-card">
+                        <img src="@producto.UrlImagen" class="product-img card-img-top" alt="@producto.Nombre">
+                        <div class="product-body card-body">
+                            <h5 class="product-title">@producto.Nombre</h5>
+                            <p class="product-price">$@producto.Precio</p>
+                            <p class="card-text">@producto.Descripcion</p>
+                            <a href="@Url.Action("Detalles", "Productos", new { id = producto.Id })" class="product-btn btn">Ver Detalles</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-center">No hay productos disponibles en esta categoría.</p>
+        }
+    </div>
+</div>

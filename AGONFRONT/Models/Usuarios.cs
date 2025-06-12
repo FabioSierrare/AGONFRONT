@@ -64,5 +64,7 @@ namespace AGONFRONT.Models
         [Display(Name =  "Fehca de creacion")]
         [DataType(DataType.DateTime)]
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+
+
     }
 }

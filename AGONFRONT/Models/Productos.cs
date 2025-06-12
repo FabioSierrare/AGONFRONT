@@ -44,5 +44,7 @@ namespace AGONFRONT.Models
         [Display(Name = " UrlImagen")]
         public string UrlImagen { get; set; }
 
+        [NotMapped] // Importante si esta propiedad no viene desde la base de datos, sino del JSON
+        public Categoria Categoria { get; set; }
     }
 }
