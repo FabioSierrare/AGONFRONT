@@ -14,10 +14,6 @@
             campo.value = campo.value.replace(/[^a-zA-Z0-9]/g, '');
         });
     });
-  }
-
-function validarSoloLetras() {
-    const campos = document.querySelectorAll('.sl');
 
     campos.forEach(campo => {
         campo.addEventListener('input', () => {
