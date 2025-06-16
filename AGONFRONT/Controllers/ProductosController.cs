@@ -142,7 +142,7 @@ namespace AGONFRONT.Controllers
                     }
 
                     // Obtener email del usuario desde cookie para buscar su ID
-                    string emailUsuario = Request.Cookies["UserEmail"]?.Value;
+                    string emailUsuario = Session["UserEmail"] as string;
                     if (!string.IsNullOrEmpty(emailUsuario))
                     {
                         HttpResponseMessage usuariosResponse = await client.GetAsync("api/Usuarios/GetUsuarios");
@@ -198,7 +198,7 @@ namespace AGONFRONT.Controllers
         public async Task<ActionResult> Comentar(int productoId, string comentarioTexto)
         {
             // Obtener correo del usuario desde la cookie
-            string emailUsuario = Request.Cookies["UserEmail"]?.Value;
+            string emailUsuario = Session["UserEmail"] as string;
             if (string.IsNullOrEmpty(emailUsuario))
             {
                 TempData["Error"] = "Debes iniciar sesión para comentar.";

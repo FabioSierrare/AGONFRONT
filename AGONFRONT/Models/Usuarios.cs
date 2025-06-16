@@ -17,7 +17,7 @@ namespace AGONFRONT.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Display(Name = " Nombre Completo")]
+        [Display(Name = " Nombre completo")]
         [Required(ErrorMessage = " El campo {0} es requerido")]
         public string Nombre { get; set; }
 

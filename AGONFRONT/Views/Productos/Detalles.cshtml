@@ -25,13 +25,7 @@
         </div>
     }
 
-    @if (ViewBag.UserId != null)
-    {
-        <div class="alert alert-success">
-            Estás logueado como usuario #@ViewBag.UserId
-        </div>
-    }
-    else
+    @if (ViewBag.UserId == null)
     {
         <div class="alert alert-warning">
             No estás logueado. Inicia sesión para comentar.
