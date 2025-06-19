@@ -185,6 +185,14 @@ namespace AGONFRONT.Controllers
         /// <returns>Redirige a la vista de productos del vendedor, con mensaje de éxito o error.</returns>
         public async Task<ActionResult> Editarmiproducto(Productos productos)
         {
+            Console.WriteLine($"Precio recibido: {productos.Precio}");
+
+            if (productos.Precio < 0)
+            {
+                TempData["Error"] = "El precio debe ser mayor a 0 (desde backend).";
+                return RedirectToAction("Misproductosvendedor");
+            }
+
             // 🔐 Obtener el token JWT desde las cookies o la sesión
             var tokenCookie = Request.Cookies["BearerToken"];
             var tokenSession = Session["BearerToken"] as string;
