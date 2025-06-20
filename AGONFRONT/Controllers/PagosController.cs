@@ -28,6 +28,7 @@ namespace AGONFRONT.Controllers
             Pagos pago = new Pagos();
             List<Pedidos> pedidoget = new List<Pedidos>(); // No se usa en el código actual
             List<Productos> productos = new List<Productos>();
+            Productos productosdos = new Productos();
             List<Usuarios> usuario = new List<Usuarios>();
 
             // Validar si el modelo recibido es válido
@@ -67,9 +68,9 @@ namespace AGONFRONT.Controllers
                 var userId = GetLoggedInUserId(token);
 
                 // Obtener lista de productos desde la API
-                var productosResp = await client.GetAsync("api/Productos/GetProductos");
+                HttpResponseMessage productosResp = await client.GetAsync("api/Productos/GetProductos");
                 // Obtener lista de usuarios desde la API
-                var usuariosResp = await client.GetAsync("api/Usuarios/GetUsuarios");
+                HttpResponseMessage usuariosResp = await client.GetAsync("api/Usuarios/GetUsuarios");
 
                 // Deserializar las respuestas JSON a listas de objetos correspondientes
                 productos = JsonConvert.DeserializeObject<List<Productos>>(await productosResp.Content.ReadAsStringAsync()) ?? new List<Productos>();
@@ -102,17 +103,51 @@ namespace AGONFRONT.Controllers
                 string json = JsonConvert.SerializeObject(pedido);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
+
                 // Enviar el pedido a la API
                 HttpResponseMessage response = await client.PostAsync("api/Pedidos/PostPedidos", content);
                 if (response.IsSuccessStatusCode)
                 {
+
                     TempData["Success"] = "Pedido Creado correctamente.";
+                    foreach (var item in model)
+                    {
+                        // Buscar el producto en la lista obtenida de la API según el Id
+                        var producto = productos.FirstOrDefault(p => p.Id == item.ProductoId);
+                        if (producto != null)
+                        {
+                            productosdos.Id = producto.Id;
+                            productosdos.Nombre = producto.Nombre;
+                            productosdos.Descripcion = producto.Descripcion;
+                            productosdos.Precio = producto.Precio;
+                            productosdos.Stock = producto.Stock - 1;
+                            productosdos.FechaCreacion = producto.FechaCreacion;
+                            productosdos.CategoriaId = producto.CategoriaId;
+                            productosdos.VendedorId = producto.VendedorId;
+                            productosdos.UrlImagen = producto.UrlImagen;
+
+                            var json2 = JsonConvert.SerializeObject(productosdos);
+                            Console.WriteLine(json2);
+                            var contproducto = new StringContent(json2, Encoding.UTF8, "application/json");
+                            Console.WriteLine(contproducto);
+                            HttpResponseMessage responsepr = await client.PutAsync($"api/Productos/PutProductos/{producto.Id}", contproducto);
+                            var errorBody = await responsepr.Content.ReadAsStringAsync();
+                            Console.WriteLine($"STATUS: {responsepr.StatusCode}");
+                            Console.WriteLine($"BODY: {errorBody}");
+                            if (responsepr.IsSuccessStatusCode)
+                            {
+                                Console.WriteLine("");
+                            }
+                        }
+                    }
                 }
                 else
                 {
                     TempData["Error"] = "Fallo al crear pedido.";
                 }
 
+
+                Session["Carrito"] = null;
                 // Preparar datos para la pasarela de pago
                 string factura = $"{userId}AGON{DateTime.Now.Ticks}";
                 string nombre = usuario.FirstOrDefault(u => u.Id == pedido.ClienteId)?.Nombre ?? "Cliente";
