@@ -36,14 +36,10 @@
     </div>
 
     <div class="form-group">
-        @Html.Label("Rol", new { @class = "control-label col-md-2" })
+        @Html.LabelFor(m => m.Direccion, new { @class = "control-label col-md-2" })
         <div class="col-md-8">
-            @Html.DropDownListFor(
-                m => m.TipoUsuarioId,
-                new SelectList(tipos, "Id", "Nombre", Model.TipoUsuarioId),
-                "-- Selecciona un rol --",
-                new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.TipoUsuarioId)
+            @Html.TextBoxFor(m => m.Direccion, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Direccion)
         </div>
     </div>
 
