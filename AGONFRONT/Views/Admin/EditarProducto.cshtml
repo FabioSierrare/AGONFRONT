@@ -4,6 +4,8 @@
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     var categorias = ViewBag.Categoria as IEnumerable<AGONFRONT.Models.Categoria>;
     var vendedores = ViewBag.Vendedores as IEnumerable<AGONFRONT.Models.Usuarios>;
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
 }
 
 <h2>Editar Producto</h2>
@@ -19,8 +21,6 @@
 {
     @Html.AntiForgeryToken()
     @Html.HiddenFor(m => m.Id)
-
-    <!-- Campos ocultos para evitar errores 400 -->
     @Html.HiddenFor(m => m.FechaCreacion)
     @Html.HiddenFor(m => m.UrlImagen, new { @Value = Model.UrlImagen ?? "/assets/default.png" })
     @Html.HiddenFor(m => m.Descripcion, new { @Value = Model.Descripcion ?? "Sin descripción." })
@@ -28,24 +28,24 @@
     <div class="form-group">
         @Html.LabelFor(m => m.Nombre, new { @class = "control-label col-md-2" })
         <div class="col-md-8">
-            @Html.TextBoxFor(m => m.Nombre, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Nombre)
+            @Html.TextBoxFor(m => m.Nombre, new { @class = "form-control", @id = "Nombre" })
+            @Html.ValidationMessageFor(m => m.Nombre, "", new { @class = "text-danger" })
         </div>
     </div>
 
     <div class="form-group">
         @Html.LabelFor(m => m.Precio, new { @class = "control-label col-md-2" })
         <div class="col-md-8">
-            @Html.TextBoxFor(m => m.Precio, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Precio)
+            @Html.TextBoxFor(m => m.Precio, new { @class = "form-control", @id = "Precio" })
+            @Html.ValidationMessageFor(m => m.Precio, "", new { @class = "text-danger" })
         </div>
     </div>
 
     <div class="form-group">
         @Html.LabelFor(m => m.Stock, new { @class = "control-label col-md-2" })
         <div class="col-md-8">
-            @Html.TextBoxFor(m => m.Stock, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Stock)
+            @Html.TextBoxFor(m => m.Stock, new { @class = "form-control", @id = "Stock" })
+            @Html.ValidationMessageFor(m => m.Stock, "", new { @class = "text-danger" })
         </div>
     </div>
 
@@ -77,4 +77,21 @@
             @Html.ActionLink("Cancelar", "Productos", "Admin", null, new { @class = "btn btn-default ml-2" })
         </div>
     </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            $('#Nombre').on('input', function () {
+                this.value = this.value.replace(/[^a-zA-Z0-9\s]/g, '');
+            });
+            $('#Precio').on('input', function () {
+                this.value = this.value.replace(/[^0-9.]/g, '');
+            });
+            $('#Stock').on('input', function () {
+                this.value = this.value.replace(/\D/g, '');
+            });
+        });
+    </script>
 }
