@@ -136,6 +136,41 @@
         </div>
     </div>
 </div>
+@if (ViewBag.ProductosConDescuento != null)
+{
+    var productos = (List<AGONFRONT.Models.Productos>)ViewBag.ProductosConDescuento;
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h3><i class="bi bi-box-seam me-2"></i>Productos con Descuento Aplicado</h3>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Precio Actual</th>
+                            <th>Imagen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in productos)
+                        {
+                            <tr>
+                                <td>@p.Nombre</td>
+                                <td>$@p.Precio.ToString("N2")</td>
+                                <td>
+                                    <img src="@p.UrlImagen" alt="Imagen" width="60" class="img-thumbnail" />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

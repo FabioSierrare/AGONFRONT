@@ -927,34 +927,89 @@ namespace AGONFRONT.Controllers
         {
             try
             {
-
-                // Enviar solicitud POST a la API para agregar el descuento
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
+
+                    // 1. Obtener y filtrar productos del vendedor
+                    var responseProductos = await client.GetAsync("api/Productos/GetProductos");
+                    if (!responseProductos.IsSuccessStatusCode)
+                    {
+                        TempData["Error"] = "No se pudieron obtener los productos.";
+                        return RedirectToAction("GestionDescuentos");
+                    }
+
+                    var productosJson = await responseProductos.Content.ReadAsStringAsync();
+                    var productos = JsonConvert.DeserializeObject<List<Productos>>(productosJson);
+                    var productosVendedor = productos.Where(p => p.VendedorId == model.VendedorId).ToList();
+
+                    // 2. Aplicar descuento y actualizar cada producto
+                    foreach (var producto in productosVendedor)
+                    {
+                        try
+                        {
+                            producto.Precio -= producto.Precio * ((decimal)model.Descuento / 100);
+
+                            // Lógica migrada del trigger (Stock → Nombre)
+                            if (producto.Stock == 0 && !producto.Nombre.Contains("(Agotado)"))
+                            {
+                                producto.Nombre += " (Agotado)";
+                            }
+                            else if (producto.Stock > 0 && producto.Nombre.Contains("(Agotado)"))
+                            {
+                                producto.Nombre = producto.Nombre.Replace(" (Agotado)", "");
+                            }
+
+                            var jsonProducto = JsonConvert.SerializeObject(producto);
+                            var contentProducto = new StringContent(jsonProducto, Encoding.UTF8, "application/json");
+
+                            var responseUpdate = await client.PutAsync($"api/Productos/PutProductos/{producto.Id}", contentProducto);
+
+                            if (!responseUpdate.IsSuccessStatusCode)
+                            {
+                                var errorBody = await responseUpdate.Content.ReadAsStringAsync();
+
+                                TempData["Error"] = $"❌ Error al actualizar el producto '{producto.Nombre}':\n" +
+                                                    $"Status: {responseUpdate.StatusCode}\n" +
+                                                    $"Body: {errorBody}\n" +
+                                                    $"JSON Enviado: {jsonProducto}";
+
+                                return RedirectToAction("GestionDescuentos");
+                            }
+                        }
+                        catch (Exception exProducto)
+                        {
+                            TempData["Error"] = $"⚠️ Excepción inesperada al procesar '{producto.Nombre}': {exProducto.Message}";
+                            return RedirectToAction("GestionDescuentos");
+                        }
+                    }
+
+                    // 3. Guardar el descuento en la API
                     string json = JsonConvert.SerializeObject(model);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
                     HttpResponseMessage response = await client.PostAsync("api/Descuentos/PostDescuentos", content);
-
-                    // Manejar error en la respuesta de la API
                     if (!response.IsSuccessStatusCode)
                     {
                         var errorContent = await response.Content.ReadAsStringAsync();
-                        TempData["Error"] = $"Error de API: {response.StatusCode} - {errorContent}";
+                        TempData["Error"] = $"❌ Error al guardar el descuento:\n{errorContent}";
                         return RedirectToAction("GestionDescuentos");
                     }
+
+                    // 4. Refrescar lista de productos con descuento aplicado
+                    ViewBag.ProductosConDescuento = productosVendedor;
                 }
 
-                TempData["Success"] = "Descuento agregado correctamente.";
+                TempData["Success"] = "✅ Descuento agregado y aplicado correctamente.";
                 return RedirectToAction("GestionDescuentos");
             }
             catch (Exception ex)
             {
-                TempData["Error"] = $"Hubo un error al procesar la solicitud: {ex.Message}";
+                TempData["Error"] = $"🚨 Error general: {ex.Message}";
                 return RedirectToAction("GestionDescuentos");
             }
         }
+
 
 
         /// <summary>
