@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using AGONFRONT.Filters;
 using AGONFRONT.Models;
+using AGONFRONT.Utils;
 using Newtonsoft.Json;
 
 namespace AGONFRONT.Controllers
 {
-    [AuthorizeByRole("3")]
     public class AdminController : Controller
     {
         private readonly string apiUrl = System.Configuration.ConfigurationManager.AppSettings["Api"];
@@ -56,6 +58,51 @@ namespace AGONFRONT.Controllers
             return View(lista);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> EditarUsuario(Usuarios model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            try
+            {
+                // Solo encriptar si parece ser texto plano
+                if (!string.IsNullOrWhiteSpace(model.Contraseña) && model.Contraseña.Length < 50)
+                {
+                    var plain = model.Contraseña;
+                    model.Contraseña = Encriptador.Encriptar(plain);
+                }
+
+                // ConfirmarContraseña se ignora al enviarse
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    var json = JsonConvert.SerializeObject(model);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    var response = await client.PutAsync($"api/Usuarios/PutUsuarios/{model.Id}", content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        TempData["Success"] = "Usuario actualizado correctamente.";
+                        return RedirectToAction("Usuarios");
+                    }
+                    else
+                    {
+                        var err = await response.Content.ReadAsStringAsync();
+                        ModelState.AddModelError("", $"API devolvió error: {err}");
+                        return View(model);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Error al actualizar usuario: " + ex.Message);
+                return View(model);
+            }
+        }
+
         // GET: Admin/EditarUsuario/5
         public async Task<ActionResult> EditarUsuario(int id)
         {
@@ -84,46 +131,10 @@ namespace AGONFRONT.Controllers
                 return RedirectToAction("Usuarios");
             }
 
-            ViewBag.TiposUsuario = await ObtenerTiposUsuario();
-            return View(model);
+            return View(model); // Retorna la vista con el modelo cargado
         }
 
-        // POST: Admin/EditarUsuario
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> EditarUsuario(Usuarios model)
-        {
-            if (!ModelState.IsValid)
-            {
-                ViewBag.TiposUsuario = await ObtenerTiposUsuario();
-                return View(model);
-            }
 
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(apiUrl);
-                    var json = JsonConvert.SerializeObject(model);
-                    var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-                    var response = await client.PutAsync($"api/Usuarios/PutUsuarios/{model.Id}", content);
-
-                    if (response.IsSuccessStatusCode)
-                        TempData["Success"] = "Usuario actualizado correctamente.";
-                    else
-                    {
-                        var err = await response.Content.ReadAsStringAsync();
-                        TempData["Error"] = $"API devolvió error: {err}";
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = $"Excepción: {ex.Message}";
-            }
-
-            return RedirectToAction("Usuarios");
-        }
 
         // POST: Admin/EliminarUsuario/5
         [HttpPost]
@@ -563,6 +574,70 @@ namespace AGONFRONT.Controllers
             }
             catch { }
             return vendedores;
+        }
+
+        // GET: Admin/CrearAdmin
+        // dentro de AdminController, al final de la clase
+
+        // GET: Admin/CrearAdmin
+        // GET: Admin/CrearAdmin
+        // dentro de AdminController, al final de la clase
+        // ------------------------------------------------
+
+        // GET: Admin/CrearAdmin
+        public ActionResult CrearAdmin()
+        {
+            // Pre-inicializamos rol=3 y fecha
+            var model = new Usuarios
+            {
+                TipoUsuarioId = 3,
+                FechaCreacion = DateTime.UtcNow
+            };
+            return View(model);
+        }
+
+        // POST: Admin/CrearAdmin
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> CrearAdmin(Usuarios model)
+        {
+            // Aseguramos rol y fecha
+            model.TipoUsuarioId = 3;
+            model.FechaCreacion = DateTime.UtcNow;
+
+            // Validamos modelo (incluye Compare contra ConfirmarContraseña)
+            if (!ModelState.IsValid)
+            {
+                // Si hay errores, retornamos la misma vista con ModelState
+                return View(model);
+            }
+
+            // Encriptamos la contraseña _antes_ de enviar al API
+            var plain = model.Contraseña;
+            model.Contraseña = Encriptador.Encriptar(plain);
+
+            // ConfirmarContraseña tiene [JsonIgnore], no se enviará
+            // Llamada al microservicio
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiUrl);
+                var json = JsonConvert.SerializeObject(model);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var resp = await client.PostAsync("api/Usuarios/PostUsuarios", content);
+
+                if (resp.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Administrador creado correctamente.";
+                    return RedirectToAction("Usuarios");
+                }
+                else
+                {
+                    // Si el API devolvió un error, lo añadimos a ModelState para que aparezca
+                    var err = await resp.Content.ReadAsStringAsync();
+                    ModelState.AddModelError("", $"API devolvió error: {err}");
+                    return View(model);
+                }
+            }
         }
     }
 }

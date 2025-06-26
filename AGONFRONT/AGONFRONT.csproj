@@ -456,6 +456,7 @@
     <Content Include="Views\Admin\EditarCategoria.cshtml" />
     <Content Include="Views\Shared\_CategoriasDropdown.cshtml" />
     <Content Include="Views\Productos\ProductosCategoria.cshtml" />
+    <Content Include="Views\Admin\CrearAdmin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
