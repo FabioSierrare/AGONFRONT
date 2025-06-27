@@ -229,6 +229,7 @@
     <Compile Include="Models\CarritoYComentariosViewModel.cs" />
     <Compile Include="Models\DetalleProductoViewModel.cs" />
     <Compile Include="Models\Filtros.cs" />
+    <Compile Include="Models\ImgPerfil.cs" />
     <Compile Include="Models\IngresosDiarios.cs" />
     <Compile Include="Models\Pagos.cs" />
     <Compile Include="Models\ProductoEnCarritocs.cs" />

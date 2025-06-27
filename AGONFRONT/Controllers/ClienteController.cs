@@ -16,6 +16,8 @@ using static AGONFRONT.Controllers.HomeController;
 using System.Globalization;
 using AGONFRONT.Filters;
 using AGONFRONT.Utils;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage;
 
 namespace AGONFRONT.Controllers
 {
@@ -66,18 +68,19 @@ namespace AGONFRONT.Controllers
         {
             List<Usuarios> usuarios = new List<Usuarios>();
             List<Pedidos> pedidos = new List<Pedidos>();
+            List<ImgPerfil> imgperfil = new List<ImgPerfil>();
 
-            // Obtener token de autenticación desde cookie o sesión
             var tokenCookie = Request.Cookies["BearerToken"];
             var tokenSession = Session["BearerToken"] as string;
             string token = tokenCookie?.Value ?? tokenSession;
 
             using (var client = new HttpClient())
             {
+                string userId = GetLoggedInUserId(token); // Obtienes el ID del usuario logueado
                 client.BaseAddress = new Uri(apiUrl);
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                // Cargar usuarios desde el servicio API
+                // Cargar usuarios
                 var responseUsuarios = await client.GetAsync("api/Usuarios/GetUsuarios");
                 if (responseUsuarios.IsSuccessStatusCode)
                 {
@@ -85,18 +88,28 @@ namespace AGONFRONT.Controllers
                     usuarios = JsonConvert.DeserializeObject<List<Usuarios>>(resUsuarios);
                 }
 
-                // Cargar pedidos desde el servicio API
+                // Cargar pedidos
                 var responsePedidos = await client.GetAsync("api/Pedidos/GetPedidos");
                 if (responsePedidos.IsSuccessStatusCode)
                 {
                     var resPedidos = await responsePedidos.Content.ReadAsStringAsync();
                     pedidos = JsonConvert.DeserializeObject<List<Pedidos>>(resPedidos);
                 }
+
+                // Cargar ImgPerfil para el usuario específico
+                var responseImgPerfil = await client.GetAsync($"api/ImgPerfil/GetImgPerfil?userId={userId}");
+                if (responseImgPerfil.IsSuccessStatusCode)
+                {
+                    var resImgPerfil = await responseImgPerfil.Content.ReadAsStringAsync();
+                    imgperfil = JsonConvert.DeserializeObject<List<ImgPerfil>>(resImgPerfil);
+                }
             }
 
-            // Se pasan los pedidos mediante ViewBag y los usuarios como modelo de la vista
+            // Verifica si se encontró una imagen de perfil y asigna a ViewBag
             ViewBag.Pedidos = pedidos;
-            return View(usuarios);
+            ViewBag.ImgPerfil = imgperfil; // Aquí pasas las imágenes al ViewBag
+
+            return View(usuarios); // Los usuarios van al Model de la vista
         }
 
         private async Task<List<Categoria>> ObtenerCategorias()
@@ -241,6 +254,105 @@ namespace AGONFRONT.Controllers
             return RedirectToAction("Iniciar", "Home");
         }
 
+
+
+        [HttpPost]
+        public async Task<ActionResult> ModificarFotoPerfil(ImgPerfil model, HttpPostedFileBase Foto)
+        {
+            var tokenCookie = Request.Cookies["BearerToken"];
+            var tokenSession = Session["BearerToken"] as string;
+            string token = tokenCookie?.Value ?? tokenSession;
+
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Clear();
+
+                    string userId = GetLoggedInUserId(token);
+                    model.IdUsuario = int.Parse(userId);
+
+                    if (Foto != null && Foto.ContentLength > 0)
+                    {
+                        // Subir imagen a Azure y obtener URL
+                        var urlImagen = await SubirImagenAzure(Foto);
+
+                        // Guardar la URL en el producto
+                        model.URLImg = urlImagen;
+                    }
+                    else
+                    {
+                        TempData["Error"] = "Debes subir una imagen para el producto.";
+                        return RedirectToAction("EditarPerfilCliente");
+                    }
+
+
+                    var json = JsonConvert.SerializeObject(model);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    // Consultar si ya existe una imagen de perfil
+                    var responseImgPerfil = await client.GetAsync("api/ImgPerfil/GetImgPerfil");
+
+                    if (responseImgPerfil.IsSuccessStatusCode)
+                    {
+                        var existingData = await responseImgPerfil.Content.ReadAsStringAsync();
+                        var lista = JsonConvert.DeserializeObject<List<ImgPerfil>>(existingData);
+                        var existingImg = lista.FirstOrDefault(x => x.IdUsuario == int.Parse(userId));
+
+                        if (existingImg != null && existingImg.Id != 0)
+                        {
+                            var response = await client.PutAsync($"api/ImgPerfil/PutImgPerfil/{existingImg.Id}", content);
+                            return RedirectToAction("EditarPerfilCliente");
+                        }
+                    }
+
+
+                    // Si no existe, hacemos POST
+                    var postResponse = await client.PostAsync("api/ImgPerfil/PostImgPerfil", content);
+                    if (postResponse.IsSuccessStatusCode)
+                    {
+                        TempData["Success"] = "Foto de perfil modificada correctamente.";
+                        return RedirectToAction("EditarPerfilCliente");
+                    }
+                    else
+                    {
+                        TempData["Error"] = "No se pudo guardar la imagen de perfil.";
+                        return RedirectToAction("EditarPerfilCliente");
+                    }
+
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Hubo un error al procesar la solicitud: {ex.Message}";
+                return RedirectToAction("RespuestasFAQ");
+            }
+        }
+
+
+        private async Task<string> SubirImagenAzure(HttpPostedFileBase imagen)
+        {
+            string storageConnectionString = ConfigurationManager.ConnectionStrings["AzureStorageConnectionString"].ConnectionString;
+            string containerName = "imagenescliente"; // tu contenedor
+
+            var storageAccount = CloudStorageAccount.Parse(storageConnectionString);
+            var blobClient = storageAccount.CreateCloudBlobClient();
+            var container = blobClient.GetContainerReference(containerName);
+
+            await container.CreateIfNotExistsAsync();
+            await container.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
+
+            string nombreArchivo = Guid.NewGuid().ToString() + System.IO.Path.GetExtension(imagen.FileName);
+            var blockBlob = container.GetBlockBlobReference(nombreArchivo);
+
+            blockBlob.Properties.ContentType = imagen.ContentType;
+            await blockBlob.UploadFromStreamAsync(imagen.InputStream);
+
+            return blockBlob.Uri.AbsoluteUri;
+        }
 
         [HttpPost]
         /// <summary>

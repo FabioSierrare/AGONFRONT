@@ -1,10 +1,11 @@
 ﻿@model List<AGONFRONT.Models.Usuarios>
+@using System.Linq;
 
 @{
     Layout = "~/Views/Shared/_LayoutLoged.cshtml";
 
-    var emailUsuario = Session["UserEmail"] as string; ;
-    var idUsuarioCookie = Session["UserId"] as string;
+    var emailUsuario = Session["UserEmail"] as string;
+    var idUsuarioCookie = Session["RolUsuario"] as string;
 
     var usuario = Model?.FirstOrDefault(u => u.Correo == emailUsuario);
 
@@ -17,6 +18,8 @@
     }
 
     var pedidos = ViewBag.Pedidos as List<AGONFRONT.Models.Pedidos>;
+    var img = ViewBag.ImgPerfil as List<AGONFRONT.Models.ImgPerfil>;
+
 }
 <style>
     /* Tarjeta de perfil */
@@ -77,14 +80,32 @@
             <h3 class="text-center mb-4">Mi Perfil</h3>
 
             <div class="row align-items-center">
-                <div class="col-md-3 text-center">
-                    <img src="~/Content/img/default-user.png" alt="Foto de perfil" class="img-thumbnail mb-2" style="width: 150px; height: 150px; object-fit: cover;" />
-                    @using (Html.BeginForm("CambiarFoto", "Usuarios", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                @if (img != null && img.Any())
+                {
+                    foreach (var per in img)
                     {
-                        <input type="file" name="Foto" class="form-control mb-2" required />
-                        <button type="submit" class="btn btn-success">Cambiar Foto</button>
+                        <div class="col-md-3 text-center">
+                            <img src="@per.URLImg" alt="Foto de perfil" class="img-thumbnail mb-2" style="width: 150px; height: 150px; object-fit: cover;" />
+                            @using (Html.BeginForm("ModificarFotoPerfil", "Cliente", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                            {
+                                <input type="file" name="Foto" class="form-control mb-2" required />
+                                <button type="submit" class="btn btn-success">Cambiar Foto</button>
+                            }
+                        </div>
                     }
-                </div>
+                }
+                else
+                {
+                    <div class="col-md-3 text-center">
+                        <img src="~/img/default-profile.jpg" alt="Foto de perfil" class="img-thumbnail mb-2" style="width: 150px; height: 150px; object-fit: cover;" />
+                        @using (Html.BeginForm("ModificarFotoPerfil", "Cliente", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                        {
+                            <input type="file" name="Foto" class="form-control mb-2" required />
+                            <button type="submit" class="btn btn-success">Cambiar Foto</button>
+                        }
+                    </div>
+                }
+
                 <div class="col-md-8">
                     <h5 class="profile-section-title">Información Personal</h5>
 
@@ -104,6 +125,7 @@
             </div>
         </div>
     </div>
+
 
     <!-- Modal Editar Perfil -->
     <div class="modal fade" id="editarPerfilModal" tabindex="-1" aria-labelledby="editarPerfilModalLabel" aria-hidden="true">
