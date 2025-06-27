@@ -484,12 +484,10 @@ namespace AGONFRONT.Controllers
         {
             List<Productos> productos = new List<Productos>();
 
-            // 🔐 Obtener el token desde cookie o sesión
             var tokenCookie = Request.Cookies["BearerToken"]?.Value;
             var tokenSession = Session["BearerToken"] as string;
             string token = tokenCookie ?? tokenSession;
 
-            // 🚫 Verificar si el token está vacío
             if (string.IsNullOrEmpty(token))
             {
                 TempData["Error"] = "No tienes acceso a esta página. Por favor inicia sesión.";
@@ -498,27 +496,24 @@ namespace AGONFRONT.Controllers
 
             try
             {
-                // 🌐 Realizar solicitud GET a la API de productos
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
                     client.DefaultRequestHeaders.Authorization =
                         new AuthenticationHeaderValue("Bearer", token);
 
+                    // Obtener productos
                     HttpResponseMessage response = await client.GetAsync("api/Productos/GetProductos");
 
-                    // ⚠️ Si la respuesta no es exitosa, redirigir con mensaje de error
                     if (!response.IsSuccessStatusCode)
                     {
                         TempData["Error"] = "No se pudieron obtener los datos de productos.";
                         return RedirectToAction("Iniciar", "Home");
                     }
 
-                    // ✅ Leer y deserializar los productos
                     var res = await response.Content.ReadAsStringAsync();
                     productos = JsonConvert.DeserializeObject<List<Productos>>(res) ?? new List<Productos>();
 
-                    // ✅ Obtener el ID del usuario desde el token
                     string userId = GetLoggedInUserId(token);
                     if (string.IsNullOrEmpty(userId))
                     {
@@ -526,25 +521,30 @@ namespace AGONFRONT.Controllers
                         return RedirectToAction("Iniciar", "Home");
                     }
 
-                    // ✅ Pasar el ID del usuario a la vista si es necesario
                     ViewBag.UsuarioId = userId;
-
-
-                    // 📋 Filtrar productos que pertenecen al vendedor autenticado
-                    productos = productos
-                        .Where(p => p.VendedorId == int.Parse(userId))
-                        .ToList();
+                    productos = productos.Where(p => p.VendedorId == int.Parse(userId)).ToList();
                 }
+
+                // ✅ Obtener categorías desde la API
+                var categorias = await ObtenerCategorias();
+
+                // 🧪 Verificación de categorías (debug en consola)
+                Console.WriteLine($"Categorías encontradas: {categorias.Count}");
+                foreach (var c in categorias)
+                {
+                    Console.WriteLine($"-> {c.Id}: {c.Nombre}");
+                }
+
+                // Asignar categorías a ViewBag
+                ViewBag.Categorias = new SelectList(categorias, "Id", "Nombre");
             }
             catch (Exception ex)
             {
-                // ⚠️ Manejo de errores en caso de fallo de red o excepción inesperada
                 Console.WriteLine($"[ERROR] {ex.Message}");
                 TempData["Error"] = $"Error en la conexión con la API: {ex.Message}";
                 return RedirectToAction("Iniciar", "Home");
             }
 
-            // ✅ Mostrar la vista con los productos filtrados
             return View(productos);
         }
 
@@ -707,23 +707,34 @@ namespace AGONFRONT.Controllers
         {
             List<Categoria> categorias = new List<Categoria>();
 
+            // Obtén el token desde cookie o sesión
+            var tokenCookie = Request.Cookies["BearerToken"]?.Value;
+            var tokenSession = Session["BearerToken"] as string;
+            string token = tokenCookie ?? tokenSession;
+
             using (var client = new HttpClient())
             {
-                // Establece la URL base del cliente HTTP
                 client.BaseAddress = new Uri(apiUrl);
 
-                // Envía una solicitud GET para obtener las categorías
-                HttpResponseMessage response = await client.GetAsync("api/Categorias/GetCategorias");
+                // ✅ Si hay token, lo agregamos
+                if (!string.IsNullOrEmpty(token))
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                }
 
-                // Si la respuesta es exitosa, deserializa el contenido a la lista de categorías
+                HttpResponseMessage response = await client.GetAsync("api/Categorias/GetCategoria");
+
                 if (response.IsSuccessStatusCode)
                 {
                     var res = await response.Content.ReadAsStringAsync();
                     categorias = JsonConvert.DeserializeObject<List<Categoria>>(res);
                 }
+                else
+                {
+                    Console.WriteLine($"[CATEGORÍAS] Error al obtener: {response.StatusCode}");
+                }
             }
 
-            // Retorna la lista de categorías (vacía si hubo error)
             return categorias;
         }
 

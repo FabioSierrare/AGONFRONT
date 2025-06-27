@@ -88,7 +88,7 @@
                             <img src="@per.URLImg" alt="Foto de perfil" class="img-thumbnail mb-2" style="width: 150px; height: 150px; object-fit: cover;" />
                             @using (Html.BeginForm("ModificarFotoPerfil", "Cliente", FormMethod.Post, new { enctype = "multipart/form-data" }))
                             {
-                                <input type="file" name="Foto" class="form-control mb-2" required />
+                                <input type="file" name="Foto" accept="image/*" class="form-control mb-2" required />
                                 <button type="submit" class="btn btn-success">Cambiar Foto</button>
                             }
                         </div>

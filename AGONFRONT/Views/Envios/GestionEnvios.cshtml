@@ -285,13 +285,13 @@
                     @Html.AntiForgeryToken()
                     <div class="mb-3">
                         @Html.LabelFor(m => m.Envios.PedidoId, new { @class = "form-label" })
-                        @Html.TextBoxFor(m => m.Envios.PedidoId, new { @class = "form-control" })
+                        @Html.TextBoxFor(m => m.Envios.PedidoId, new { @class = "form-control sn" })
                         @Html.ValidationMessageFor(m => m.Envios.PedidoId, "", new { @class = "text-danger" })
 
                     </div>
                     <div class="mb-3">
                         @Html.LabelFor(m => m.Envios.Empresa, new { @class = "form-label" })
-                        @Html.TextBoxFor(m => m.Envios.Empresa, new { @class = "form-control" })
+                        @Html.TextBoxFor(m => m.Envios.Empresa, new { @class = "form-control nce" })
                         @Html.ValidationMessageFor(m => m.Envios.Empresa, "", new { @class = "text-danger" })
                     </div>
                     <div class="mb-3">
