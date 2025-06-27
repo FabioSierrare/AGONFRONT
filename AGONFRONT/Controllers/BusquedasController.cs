@@ -157,6 +157,28 @@ namespace AGONFRONT.Controllers
             return PartialView("_PartialProductosBusqueda", productosFiltrados);
         }
 
+        public ActionResult FiltroCategorias()
+        {
+            List<Categoria> categorias = new List<Categoria>();
+
+            var tokenCookie = Request.Cookies["BearerToken"];
+            string token = tokenCookie != null ? tokenCookie.Value : (Session["BearerToken"] as string);
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiUrl);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                var response = client.GetAsync("/api/Categorias/GetCategoria").Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = response.Content.ReadAsStringAsync().Result;
+                    categorias = JsonConvert.DeserializeObject<List<Categoria>>(json);
+                }
+            }
+
+            return PartialView("_PartialAsideCategorias", categorias);
+        }
 
     }
 }

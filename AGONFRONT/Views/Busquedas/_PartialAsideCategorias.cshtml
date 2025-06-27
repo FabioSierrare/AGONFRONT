@@ -1,25 +1,26 @@
-﻿<aside class="col-3 p-0 mb-4" id="sidebar-container">
+﻿@model List<AGONFRONT.Models.Categoria>
+
+<aside class="col-3 p-0 mb-4" id="sidebar-container">
     <div class="bg-dark text-white p-3 rounded">
         <form id="formFiltros" method="get">
             <h5>Categorías</h5>
             <hr class="mt-1">
 
-            <div class="form-check">
-                <input class="form-check-input" name="categorias" type="checkbox" value="1" id="frutas">
-                <label class="form-check-label" for="frutas">Frutas</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" name="categorias" type="checkbox" value="2" id="verduras">
-                <label class="form-check-label" for="verduras">Verduras</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" name="categorias" type="checkbox" value="3" id="granos">
-                <label class="form-check-label" for="granos">Granos y cereales</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" name="categorias" type="checkbox" value="4" id="granja">
-                <label class="form-check-label" for="granja">Granja</label>
-            </div>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var categoria in Model)
+                {
+                    string checkboxId = "categoria_" + categoria.Id;
+                    <div class="form-check">
+                        <input class="form-check-input" name="categorias" type="checkbox" value="@categoria.Id" id="@checkboxId" />
+                        <label class="form-check-label" for="@checkboxId">@categoria.Nombre</label>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-warning">No hay categorías disponibles.</p>
+            }
 
             <br />
             <h5>Precio</h5>
